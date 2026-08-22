@@ -46,6 +46,27 @@ service worker ทำงานเฉพาะบิลด์ production เท�
 npx serve dist/financetracker/browser
 ```
 
+## Deploy ขึ้น GitHub Pages
+
+มี workflow อยู่ที่ [`.github/workflows/deploy.yml`](.github/workflows/deploy.yml) — ทุกครั้งที่ push เข้า `main`
+(หรือกดรันเองจากแท็บ Actions) จะบิลด์แล้ว deploy ให้อัตโนมัติ ได้เว็บที่
+https://san-marut.github.io/finance-tracking/
+
+ตั้งค่าครั้งเดียวก่อนใช้: ที่หน้า repo → **Settings → Pages → Build and deployment → Source: GitHub Actions**
+
+สิ่งที่ workflow จัดการให้เป็นพิเศษสำหรับ Angular:
+
+- บิลด์ด้วย `--base-href /finance-tracking/` เพราะเป็น project page ที่อยู่ใต้ path ย่อย
+  (ค่า base href ดึงจากชื่อ repo อัตโนมัติ ถ้าเปลี่ยนชื่อ repo ก็ยังทำงานถูก)
+- ก๊อป `index.html` เป็น `404.html` เพื่อให้เปิด URL ตรงๆ อย่าง `/finance-tracking/transactions` แล้ว router ทำงานได้
+- สร้าง `.nojekyll` กัน Jekyll ตัดไฟล์ที่ขึ้นต้นด้วย `_`
+
+ทดสอบบิลด์แบบเดียวกับที่ deploy ได้ในเครื่องด้วย
+
+```bash
+npm run build:pages
+```
+
 ## โครงสร้างโค้ด
 
 ```
