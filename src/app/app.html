@@ -1,0 +1,45 @@
+<div class="shell">
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" routerLink="/dashboard">
+        <span class="brand-mark">฿</span>
+        <span class="brand-text">
+          <strong>บันทึกรายรับรายจ่าย</strong>
+          <small>Finance Tracker</small>
+        </span>
+      </a>
+
+      @if (installEvent()) {
+        <button type="button" class="btn install-btn" (click)="install()">
+          ⬇️ ติดตั้งแอป
+        </button>
+      }
+    </div>
+  </header>
+
+  @if (updateReady()) {
+    <div class="update-banner">
+      <span>มีเวอร์ชันใหม่พร้อมใช้งาน</span>
+      <button type="button" class="btn btn-primary" (click)="reloadApp()">อัปเดตเลย</button>
+    </div>
+  }
+
+  <main class="content">
+    <router-outlet />
+  </main>
+
+  <a class="fab" routerLink="/entry" aria-label="เพิ่มรายการใหม่">＋</a>
+
+  <nav class="bottom-nav">
+    @for (item of navItems; track item.path) {
+      <a
+        [routerLink]="item.path"
+        routerLinkActive="active"
+        class="nav-item"
+      >
+        <span class="nav-icon">{{ item.icon }}</span>
+        <span class="nav-label">{{ item.label }}</span>
+      </a>
+    }
+  </nav>
+</div>

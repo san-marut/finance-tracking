@@ -1,0 +1,68 @@
+:host { display: block; }
+
+.head {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.all-banner {
+  padding: 12px;
+  text-align: center;
+  font-weight: 700;
+}
+
+.all-toggle {
+  display: inline-flex;
+  align-self: center;
+  align-items: center;
+  gap: 7px;
+  font-size: 13px;
+  color: var(--text-dim);
+  cursor: pointer;
+
+  input { accent-color: var(--brand); width: 16px; height: 16px; }
+}
+
+.filters {
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.search { background: var(--surface-2); }
+
+.chip-row { display: flex; gap: 7px; }
+
+.fchip {
+  flex: 1;
+  padding: 8px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-dim);
+  cursor: pointer;
+
+  &.on { background: var(--text); color: var(--bg); border-color: transparent; }
+  &.expense.on { background: var(--expense); color: #fff; }
+  &.income.on { background: var(--income); color: #fff; }
+}
+
+.clear-btn { align-self: flex-start; padding: 4px 8px; font-size: 12.5px; }
+
+.totals {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  padding: 12px;
+  margin-bottom: 16px;
+  text-align: center;
+
+  small { display: block; font-size: 11px; color: var(--text-faint); }
+  b { font-size: 14.5px; }
+}

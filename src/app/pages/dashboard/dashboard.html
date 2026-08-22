@@ -1,0 +1,205 @@
+<section class="head">
+  <app-month-picker
+    [month]="store.selectedMonth()"
+    (monthChange)="setMonth($event)"
+    (jumpToNow)="resetMonth()"
+  />
+
+  <div class="scope-switch" role="tablist" aria-label="ช่วงข้อมูล">
+    <button
+      type="button"
+      role="tab"
+      [attr.aria-selected]="scope() === 'month'"
+      [class.on]="scope() === 'month'"
+      (click)="scope.set('month')"
+    >
+      รายเดือน
+    </button>
+    <button
+      type="button"
+      role="tab"
+      [attr.aria-selected]="scope() === 'all'"
+      [class.on]="scope() === 'all'"
+      (click)="scope.set('all')"
+    >
+      ทั้งหมด
+    </button>
+  </div>
+</section>
+
+<section class="card balance">
+  <div class="balance-top">
+    <span class="cap">คงเหลือ · {{ scopeLabel() }}</span>
+    <strong
+      class="big tabular"
+      [class.amount-pos]="summary().balance >= 0"
+      [class.amount-neg]="summary().balance < 0"
+    >
+      {{ summary().balance | money }} ฿
+    </strong>
+  </div>
+
+  <div class="balance-split">
+    <div class="split-item">
+      <span class="dot income"></span>
+      <div>
+        <small>รายรับ</small>
+        <b class="tabular amount-pos">{{ summary().income | money: 0 }}</b>
+      </div>
+    </div>
+    <div class="split-item">
+      <span class="dot expense"></span>
+      <div>
+        <small>รายจ่าย</small>
+        <b class="tabular amount-neg">{{ summary().expense | money: 0 }}</b>
+      </div>
+    </div>
+    <div class="split-item">
+      <span class="dot neutral"></span>
+      <div>
+        <small>เฉลี่ย/วันที่ใช้จ่าย</small>
+        <b class="tabular">{{ avgPerDay() | money: 0 }}</b>
+      </div>
+    </div>
+  </div>
+
+  @if (expenseDelta() !== null) {
+    <div class="delta" [class.up]="expenseDelta()! > 0" [class.down]="expenseDelta()! <= 0">
+      @if (expenseDelta()! > 0) {
+        ▲ รายจ่ายเพิ่มขึ้น {{ expenseDelta()! | money: 1 }}% จากเดือนก่อน
+      } @else {
+        ▼ รายจ่ายลดลง {{ -expenseDelta()! | money: 1 }}% จากเดือนก่อน
+      }
+    </div>
+  }
+
+  <div class="bar-track" [attr.aria-label]="'สัดส่วนรายจ่ายเทียบรายรับ'">
+    @if (summary().income > 0) {
+      <span
+        class="bar-fill"
+        [style.width.%]="summary().income ? (summary().expense / summary().income) * 100 : 0"
+      ></span>
+    }
+  </div>
+  <div class="bar-cap faint">
+    @if (summary().income > 0) {
+      ใช้ไปแล้ว {{ (summary().expense / summary().income) * 100 | money: 0 }}% ของรายรับ
+    } @else {
+      ยังไม่มีรายรับในช่วงนี้
+    }
+  </div>
+</section>
+
+<section class="block">
+  <div class="section-title">
+    <span>แยกตามแท็ก</span>
+    <div class="kind-switch">
+      <button type="button" [class.on]="kindView() === 'expense'" (click)="kindView.set('expense')">
+        รายจ่าย
+      </button>
+      <button type="button" [class.on]="kindView() === 'income'" (click)="kindView.set('income')">
+        รายรับ
+      </button>
+    </div>
+  </div>
+
+  <div class="card breakdown">
+    @if (stats().length) {
+      <div class="donut-row">
+        <app-donut-chart
+          [segments]="donutSegments()"
+          [caption]="kindView() === 'expense' ? 'รายจ่ายรวม' : 'รายรับรวม'"
+        />
+        <ul class="legend">
+          @for (s of stats().slice(0, 6); track s.categoryId) {
+            <li>
+              <span class="chip" [style.background]="s.color"></span>
+              <span class="lg-name">{{ s.name }}</span>
+              <span class="lg-pct tabular faint">{{ s.percent | money: 0 }}%</span>
+            </li>
+          }
+          @if (stats().length > 6) {
+            <li class="faint">และอีก {{ stats().length - 6 }} แท็ก</li>
+          }
+        </ul>
+      </div>
+
+      <ul class="cat-list">
+        @for (s of stats(); track s.categoryId) {
+          <li class="cat">
+            <button type="button" class="cat-head" (click)="toggle(s.categoryId)">
+              <span class="cat-icon" [style.background]="s.color + '22'" [style.color]="s.color">
+                {{ s.icon }}
+              </span>
+              <span class="cat-main">
+                <span class="cat-name">
+                  {{ s.name }}
+                  <small class="faint">({{ s.count }} รายการ)</small>
+                </span>
+                <span class="meter">
+                  <span
+                    class="meter-fill"
+                    [style.width.%]="s.percent"
+                    [style.background]="s.color"
+                  ></span>
+                </span>
+              </span>
+              <span class="cat-num">
+                <b class="tabular">{{ s.total | money: 0 }}</b>
+                <small class="faint tabular">{{ s.percent | money: 1 }}%</small>
+              </span>
+              <span class="caret" [class.open]="isOpen(s.categoryId)">›</span>
+            </button>
+
+            @if (isOpen(s.categoryId)) {
+              <ul class="sub-list">
+                @for (c of s.children; track c.subCategoryId) {
+                  <li>
+                    <span class="sub-name">{{ c.name }}</span>
+                    <span class="sub-meter">
+                      <span
+                        class="meter-fill"
+                        [style.width.%]="c.percent"
+                        [style.background]="s.color"
+                      ></span>
+                    </span>
+                    <span class="tabular sub-num">{{ c.total | money: 0 }}</span>
+                  </li>
+                }
+              </ul>
+            }
+          </li>
+        }
+      </ul>
+    } @else {
+      <div class="empty">
+        <div class="empty-icon">📭</div>
+        <div>ยังไม่มี{{ kindView() === 'expense' ? 'รายจ่าย' : 'รายรับ' }}ในช่วงนี้</div>
+      </div>
+    }
+  </div>
+</section>
+
+<section class="block">
+  <div class="section-title">
+    <span>แนวโน้ม 12 เดือน</span>
+    <span class="legend-inline faint">
+      <span class="chip income"></span>รับ <span class="chip expense"></span>จ่าย
+    </span>
+  </div>
+  <div class="card pad">
+    <app-trend-chart
+      [points]="store.monthlyTrend()"
+      [activeMonth]="store.selectedMonth()"
+      (pick)="setMonth($event)"
+    />
+  </div>
+</section>
+
+<section class="block">
+  <div class="section-title">
+    <span>รายการล่าสุด</span>
+    <a class="link" routerLink="/transactions">ดูทั้งหมด ›</a>
+  </div>
+  <app-tx-list [transactions]="recent()" />
+</section>

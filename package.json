@@ -1,0 +1,32 @@
+{
+  "name": "finance-tracking",
+  "version": "0.0.0",
+  "scripts": {
+    "ng": "ng",
+    "start": "ng serve",
+    "build": "ng build",
+    "watch": "ng build --watch --configuration development",
+    "test": "ng test"
+  },
+  "private": true,
+  "packageManager": "npm@11.17.0",
+  "dependencies": {
+    "@angular/common": "^22.1.0",
+    "@angular/compiler": "^22.1.0",
+    "@angular/core": "^22.1.0",
+    "@angular/forms": "^22.1.0",
+    "@angular/platform-browser": "^22.1.0",
+    "@angular/router": "^22.1.0",
+    "@angular/service-worker": "^22.1.0",
+    "rxjs": "~7.8.0",
+    "tslib": "^2.3.0"
+  },
+  "devDependencies": {
+    "@angular/build": "^22.1.5",
+    "@angular/cli": "^22.1.5",
+    "@angular/compiler-cli": "^22.1.0",
+    "prettier": "^3.8.1",
+    "typescript": "~6.0.2"
+  },
+  "description": "PWA \u0e1a\u0e31\u0e19\u0e17\u0e36\u0e01\u0e23\u0e32\u0e22\u0e23\u0e31\u0e1a\u0e23\u0e32\u0e22\u0e08\u0e48\u0e32\u0e22\u0e2a\u0e48\u0e27\u0e19\u0e15\u0e31\u0e27\u0e14\u0e49\u0e27\u0e22 Angular"
+}

@@ -1,0 +1,116 @@
+<div class="page-head">
+  <h1>ตั้งค่า</h1>
+  <p class="muted">ข้อมูลทั้งหมดเก็บไว้ในเครื่องของคุณเท่านั้น (localStorage) ไม่ถูกส่งออกไปที่ไหน</p>
+</div>
+
+<section class="card stats">
+  <div><small>รายการทั้งหมด</small><b class="tabular">{{ stats().count }}</b></div>
+  <div><small>แท็กระดับ 1</small><b class="tabular">{{ stats().categories }}</b></div>
+  <div><small>แท็กระดับ 2</small><b class="tabular">{{ stats().subCategories }}</b></div>
+  <div>
+    <small>ยอดสุทธิสะสม</small>
+    <b class="tabular" [class.amount-pos]="stats().balance >= 0" [class.amount-neg]="stats().balance < 0">
+      {{ stats().balance | money: 0 }}
+    </b>
+  </div>
+  <div class="wide"><small>รายการแรกสุด</small><b>{{ stats().firstDate }}</b></div>
+  <div class="wide"><small>รายการล่าสุด</small><b>{{ stats().lastDate }}</b></div>
+</section>
+
+<section class="block">
+  <h2 class="section-title">สำรอง / ย้ายข้อมูล</h2>
+  <div class="card rows">
+    <button type="button" class="row" (click)="exportJson()">
+      <span class="row-icon">💾</span>
+      <span class="row-text">
+        <b>ส่งออกไฟล์สำรอง (JSON)</b>
+        <small class="faint">เก็บไว้ย้ายเครื่องหรือกู้คืนภายหลัง</small>
+      </span>
+      <span class="chev">›</span>
+    </button>
+
+    <button type="button" class="row" (click)="exportCsv()">
+      <span class="row-icon">📄</span>
+      <span class="row-text">
+        <b>ส่งออกเป็น CSV</b>
+        <small class="faint">เปิดต่อใน Excel / Google Sheets</small>
+      </span>
+      <span class="chev">›</span>
+    </button>
+
+    <label class="row">
+      <span class="row-icon">📥</span>
+      <span class="row-text">
+        <b>นำเข้าไฟล์สำรอง</b>
+        <small class="faint">ข้อมูลเดิมในเครื่องจะถูกแทนที่ทั้งหมด</small>
+      </span>
+      <span class="chev">›</span>
+      <input class="sr-only" type="file" accept="application/json,.json" (change)="importFile($event)" />
+    </label>
+  </div>
+</section>
+
+<section class="block">
+  <h2 class="section-title">ข้อมูลทดลอง</h2>
+  <div class="card rows">
+    <button type="button" class="row" (click)="seedDemo()">
+      <span class="row-icon">🧪</span>
+      <span class="row-text">
+        <b>เพิ่มข้อมูลตัวอย่าง 3 เดือน</b>
+        <small class="faint">ไว้ลองดูแดชบอร์ดก่อนเริ่มกรอกจริง</small>
+      </span>
+      <span class="chev">›</span>
+    </button>
+  </div>
+</section>
+
+<section class="block">
+  <h2 class="section-title">ล้างข้อมูล</h2>
+  <div class="card rows">
+    @if (!confirmClear()) {
+      <button type="button" class="row danger" (click)="confirmClear.set(true)">
+        <span class="row-icon">🧹</span>
+        <span class="row-text">
+          <b>ลบรายการรับ-จ่ายทั้งหมด</b>
+          <small class="faint">เก็บแท็กที่ตั้งไว้เอาไว้</small>
+        </span>
+        <span class="chev">›</span>
+      </button>
+    } @else {
+      <div class="confirm">
+        <span>ลบรายการทั้งหมด {{ stats().count }} รายการ?</span>
+        <div class="confirm-actions">
+          <button type="button" class="btn" (click)="confirmClear.set(false)">ยกเลิก</button>
+          <button type="button" class="btn btn-danger" (click)="clearTransactions()">ลบเลย</button>
+        </div>
+      </div>
+    }
+
+    @if (!confirmReset()) {
+      <button type="button" class="row danger" (click)="confirmReset.set(true)">
+        <span class="row-icon">♻️</span>
+        <span class="row-text">
+          <b>คืนค่าเริ่มต้นทั้งหมด</b>
+          <small class="faint">ลบทั้งรายการและแท็กที่แก้ไขไว้</small>
+        </span>
+        <span class="chev">›</span>
+      </button>
+    } @else {
+      <div class="confirm">
+        <span>ล้างทุกอย่างและกลับไปใช้แท็กเริ่มต้น?</span>
+        <div class="confirm-actions">
+          <button type="button" class="btn" (click)="confirmReset.set(false)">ยกเลิก</button>
+          <button type="button" class="btn btn-danger" (click)="resetAll()">คืนค่าเริ่มต้น</button>
+        </div>
+      </div>
+    }
+  </div>
+</section>
+
+<p class="foot faint">
+  ติดตั้งเป็นแอปได้จากเมนูเบราว์เซอร์ → "เพิ่มไปยังหน้าจอโฮม" ใช้งานออฟไลน์ได้เต็มรูปแบบ
+</p>
+
+@if (toast()) {
+  <div class="toast">{{ toast() }}</div>
+}
