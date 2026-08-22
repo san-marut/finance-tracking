@@ -86,6 +86,10 @@ src/app/
     settings/          # สำรอง/นำเข้า/ล้างข้อมูล + ข้อมูลตัวอย่าง
 ```
 
+ไอคอนแอปวาดเป็น SVG เอง ต้นฉบับอยู่ที่ `public/icons/icon.svg` (แบบมุมโค้งสำหรับใช้ทั่วไป)
+และ `public/icons/icon-maskable.svg` (แบบเต็มขอบสำหรับ maskable ของ Android)
+ไฟล์ PNG ทุกขนาด, `apple-touch-icon.png` และ `favicon.ico` เรนเดอร์มาจาก SVG สองไฟล์นี้
+
 การคำนวณสรุปทุกอย่างเป็น `computed()` บน signal ของรายการดิบ จึงอัปเดตทันทีเมื่อมีการเพิ่ม/แก้ไขข้อมูล
 และมี `effect()` ตัวเดียวที่คอยเขียนข้อมูลลง `localStorage` (คีย์ `finance-tracker.v1`)
 

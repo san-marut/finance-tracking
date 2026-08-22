@@ -33,15 +33,10 @@
 }
 
 .brand-mark {
-  display: grid;
-  place-items: center;
+  display: block;
   width: 36px;
   height: 36px;
-  border-radius: 12px;
-  background: linear-gradient(135deg, var(--brand), color-mix(in srgb, var(--brand) 55%, #22d3ee));
-  color: #fff;
-  font-size: 19px;
-  font-weight: 700;
+  border-radius: 11px;
 }
 
 .brand-text {
