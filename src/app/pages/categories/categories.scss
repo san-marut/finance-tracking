@@ -149,10 +149,10 @@
 
 .icon-btn {
   flex: none;
-  width: 34px;
-  height: 34px;
+  width: 42px;
+  height: 42px;
   border: none;
-  border-radius: 10px;
+  border-radius: 12px;
   background: transparent;
   color: var(--text-dim);
   font-size: 15px;
@@ -182,7 +182,7 @@
   margin-top: 4px;
 }
 
-.sub-row { display: flex; align-items: center; gap: 8px; }
+.sub-row { display: flex; align-items: center; gap: 6px; }
 
 .bullet { width: 7px; height: 7px; border-radius: 50%; flex: none; }
 

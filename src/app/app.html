@@ -1,4 +1,4 @@
-<div class="shell">
+<div class="shell" [class.with-fab]="showFab()">
   <header class="topbar">
     <div class="topbar-inner">
       <a class="brand" routerLink="/dashboard">
@@ -28,7 +28,9 @@
     <router-outlet />
   </main>
 
-  <a class="fab" routerLink="/entry" aria-label="เพิ่มรายการใหม่">＋</a>
+  @if (showFab()) {
+    <a class="fab" routerLink="/entry" aria-label="เพิ่มรายการใหม่">＋</a>
+  }
 
   <nav class="bottom-nav">
     @for (item of navItems; track item.path) {

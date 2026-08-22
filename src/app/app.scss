@@ -7,6 +7,11 @@
   padding-bottom: calc(var(--nav-h) + env(safe-area-inset-bottom) + 12px);
 }
 
+/* เผื่อที่ให้เลื่อนเนื้อหาพ้นปุ่มลอย ไม่ให้ปุ่มไปทับตัวควบคุมท้ายหน้า */
+.shell.with-fab {
+  padding-bottom: calc(var(--nav-h) + env(safe-area-inset-bottom) + 96px);
+}
+
 .topbar {
   position: sticky;
   top: 0;
