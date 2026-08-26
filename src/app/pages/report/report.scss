@@ -1,0 +1,233 @@
+:host { display: block; }
+
+.year-picker {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px;
+  margin-bottom: 16px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  box-shadow: var(--shadow);
+
+  .arrow {
+    width: 40px;
+    height: 40px;
+    border: none;
+    border-radius: 999px;
+    background: var(--surface-2);
+    color: var(--text-dim);
+    font-size: 22px;
+    line-height: 1;
+    cursor: pointer;
+  }
+
+  .arrow:active { transform: scale(0.94); }
+
+  .label {
+    flex: 1;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    line-height: 1.15;
+    font-size: 20px;
+    font-weight: 700;
+    padding: 2px;
+
+    small { font-size: 10.5px; font-weight: 500; color: var(--text-faint); }
+  }
+}
+
+.summary {
+  padding: 16px;
+  margin-bottom: 20px;
+  background: linear-gradient(160deg, var(--surface), var(--surface-2));
+}
+
+.sum-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.sum-item {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.25;
+
+  small { font-size: 11.5px; color: var(--text-faint); }
+  b { font-size: 21px; }
+}
+
+.delta {
+  font-size: 11.5px;
+  font-weight: 600;
+  margin-top: 2px;
+
+  &.good { color: var(--income); }
+  &.bad { color: var(--expense); }
+
+  small { font-weight: 500; color: var(--text-faint); }
+}
+
+.balance-line {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  margin: 14px 0;
+  padding: 12px 0;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+
+  .cap { font-size: 12.5px; color: var(--text-dim); font-weight: 600; }
+  strong { font-size: 20px; }
+}
+
+.mini-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  text-align: center;
+
+  small { display: block; font-size: 10.5px; color: var(--text-faint); line-height: 1.3; }
+  b { font-size: 14px; }
+}
+
+.foot { font-size: 11.5px; margin: 12px 0 0; text-align: center; }
+
+.block { margin-bottom: 22px; }
+
+.pad { padding: 14px; }
+
+.kind-switch {
+  display: inline-flex;
+  padding: 3px;
+  border-radius: 999px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+
+  button {
+    border: none;
+    background: transparent;
+    border-radius: 999px;
+    padding: 5px 12px;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--text-dim);
+    cursor: pointer;
+  }
+
+  button.on { background: var(--surface); color: var(--text); box-shadow: var(--shadow); }
+}
+
+.chip {
+  width: 10px;
+  height: 10px;
+  border-radius: 3px;
+  flex: none;
+  display: inline-block;
+
+  &.income { background: var(--income); }
+  &.expense { background: var(--expense); }
+}
+
+.legend-inline {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11.5px;
+  font-weight: 500;
+}
+
+/* ---------- ตารางรายเดือน ---------- */
+.table { overflow: hidden; }
+
+.tr {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr repeat(3, minmax(0, 1.15fr));
+  align-items: center;
+  gap: 6px;
+  padding: 10px 12px;
+  border: none;
+  border-bottom: 1px solid var(--border);
+  background: transparent;
+  text-align: left;
+  font-size: 13px;
+  cursor: pointer;
+  color: inherit;
+
+  &:last-child { border-bottom: none; }
+  &:active { background: var(--surface-2); }
+  &.blank { cursor: default; }
+}
+
+.th {
+  font-size: 11px;
+  color: var(--text-faint);
+  font-weight: 600;
+  background: var(--surface-2);
+  cursor: default;
+}
+
+.total {
+  font-weight: 700;
+  background: var(--surface-2);
+  cursor: default;
+}
+
+.mth { font-weight: 600; }
+
+.num { text-align: right; }
+
+/* ---------- ไฮไลต์ ---------- */
+.rows { overflow: hidden; }
+
+.hl {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--border);
+  font-weight: 700;
+
+  &:last-child { border-bottom: none; }
+}
+
+.hl-icon {
+  flex: none;
+  width: 36px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  border-radius: 12px;
+  background: var(--surface-2);
+  font-size: 17px;
+}
+
+.hl-text {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  line-height: 1.35;
+
+  b { font-size: 13.5px; }
+  small {
+    font-size: 11.5px;
+    font-weight: 500;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+@media (max-width: 400px) {
+  .mini-grid { grid-template-columns: repeat(2, 1fr); }
+  .tr { font-size: 12px; padding: 9px 10px; }
+}

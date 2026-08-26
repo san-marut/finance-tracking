@@ -3,7 +3,7 @@ import { RouterLink } from '@angular/router';
 import { FinanceStore } from '../../core/finance-store';
 import { TxKind } from '../../models/finance.models';
 import { currentMonth, monthLabel } from '../../core/utils';
-import { DonutChart, DonutSegment } from '../../shared/donut-chart';
+import { CategoryBreakdown } from '../../shared/category-breakdown';
 import { MonthPicker } from '../../shared/month-picker';
 import { TrendChart } from '../../shared/trend-chart';
 import { TxList } from '../../shared/tx-list';
@@ -14,7 +14,7 @@ type Scope = 'month' | 'all';
 @Component({
   selector: 'app-dashboard',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RouterLink, DonutChart, MonthPicker, TrendChart, TxList, MoneyPipe],
+  imports: [RouterLink, CategoryBreakdown, MonthPicker, TrendChart, TxList, MoneyPipe],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.scss',
 })
@@ -23,8 +23,6 @@ export class Dashboard {
 
   protected readonly scope = signal<Scope>('month');
   protected readonly kindView = signal<TxKind>('expense');
-  private readonly expanded = signal<ReadonlySet<string>>(new Set());
-
   /** null = ดูข้อมูลทั้งหมด */
   protected readonly activeMonth = computed(() =>
     this.scope() === 'month' ? this.store.selectedMonth() : null,
@@ -34,10 +32,6 @@ export class Dashboard {
 
   protected readonly stats = computed(() =>
     this.store.statsFor(this.kindView(), this.activeMonth()),
-  );
-
-  protected readonly donutSegments = computed<DonutSegment[]>(() =>
-    this.stats().map((s) => ({ label: s.name, value: s.total, color: s.color })),
   );
 
   /** เปรียบเทียบรายจ่ายกับเดือนก่อน (เฉพาะโหมดรายเดือน) */
@@ -74,16 +68,5 @@ export class Dashboard {
 
   protected resetMonth(): void {
     this.store.selectedMonth.set(currentMonth());
-  }
-
-  protected toggle(categoryId: string): void {
-    const next = new Set(this.expanded());
-    if (next.has(categoryId)) next.delete(categoryId);
-    else next.add(categoryId);
-    this.expanded.set(next);
-  }
-
-  protected isOpen(categoryId: string): boolean {
-    return this.expanded().has(categoryId);
   }
 }

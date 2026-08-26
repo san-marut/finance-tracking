@@ -1,0 +1,196 @@
+<div class="year-picker">
+  <button type="button" class="arrow" (click)="shiftYear(-1)" aria-label="ปีก่อนหน้า">‹</button>
+  <button type="button" class="label" (click)="resetYear()">
+    <small>รายงานประจำปี</small>
+    {{ yearLabel() }}
+  </button>
+  <button type="button" class="arrow" (click)="shiftYear(1)" aria-label="ปีถัดไป">›</button>
+</div>
+
+@if (!hasData()) {
+  <div class="card empty">
+    <div class="empty-icon">🗓️</div>
+    <div>ยังไม่มีรายการในปี {{ yearLabel() }}</div>
+  </div>
+} @else {
+  <section class="card summary">
+    <div class="sum-row">
+      <div class="sum-item">
+        <small>รายรับทั้งปี</small>
+        <b class="tabular amount-pos">{{ summary().income | money: 0 }}</b>
+        @if (incomeDelta() !== null) {
+          <!-- รายรับเพิ่มขึ้นคือดี รายจ่ายเพิ่มขึ้นคือไม่ดี สีจึงสลับกัน -->
+          <span class="delta" [class.good]="incomeDelta()! > 0" [class.bad]="incomeDelta()! <= 0">
+            {{ incomeDelta()! > 0 ? '▲' : '▼' }} {{ abs(incomeDelta()!) | money: 1 }}%
+            <small>จากปีก่อน</small>
+          </span>
+        }
+      </div>
+      <div class="sum-item">
+        <small>รายจ่ายทั้งปี</small>
+        <b class="tabular amount-neg">{{ summary().expense | money: 0 }}</b>
+        @if (expenseDelta() !== null) {
+          <span class="delta" [class.bad]="expenseDelta()! > 0" [class.good]="expenseDelta()! <= 0">
+            {{ expenseDelta()! > 0 ? '▲' : '▼' }} {{ abs(expenseDelta()!) | money: 1 }}%
+            <small>จากปีก่อน</small>
+          </span>
+        }
+      </div>
+    </div>
+
+    <div class="balance-line">
+      <span class="cap">คงเหลือทั้งปี</span>
+      <strong
+        class="tabular"
+        [class.amount-pos]="summary().balance >= 0"
+        [class.amount-neg]="summary().balance < 0"
+      >
+        {{ summary().balance | money }} ฿
+      </strong>
+    </div>
+
+    <div class="mini-grid">
+      <div><small>เฉลี่ยรับ/เดือน</small><b class="tabular">{{ avgIncome() | money: 0 }}</b></div>
+      <div><small>เฉลี่ยจ่าย/เดือน</small><b class="tabular">{{ avgExpense() | money: 0 }}</b></div>
+      <div>
+        <small>อัตราการออม</small>
+        <b class="tabular">{{ savingRate() === null ? '—' : (savingRate()! | money: 1) + '%' }}</b>
+      </div>
+      <div><small>จำนวนรายการ</small><b class="tabular">{{ summary().count }}</b></div>
+    </div>
+
+    @if (!hasPrevYear()) {
+      <p class="foot faint">ยังไม่มีข้อมูลปี {{ yearLabel() - 1 }} จึงเทียบกับปีก่อนหน้าไม่ได้</p>
+    }
+  </section>
+
+  <section class="block">
+    <div class="section-title">
+      <span>รับ-จ่ายรายเดือน</span>
+      <span class="legend-inline faint">
+        <span class="chip income"></span>รับ <span class="chip expense"></span>จ่าย
+      </span>
+    </div>
+    <div class="card pad">
+      <app-trend-chart [points]="points()" (pick)="openMonth($event)" />
+    </div>
+  </section>
+
+  <section class="block">
+    <div class="section-title"><span>สรุปรายเดือน</span></div>
+    <div class="card table">
+      <div class="tr th">
+        <span>เดือน</span>
+        <span class="num">รายรับ</span>
+        <span class="num">รายจ่าย</span>
+        <span class="num">คงเหลือ</span>
+      </div>
+      @for (p of points(); track p.month) {
+        <button
+          type="button"
+          class="tr"
+          [class.blank]="p.income === 0 && p.expense === 0"
+          (click)="openMonth(p.month)"
+        >
+          <span class="mth">{{ monthName(p.month) }}</span>
+          @if (p.income === 0 && p.expense === 0) {
+            <span class="num faint">—</span>
+            <span class="num faint">—</span>
+            <span class="num faint">—</span>
+          } @else {
+            <span class="num tabular amount-pos">{{ p.income | money: 0 }}</span>
+            <span class="num tabular amount-neg">{{ p.expense | money: 0 }}</span>
+            <span
+              class="num tabular"
+              [class.amount-pos]="p.balance >= 0"
+              [class.amount-neg]="p.balance < 0"
+            >
+              {{ p.balance | money: 0 }}
+            </span>
+          }
+        </button>
+      }
+      <div class="tr total">
+        <span>รวมทั้งปี</span>
+        <span class="num tabular amount-pos">{{ summary().income | money: 0 }}</span>
+        <span class="num tabular amount-neg">{{ summary().expense | money: 0 }}</span>
+        <span
+          class="num tabular"
+          [class.amount-pos]="summary().balance >= 0"
+          [class.amount-neg]="summary().balance < 0"
+        >
+          {{ summary().balance | money: 0 }}
+        </span>
+      </div>
+    </div>
+  </section>
+
+  <section class="block">
+    <div class="section-title"><span>ไฮไลต์ของปี</span></div>
+    <div class="card rows">
+      @if (topMonth(); as top) {
+        <div class="hl">
+          <span class="hl-icon">🔥</span>
+          <span class="hl-text">
+            <b>เดือนที่ใช้จ่ายมากที่สุด</b>
+            <small class="faint">{{ monthName(top.month) }}</small>
+          </span>
+          <span class="tabular amount-neg">{{ top.expense | money: 0 }}</span>
+        </div>
+      }
+      @if (lowMonth(); as low) {
+        <div class="hl">
+          <span class="hl-icon">🍃</span>
+          <span class="hl-text">
+            <b>เดือนที่ใช้จ่ายน้อยที่สุด</b>
+            <small class="faint">{{ monthName(low.month) }}</small>
+          </span>
+          <span class="tabular">{{ low.expense | money: 0 }}</span>
+        </div>
+      }
+      @if (largestExpense(); as tx) {
+        <div class="hl">
+          <span class="hl-icon">💸</span>
+          <span class="hl-text">
+            <b>รายจ่ายก้อนใหญ่ที่สุด</b>
+            <small class="faint">
+              {{ largestExpenseLabel() }} · {{ txDate(tx.date) }}
+            </small>
+          </span>
+          <span class="tabular amount-neg">{{ tx.amount | money: 0 }}</span>
+        </div>
+      }
+      @if (stats().length && kindView() === 'expense') {
+        <div class="hl">
+          <span class="hl-icon">🏷️</span>
+          <span class="hl-text">
+            <b>แท็กที่ใช้เงินมากที่สุด</b>
+            <small class="faint">{{ stats()[0].name }} · {{ stats()[0].count }} รายการ</small>
+          </span>
+          <span class="tabular amount-neg">{{ stats()[0].total | money: 0 }}</span>
+        </div>
+      }
+    </div>
+  </section>
+
+  <section class="block">
+    <div class="section-title">
+      <span>แยกตามแท็กทั้งปี</span>
+      <div class="kind-switch">
+        <button type="button" [class.on]="kindView() === 'expense'" (click)="kindView.set('expense')">
+          รายจ่าย
+        </button>
+        <button type="button" [class.on]="kindView() === 'income'" (click)="kindView.set('income')">
+          รายรับ
+        </button>
+      </div>
+    </div>
+    <div class="card pad">
+      <app-category-breakdown
+        [stats]="stats()"
+        [caption]="kindView() === 'expense' ? 'รายจ่ายทั้งปี' : 'รายรับทั้งปี'"
+        [emptyText]="'ยังไม่มี' + (kindView() === 'expense' ? 'รายจ่าย' : 'รายรับ') + 'ในปีนี้'"
+      />
+    </div>
+  </section>
+}

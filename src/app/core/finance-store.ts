@@ -74,6 +74,13 @@ export class FinanceStore {
     return points;
   });
 
+  /** ปีทั้งหมดที่มีข้อมูล เรียงใหม่ก่อน */
+  readonly yearsWithData = computed(() => {
+    const set = new Set(this._transactions().map((t) => t.date.slice(0, 4)));
+    set.add(currentMonth().slice(0, 4));
+    return [...set].sort((a, b) => b.localeCompare(a));
+  });
+
   /** เดือนทั้งหมดที่มีข้อมูล เรียงใหม่ก่อน */
   readonly monthsWithData = computed(() => {
     const set = new Set(this._transactions().map((t) => monthOf(t.date)));
@@ -116,17 +123,20 @@ export class FinanceStore {
     return this._transactions().find((t) => t.id === id);
   }
 
-  /** ยอดสรุปของเดือนที่ระบุ (null = ทั้งหมด) */
-  summaryFor(month: string | null): Summary {
-    return summarize(this.filterBy(month));
+  /**
+   * ยอดสรุปของช่วงที่ระบุ
+   * @param period 'YYYY-MM' = รายเดือน, 'YYYY' = รายปี, null = ทั้งหมด
+   */
+  summaryFor(period: string | null): Summary {
+    return summarize(this.filterBy(period));
   }
 
   /**
    * ยอดรวมแยกตามแท็ก 2 ระดับ
-   * @param month YYYY-MM หรือ null เพื่อดูทั้งหมด
+   * @param period 'YYYY-MM' = รายเดือน, 'YYYY' = รายปี, null = ทั้งหมด
    */
-  statsFor(kind: TxKind, month: string | null): CategoryStat[] {
-    const rows = this.filterBy(month).filter((t) => t.kind === kind);
+  statsFor(kind: TxKind, period: string | null): CategoryStat[] {
+    const rows = this.filterBy(period).filter((t) => t.kind === kind);
     const total = rows.reduce((sum, t) => sum + t.amount, 0);
     const stats: CategoryStat[] = [];
 
@@ -174,9 +184,32 @@ export class FinanceStore {
     return stats.sort((a, b) => b.total - a.total);
   }
 
-  private filterBy(month: string | null): Transaction[] {
+  /** รายการของช่วงที่ระบุ — ใช้การขึ้นต้นของวันที่ ทำให้รองรับทั้งรายเดือนและรายปี */
+  private filterBy(period: string | null): Transaction[] {
     const all = this._transactions();
-    return month ? all.filter((t) => monthOf(t.date) === month) : all;
+    return period ? all.filter((t) => t.date.startsWith(period)) : all;
+  }
+
+  /** 12 เดือนของปีที่ระบุ สำหรับกราฟและตารางในรายงานรายปี */
+  monthlyPointsOfYear(year: string): MonthlyPoint[] {
+    return Array.from({ length: 12 }, (_, i) => {
+      const month = `${year}-${`${i + 1}`.padStart(2, '0')}`;
+      const s = this.summaryFor(month);
+      return {
+        month,
+        label: monthLabelShort(month),
+        income: s.income,
+        expense: s.expense,
+        balance: s.balance,
+      };
+    });
+  }
+
+  /** รายการที่จ่ายมากที่สุดในช่วงที่ระบุ */
+  largestExpense(period: string | null): Transaction | null {
+    const rows = this.filterBy(period).filter((t) => t.kind === 'expense');
+    if (!rows.length) return null;
+    return rows.reduce((max, t) => (t.amount > max.amount ? t : max));
   }
 
   // ---------- แก้ไขรายการ ----------

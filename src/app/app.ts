@@ -29,6 +29,7 @@ export class App {
   protected readonly navItems = [
     { path: '/dashboard', label: 'แดชบอร์ด', icon: '📊' },
     { path: '/transactions', label: 'รายการ', icon: '🧾' },
+    { path: '/report', label: 'รายปี', icon: '📅' },
     { path: '/categories', label: 'แท็ก', icon: '🏷️' },
     { path: '/settings', label: 'ตั้งค่า', icon: '⚙️' },
   ];

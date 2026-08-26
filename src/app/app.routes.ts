@@ -13,6 +13,11 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/transactions/transactions').then((m) => m.Transactions),
   },
   {
+    path: 'report',
+    title: 'รายงานรายปี · บันทึกรายรับรายจ่าย',
+    loadComponent: () => import('./pages/report/report').then((m) => m.Report),
+  },
+  {
     path: 'entry',
     title: 'เพิ่มรายการ · บันทึกรายรับรายจ่าย',
     loadComponent: () => import('./pages/entry/entry').then((m) => m.Entry),

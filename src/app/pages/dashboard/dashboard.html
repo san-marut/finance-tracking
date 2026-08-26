@@ -104,79 +104,11 @@
   </div>
 
   <div class="card breakdown">
-    @if (stats().length) {
-      <div class="donut-row">
-        <app-donut-chart
-          [segments]="donutSegments()"
-          [caption]="kindView() === 'expense' ? 'รายจ่ายรวม' : 'รายรับรวม'"
-        />
-        <ul class="legend">
-          @for (s of stats().slice(0, 6); track s.categoryId) {
-            <li>
-              <span class="chip" [style.background]="s.color"></span>
-              <span class="lg-name">{{ s.name }}</span>
-              <span class="lg-pct tabular faint">{{ s.percent | money: 0 }}%</span>
-            </li>
-          }
-          @if (stats().length > 6) {
-            <li class="faint">และอีก {{ stats().length - 6 }} แท็ก</li>
-          }
-        </ul>
-      </div>
-
-      <ul class="cat-list">
-        @for (s of stats(); track s.categoryId) {
-          <li class="cat">
-            <button type="button" class="cat-head" (click)="toggle(s.categoryId)">
-              <span class="cat-icon" [style.background]="s.color + '22'" [style.color]="s.color">
-                {{ s.icon }}
-              </span>
-              <span class="cat-main">
-                <span class="cat-name">
-                  {{ s.name }}
-                  <small class="faint">({{ s.count }} รายการ)</small>
-                </span>
-                <span class="meter">
-                  <span
-                    class="meter-fill"
-                    [style.width.%]="s.percent"
-                    [style.background]="s.color"
-                  ></span>
-                </span>
-              </span>
-              <span class="cat-num">
-                <b class="tabular">{{ s.total | money: 0 }}</b>
-                <small class="faint tabular">{{ s.percent | money: 1 }}%</small>
-              </span>
-              <span class="caret" [class.open]="isOpen(s.categoryId)">›</span>
-            </button>
-
-            @if (isOpen(s.categoryId)) {
-              <ul class="sub-list">
-                @for (c of s.children; track c.subCategoryId) {
-                  <li>
-                    <span class="sub-name">{{ c.name }}</span>
-                    <span class="sub-meter">
-                      <span
-                        class="meter-fill"
-                        [style.width.%]="c.percent"
-                        [style.background]="s.color"
-                      ></span>
-                    </span>
-                    <span class="tabular sub-num">{{ c.total | money: 0 }}</span>
-                  </li>
-                }
-              </ul>
-            }
-          </li>
-        }
-      </ul>
-    } @else {
-      <div class="empty">
-        <div class="empty-icon">📭</div>
-        <div>ยังไม่มี{{ kindView() === 'expense' ? 'รายจ่าย' : 'รายรับ' }}ในช่วงนี้</div>
-      </div>
-    }
+    <app-category-breakdown
+      [stats]="stats()"
+      [caption]="kindView() === 'expense' ? 'รายจ่ายรวม' : 'รายรับรวม'"
+      [emptyText]="'ยังไม่มี' + (kindView() === 'expense' ? 'รายจ่าย' : 'รายรับ') + 'ในช่วงนี้'"
+    />
   </div>
 </section>
 
