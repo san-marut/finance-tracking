@@ -51,7 +51,7 @@ export class Entry {
     () => (this.amount() ?? 0) > 0 && !!this.categoryId() && !!this.date(),
   );
 
-  protected readonly quickAdds = [1, 5, 20, 50, 100, 500, 1000];
+  protected readonly quickAdds = [1, 5, 10, 20, 50, 100, 500, 1000];
 
   constructor() {
     // โหลดค่ารายการเดิมเมื่อเข้าโหมดแก้ไข
