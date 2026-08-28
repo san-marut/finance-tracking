@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@a
 import { RouterLink } from '@angular/router';
 import { FinanceStore } from '../../core/finance-store';
 import { TxKind } from '../../models/finance.models';
-import { currentMonth, monthLabel } from '../../core/utils';
+import { currentMonth, dateLabel, monthLabel, todayIso } from '../../core/utils';
 import { CategoryBreakdown } from '../../shared/category-breakdown';
 import { MonthPicker } from '../../shared/month-picker';
 import { TrendChart } from '../../shared/trend-chart';
@@ -43,11 +43,13 @@ export class Dashboard {
     return ((now - prev) / prev) * 100;
   });
 
-  protected readonly recent = computed(() => {
-    const list =
-      this.scope() === 'month' ? this.store.monthTransactions() : this.store.sortedTransactions();
-    return list.slice(0, 6);
+  /** รายการของวันนี้ทั้งหมด ไม่ขึ้นกับเดือนหรือช่วงที่กำลังดูอยู่ */
+  protected readonly todayList = computed(() => {
+    const today = todayIso();
+    return this.store.sortedTransactions().filter((t) => t.date === today);
   });
+
+  protected readonly todayLabel = computed(() => dateLabel(todayIso()));
 
   protected readonly scopeLabel = computed(() =>
     this.scope() === 'month' ? monthLabel(this.store.selectedMonth()) : 'ทั้งหมดตั้งแต่เริ่มใช้งาน',

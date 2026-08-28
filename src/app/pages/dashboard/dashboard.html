@@ -130,8 +130,11 @@
 
 <section class="block">
   <div class="section-title">
-    <span>รายการล่าสุด</span>
+    <span>รายการวันนี้ <small class="faint">{{ todayLabel() }}</small></span>
     <a class="link" routerLink="/transactions">ดูทั้งหมด ›</a>
   </div>
-  <app-tx-list [transactions]="recent()" />
+  <app-tx-list
+    [transactions]="todayList()"
+    emptyText="วันนี้ยังไม่มีรายการ กดปุ่ม ＋ เพื่อเพิ่มรายการแรกของวัน"
+  />
 </section>
