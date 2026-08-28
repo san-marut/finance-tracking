@@ -4,7 +4,7 @@ import { Location } from '@angular/common';
 import { Router } from '@angular/router';
 import { FinanceStore } from '../../core/finance-store';
 import { TxKind } from '../../models/finance.models';
-import { dateLabelLong, evalAmount, todayIso } from '../../core/utils';
+import { dateLabelLong, evalAmount, shiftDay, todayIso } from '../../core/utils';
 import { MoneyPipe } from '../../shared/money.pipe';
 
 @Component({
@@ -96,11 +96,7 @@ export class Entry {
   }
 
   protected shiftDate(days: number): void {
-    const d = new Date(this.date());
-    d.setDate(d.getDate() + days);
-    this.date.set(
-      `${d.getFullYear()}-${`${d.getMonth() + 1}`.padStart(2, '0')}-${`${d.getDate()}`.padStart(2, '0')}`,
-    );
+    this.date.set(shiftDay(this.date(), days));
   }
 
   protected save(stay = false): void {

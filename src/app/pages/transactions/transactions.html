@@ -1,18 +1,34 @@
 <div class="head">
-  @if (!allMonths()) {
+  <div class="mode-switch" role="tablist" aria-label="ช่วงเวลาที่ดู">
+    <button
+      type="button"
+      role="tab"
+      [attr.aria-selected]="mode() === 'month'"
+      [class.on]="mode() === 'month'"
+      (click)="setMode('month')"
+    >
+      รายเดือน
+    </button>
+    <button
+      type="button"
+      role="tab"
+      [attr.aria-selected]="mode() === 'day'"
+      [class.on]="mode() === 'day'"
+      (click)="setMode('day')"
+    >
+      รายวัน
+    </button>
+  </div>
+
+  @if (mode() === 'month') {
     <app-month-picker
       [month]="store.selectedMonth()"
       (monthChange)="setMonth($event)"
       (jumpToNow)="resetMonth()"
     />
   } @else {
-    <div class="all-banner card">แสดงรายการทุกเดือน</div>
+    <app-day-picker [date]="store.selectedDate()" (dateChange)="setDate($event)" />
   }
-
-  <label class="all-toggle">
-    <input type="checkbox" [(ngModel)]="allMonths" />
-    <span>ดูทุกเดือน</span>
-  </label>
 </div>
 
 <div class="card filters">
@@ -86,5 +102,6 @@
 
 <app-tx-list
   [transactions]="filtered()"
-  [emptyText]="hasFilter() ? 'ไม่พบรายการที่ตรงกับตัวกรอง' : 'ยังไม่มีรายการในช่วงนี้ กดปุ่ม ＋ เพื่อเพิ่ม'"
+  [emptyText]="emptyText()"
+  [showDayHeader]="mode() === 'month'"
 />

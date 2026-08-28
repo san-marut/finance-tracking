@@ -29,17 +29,19 @@ interface DayGroup {
   template: `
     @for (group of groups(); track group.date) {
       <div class="day">
-        <div class="day-head">
-          <span class="day-label">{{ group.label }}</span>
-          <span class="day-sum tabular">
-            @if (group.income > 0) {
-              <span class="amount-pos">+{{ group.income | money: 0 }}</span>
-            }
-            @if (group.expense > 0) {
-              <span class="amount-neg">-{{ group.expense | money: 0 }}</span>
-            }
-          </span>
-        </div>
+        @if (showDayHeader()) {
+          <div class="day-head">
+            <span class="day-label">{{ group.label }}</span>
+            <span class="day-sum tabular">
+              @if (group.income > 0) {
+                <span class="amount-pos">+{{ group.income | money: 0 }}</span>
+              }
+              @if (group.expense > 0) {
+                <span class="amount-neg">-{{ group.expense | money: 0 }}</span>
+              }
+            </span>
+          </div>
+        }
 
         <div class="card rows">
           @for (row of group.rows; track row.tx.id) {
@@ -126,6 +128,9 @@ export class TxList {
 
   readonly transactions = input.required<Transaction[]>();
   readonly emptyText = input('ยังไม่มีรายการในช่วงนี้ กดปุ่ม ＋ เพื่อเพิ่มรายการแรก');
+
+  /** ปิดหัวข้อวันได้เมื่อผู้เรียกบอกวันอยู่แล้ว เช่นหน้ารายการโหมดรายวัน */
+  readonly showDayHeader = input(true);
 
   protected readonly groups = computed<DayGroup[]>(() => {
     const map = new Map<string, DayGroup>();

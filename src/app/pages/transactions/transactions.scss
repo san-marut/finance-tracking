@@ -2,27 +2,36 @@
 
 .head {
   display: flex;
-  flex-direction: column;
-  gap: 8px;
+  flex-direction: column-reverse;
+  gap: 10px;
   margin-bottom: 14px;
 }
 
-.all-banner {
-  padding: 12px;
-  text-align: center;
-  font-weight: 700;
-}
-
-.all-toggle {
-  display: inline-flex;
+.mode-switch {
   align-self: center;
-  align-items: center;
-  gap: 7px;
-  font-size: 13px;
-  color: var(--text-dim);
-  cursor: pointer;
+  display: inline-flex;
+  padding: 3px;
+  border-radius: 999px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
 
-  input { accent-color: var(--brand); width: 16px; height: 16px; }
+  button {
+    border: none;
+    background: transparent;
+    border-radius: 999px;
+    padding: 7px 20px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-dim);
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease;
+  }
+
+  button.on {
+    background: var(--surface);
+    color: var(--text);
+    box-shadow: var(--shadow);
+  }
 }
 
 .filters {

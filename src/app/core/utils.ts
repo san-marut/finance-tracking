@@ -28,6 +28,12 @@ export function toIsoDate(d: Date): string {
   return `${y}-${m}-${day}`;
 }
 
+/** เลื่อนวัน เช่น shiftDay('2569-08-28', -1) => '2569-08-27' */
+export function shiftDay(isoDate: string, delta: number): string {
+  const [y, m, d] = isoDate.split('-').map(Number);
+  return toIsoDate(new Date(y, m - 1, d + delta));
+}
+
 /** YYYY-MM ของเดือนปัจจุบัน */
 export function currentMonth(): string {
   return todayIso().slice(0, 7);

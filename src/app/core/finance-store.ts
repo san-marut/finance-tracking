@@ -10,7 +10,7 @@ import {
   TxKind,
 } from '../models/finance.models';
 import { DEFAULT_CATEGORIES } from './seed-data';
-import { currentMonth, monthLabelShort, monthOf, shiftMonth, uid } from './utils';
+import { currentMonth, monthLabelShort, monthOf, shiftMonth, todayIso, uid } from './utils';
 
 const STORAGE_KEY = 'finance-tracker.v1';
 const DATA_VERSION = 1;
@@ -24,6 +24,9 @@ export class FinanceStore {
 
   /** เดือนที่กำลังดูอยู่ในหน้า Dashboard/รายการ (YYYY-MM) */
   readonly selectedMonth = signal<string>(currentMonth());
+
+  /** วันที่กำลังดูอยู่ในหน้ารายการ โหมดรายวัน (YYYY-MM-DD) */
+  readonly selectedDate = signal<string>(todayIso());
 
   readonly categories = this._categories.asReadonly();
   readonly transactions = this._transactions.asReadonly();
