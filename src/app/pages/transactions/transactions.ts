@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@a
 import { FormsModule } from '@angular/forms';
 import { FinanceStore } from '../../core/finance-store';
 import { TxKind } from '../../models/finance.models';
-import { currentMonth, dateLabel, monthLabel, monthOf, todayIso } from '../../core/utils';
+import { dateLabel, monthLabel, monthOf, todayIso } from '../../core/utils';
 import { DayPicker } from '../../shared/day-picker';
 import { MonthPicker } from '../../shared/month-picker';
 import { TxList } from '../../shared/tx-list';
@@ -96,10 +96,6 @@ export class Transactions {
 
   protected setMonth(month: string): void {
     this.store.selectedMonth.set(month);
-  }
-
-  protected resetMonth(): void {
-    this.store.selectedMonth.set(currentMonth());
   }
 
   protected setDate(date: string): void {

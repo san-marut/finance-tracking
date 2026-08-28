@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@a
 import { RouterLink } from '@angular/router';
 import { FinanceStore } from '../../core/finance-store';
 import { TxKind } from '../../models/finance.models';
-import { currentMonth, dateLabel, monthLabel, todayIso } from '../../core/utils';
+import { dateLabel, monthLabel, todayIso } from '../../core/utils';
 import { CategoryBreakdown } from '../../shared/category-breakdown';
 import { MonthPicker } from '../../shared/month-picker';
 import { TrendChart } from '../../shared/trend-chart';
@@ -66,9 +66,5 @@ export class Dashboard {
   protected setMonth(month: string): void {
     this.store.selectedMonth.set(month);
     this.scope.set('month');
-  }
-
-  protected resetMonth(): void {
-    this.store.selectedMonth.set(currentMonth());
   }
 }

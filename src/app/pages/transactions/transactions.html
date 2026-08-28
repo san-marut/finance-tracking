@@ -21,11 +21,7 @@
   </div>
 
   @if (mode() === 'month') {
-    <app-month-picker
-      [month]="store.selectedMonth()"
-      (monthChange)="setMonth($event)"
-      (jumpToNow)="resetMonth()"
-    />
+    <app-month-picker [month]="store.selectedMonth()" (monthChange)="setMonth($event)" />
   } @else {
     <app-day-picker [date]="store.selectedDate()" (dateChange)="setDate($event)" />
   }

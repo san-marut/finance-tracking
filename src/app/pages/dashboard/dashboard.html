@@ -1,9 +1,5 @@
 <section class="head">
-  <app-month-picker
-    [month]="store.selectedMonth()"
-    (monthChange)="setMonth($event)"
-    (jumpToNow)="resetMonth()"
-  />
+  <app-month-picker [month]="store.selectedMonth()" (monthChange)="setMonth($event)" />
 
   <div class="scope-switch" role="tablist" aria-label="ช่วงข้อมูล">
     <button
