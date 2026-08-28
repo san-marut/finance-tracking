@@ -4,13 +4,14 @@ import { FinanceStore } from '../../core/finance-store';
 import { MonthlyPoint, TxKind } from '../../models/finance.models';
 import { dateLabel, monthLabel } from '../../core/utils';
 import { CategoryBreakdown } from '../../shared/category-breakdown';
+import { YearPicker } from '../../shared/year-picker';
 import { TrendChart } from '../../shared/trend-chart';
 import { MoneyPipe } from '../../shared/money.pipe';
 
 @Component({
   selector: 'app-report',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CategoryBreakdown, TrendChart, MoneyPipe],
+  imports: [CategoryBreakdown, TrendChart, YearPicker, MoneyPipe],
   templateUrl: './report.html',
   styleUrl: './report.scss',
 })
@@ -83,14 +84,6 @@ export class Report {
   protected readonly hasPrevYear = computed(() => this.prevSummary().count > 0);
 
   protected readonly hasData = computed(() => this.summary().count > 0);
-
-  protected shiftYear(delta: number): void {
-    this.year.update((y) => y + delta);
-  }
-
-  protected resetYear(): void {
-    this.year.set(new Date().getFullYear());
-  }
 
   /** กดที่เดือนใดก็ได้เพื่อไปดูรายละเอียดเดือนนั้นในแดชบอร์ด */
   protected openMonth(month: string): void {

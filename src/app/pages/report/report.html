@@ -1,11 +1,4 @@
-<div class="year-picker">
-  <button type="button" class="arrow" (click)="shiftYear(-1)" aria-label="ปีก่อนหน้า">‹</button>
-  <button type="button" class="label" (click)="resetYear()">
-    <small>รายงานประจำปี</small>
-    {{ yearLabel() }}
-  </button>
-  <button type="button" class="arrow" (click)="shiftYear(1)" aria-label="ปีถัดไป">›</button>
-</div>
+<app-year-picker [year]="year()" (yearChange)="year.set($event)" />
 
 @if (!hasData()) {
   <div class="card empty">

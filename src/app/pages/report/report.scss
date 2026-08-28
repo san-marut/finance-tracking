@@ -1,46 +1,6 @@
 :host { display: block; }
 
-.year-picker {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 4px;
-  margin-bottom: 16px;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 999px;
-  box-shadow: var(--shadow);
-
-  .arrow {
-    width: 40px;
-    height: 40px;
-    border: none;
-    border-radius: 999px;
-    background: var(--surface-2);
-    color: var(--text-dim);
-    font-size: 22px;
-    line-height: 1;
-    cursor: pointer;
-  }
-
-  .arrow:active { transform: scale(0.94); }
-
-  .label {
-    flex: 1;
-    border: none;
-    background: transparent;
-    cursor: pointer;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    line-height: 1.15;
-    font-size: 20px;
-    font-weight: 700;
-    padding: 2px;
-
-    small { font-size: 10.5px; font-weight: 500; color: var(--text-faint); }
-  }
-}
+app-year-picker { display: block; margin-bottom: 16px; }
 
 .summary {
   padding: 16px;
