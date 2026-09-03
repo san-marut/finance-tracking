@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@a
 import { RouterLink } from '@angular/router';
 import { FinanceStore } from '../../core/finance-store';
 import { TxKind } from '../../models/finance.models';
-import { dateLabel, monthLabel, todayIso } from '../../core/utils';
+import { currentMonth, dateLabel, daysBetween, monthLabel, todayIso } from '../../core/utils';
 import { CategoryBreakdown } from '../../shared/category-breakdown';
 import { MonthPicker } from '../../shared/month-picker';
 import { TrendChart } from '../../shared/trend-chart';
@@ -61,6 +61,37 @@ export class Dashboard {
     const days = new Set(rows.map((t) => t.date)).size;
     const expense = this.summary().expense;
     return days ? expense / days : 0;
+  });
+
+  protected readonly mealSummary = computed(() => this.store.mealSummary(this.activeMonth()));
+
+  /**
+   * จำนวนวันที่ใช้หารค่าอาหาร — นับตามปฏิทิน ไม่ใช่เฉพาะวันที่มีรายการ
+   * เดือนปัจจุบันนับถึงวันนี้ เดือนที่ผ่านมานับทั้งเดือน ส่วนโหมดทั้งหมดนับจากรายการแรกถึงวันนี้
+   */
+  protected readonly mealDays = computed(() => {
+    const month = this.activeMonth();
+
+    if (!month) {
+      const first = this.store
+        .transactions()
+        .map((t) => t.date)
+        .sort()
+        .at(0);
+      return first ? daysBetween(first, todayIso()) + 1 : 0;
+    }
+
+    const now = currentMonth();
+    if (month > now) return 0;
+    if (month === now) return Number(todayIso().slice(8, 10));
+
+    const [y, m] = month.split('-').map(Number);
+    return new Date(y, m, 0).getDate();
+  });
+
+  protected readonly mealPerDay = computed(() => {
+    const days = this.mealDays();
+    return days ? this.mealSummary().total / days : 0;
   });
 
   protected setMonth(month: string): void {

@@ -66,6 +66,13 @@ export interface SubCategoryStat {
   count: number;
 }
 
+/** ยอดค่าอาหารแยกตามมื้อ */
+export interface MealSummary {
+  total: number;
+  count: number;
+  meals: { label: string; total: number; count: number }[];
+}
+
 /** ยอดรวมรายเดือนสำหรับกราฟแนวโน้ม */
 export interface MonthlyPoint {
   month: string;

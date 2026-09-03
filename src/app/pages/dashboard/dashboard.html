@@ -86,6 +86,34 @@
   </div>
 </section>
 
+<section class="card meal">
+  <div class="meal-top">
+    <span class="meal-icon">🍽️</span>
+    <div class="meal-head">
+      <small>ค่าอาหารเฉลี่ยต่อวัน</small>
+      <b class="tabular">{{ mealPerDay() | money }} ฿</b>
+    </div>
+  </div>
+
+  @if (mealSummary().count) {
+    <div class="meal-grid">
+      @for (meal of mealSummary().meals; track meal.label) {
+        <div>
+          <small>{{ meal.label }}</small>
+          <b class="tabular">{{ meal.total | money: 0 }}</b>
+          <span class="faint">{{ meal.count }} มื้อ</span>
+        </div>
+      }
+    </div>
+    <p class="meal-foot faint">
+      รวม {{ mealSummary().total | money: 0 }} บาท · {{ mealSummary().count }} มื้อ ·
+      เฉลี่ยจาก {{ mealDays() }} วัน
+    </p>
+  } @else {
+    <p class="meal-foot faint">ยังไม่มีรายการอาหารเช้า/กลางวัน/เย็นในช่วงนี้</p>
+  }
+</section>
+
 <section class="block">
   <div class="section-title">
     <span>แยกตามแท็ก</span>

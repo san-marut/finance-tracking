@@ -34,6 +34,14 @@ export function shiftDay(isoDate: string, delta: number): string {
   return toIsoDate(new Date(y, m - 1, d + delta));
 }
 
+/** จำนวนวันจาก from ถึง to (ไม่นับวันเริ่ม) */
+export function daysBetween(from: string, to: string): number {
+  const [y1, m1, d1] = from.split('-').map(Number);
+  const [y2, m2, d2] = to.split('-').map(Number);
+  const ms = new Date(y2, m2 - 1, d2).getTime() - new Date(y1, m1 - 1, d1).getTime();
+  return Math.round(ms / 86_400_000);
+}
+
 /** YYYY-MM ของเดือนปัจจุบัน */
 export function currentMonth(): string {
   return todayIso().slice(0, 7);

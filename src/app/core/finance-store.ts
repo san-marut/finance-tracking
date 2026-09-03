@@ -3,13 +3,14 @@ import {
   Category,
   CategoryStat,
   FinanceData,
+  MealSummary,
   MonthlyPoint,
   SubCategory,
   Summary,
   Transaction,
   TxKind,
 } from '../models/finance.models';
-import { DEFAULT_CATEGORIES } from './seed-data';
+import { DEFAULT_CATEGORIES, MEALS } from './seed-data';
 import { currentMonth, monthLabelShort, monthOf, shiftMonth, todayIso, uid } from './utils';
 
 const STORAGE_KEY = 'finance-tracker.v1';
@@ -206,6 +207,37 @@ export class FinanceStore {
         balance: s.balance,
       };
     });
+  }
+
+  /**
+   * ยอดค่าอาหาร 3 มื้อ (เช้า/กลางวัน/เย็น) ของช่วงที่ระบุ
+   * @param period 'YYYY-MM' = รายเดือน, 'YYYY' = รายปี, null = ทั้งหมด
+   */
+  mealSummary(period: string | null): MealSummary {
+    const meals = MEALS.map((meal) => ({ label: meal.label, total: 0, count: 0 }));
+    let total = 0;
+    let count = 0;
+
+    for (const tx of this.filterBy(period)) {
+      if (tx.kind !== 'expense') continue;
+      const index = this.mealIndexOf(tx);
+      if (index < 0) continue;
+      meals[index].total += tx.amount;
+      meals[index].count += 1;
+      total += tx.amount;
+      count += 1;
+    }
+
+    return { total, count, meals };
+  }
+
+  /** มื้อไหนของ MEALS — เทียบ id ของแท็กเริ่มต้นก่อน ถ้าไม่ตรงค่อยเทียบชื่อ */
+  private mealIndexOf(tx: Transaction): number {
+    if (!tx.subCategoryId) return -1;
+    const byId = MEALS.findIndex((meal) => meal.id === tx.subCategoryId);
+    if (byId >= 0) return byId;
+    const name = this.subCategoryById(tx.categoryId, tx.subCategoryId)?.name.trim();
+    return name ? MEALS.findIndex((meal) => meal.label === name) : -1;
   }
 
   /** รายการที่จ่ายมากที่สุดในช่วงที่ระบุ */

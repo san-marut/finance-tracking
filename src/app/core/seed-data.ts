@@ -158,6 +158,16 @@ export const DEFAULT_CATEGORIES: Category[] = [
   },
 ];
 
+/**
+ * แท็กย่อยที่นับเป็น "มื้ออาหาร" สำหรับค่าอาหารเฉลี่ยต่อวันในแดชบอร์ด
+ * เทียบทั้ง id ของแท็กเริ่มต้นและชื่อ เผื่อผู้ใช้ลบแล้วสร้างใหม่เอง (id จะไม่เหมือนเดิม)
+ */
+export const MEALS: ReadonlyArray<{ label: string; id: string }> = [
+  { label: 'อาหารเช้า', id: 'exp-food-breakfast' },
+  { label: 'อาหารกลางวัน', id: 'exp-food-lunch' },
+  { label: 'อาหารเย็น', id: 'exp-food-dinner' },
+];
+
 /** จานสีสำหรับตอนสร้างแท็กใหม่ */
 export const PALETTE = [
   '#ef4444', '#f97316', '#f59e0b', '#eab308', '#84cc16', '#22c55e',
