@@ -14,6 +14,7 @@ export class Settings {
   protected readonly store = inject(FinanceStore);
 
   protected readonly toast = signal('');
+  protected readonly mealOpen = signal(false);
   protected readonly confirmReset = signal(false);
   protected readonly confirmClear = signal(false);
 
@@ -29,6 +30,30 @@ export class Settings {
       balance: this.store.allTimeSummary().balance,
     };
   });
+
+  protected readonly expenseCategories = computed(() => this.store.categoriesOf('expense'));
+
+  /** ชื่อแท็กที่เลือกไว้ ไว้โชว์สรุปบนแถวก่อนกดเปิด */
+  protected readonly mealTagLabels = computed(() => {
+    const ids = this.store.mealTagIds();
+    if (!ids.length) return 'ยังไม่ได้เลือกแท็ก — ค่าอาหารในแดชบอร์ดจะเป็น 0';
+    const names = ids.map((id) => this.store.tagLabel(id));
+    return names.length > 3 ? `${names.slice(0, 3).join(', ')} +${names.length - 3}` : names.join(', ');
+  });
+
+  /** แท็กย่อยถูกนับอยู่แล้วถ้าเลือกแท็กแม่ทั้งอัน */
+  protected isSubPicked(categoryId: string, subId: string): boolean {
+    return this.store.isMealTag(categoryId) || this.store.isMealTag(subId);
+  }
+
+  protected toggleMealTag(id: string): void {
+    this.store.toggleMealTag(id);
+  }
+
+  protected resetMealTags(): void {
+    this.store.resetMealTags();
+    this.flash('คืนค่าแท็กอาหารเป็นสามมื้อเริ่มต้นแล้ว');
+  }
 
   protected exportJson(): void {
     this.download(

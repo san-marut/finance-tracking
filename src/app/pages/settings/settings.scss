@@ -63,7 +63,86 @@
   small { font-size: 11.5px; }
 }
 
-.chev { color: var(--text-faint); font-size: 19px; }
+.chev {
+  color: var(--text-faint);
+  font-size: 19px;
+  transition: transform 0.18s ease;
+
+  &.open { transform: rotate(90deg); }
+}
+
+/* ---------- เลือกแท็กที่นับเป็นค่าอาหาร ---------- */
+.meal-picker {
+  padding: 4px 14px 14px;
+  border-top: 1px solid var(--border);
+}
+
+.hint {
+  font-size: 11.5px;
+  margin: 10px 0 12px;
+  line-height: 1.5;
+}
+
+.pick-cat + .pick-cat {
+  border-top: 1px dashed var(--border);
+  margin-top: 10px;
+  padding-top: 10px;
+}
+
+.pick-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+}
+
+.pick-icon {
+  flex: none;
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  border-radius: 10px;
+  font-size: 16px;
+}
+
+.pick-name {
+  font-size: 13.5px;
+  font-weight: 600;
+
+  small { font-weight: 500; font-size: 11px; margin-left: 4px; }
+}
+
+.pick-subs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 12px;
+  padding: 8px 0 2px 42px;
+}
+
+.pick-sub {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12.5px;
+  color: var(--text-dim);
+  cursor: pointer;
+
+  &.locked { opacity: 0.55; cursor: default; }
+}
+
+input[type='checkbox'] {
+  accent-color: var(--brand);
+  width: 17px;
+  height: 17px;
+  flex: none;
+}
+
+.reset-meal {
+  width: 100%;
+  margin-top: 14px;
+  font-size: 13px;
+}
 
 .confirm {
   padding: 14px;

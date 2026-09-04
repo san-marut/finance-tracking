@@ -29,6 +29,10 @@ export class FinanceStore {
   /** วันที่กำลังดูอยู่ในหน้ารายการ โหมดรายวัน (YYYY-MM-DD) */
   readonly selectedDate = signal<string>(todayIso());
 
+  /** id ของแท็กที่นับเป็นค่าอาหาร เลือกได้ทั้งระดับ 1 (ทั้งแท็ก) และระดับ 2 */
+  private readonly _mealTagIds = signal<string[]>([]);
+  readonly mealTagIds = this._mealTagIds.asReadonly();
+
   readonly categories = this._categories.asReadonly();
   readonly transactions = this._transactions.asReadonly();
 
@@ -99,6 +103,7 @@ export class FinanceStore {
         version: DATA_VERSION,
         categories: this._categories(),
         transactions: this._transactions(),
+        mealTagIds: this._mealTagIds(),
       };
       try {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
@@ -210,34 +215,65 @@ export class FinanceStore {
   }
 
   /**
-   * ยอดค่าอาหาร 3 มื้อ (เช้า/กลางวัน/เย็น) ของช่วงที่ระบุ
+   * ยอดค่าอาหารของช่วงที่ระบุ แยกตามแท็กที่ผู้ใช้เลือกไว้ในหน้าตั้งค่า
    * @param period 'YYYY-MM' = รายเดือน, 'YYYY' = รายปี, null = ทั้งหมด
    */
   mealSummary(period: string | null): MealSummary {
-    const meals = MEALS.map((meal) => ({ label: meal.label, total: 0, count: 0 }));
+    const picked = new Set(this._mealTagIds());
+    const buckets = new Map<string, { total: number; count: number }>();
     let total = 0;
     let count = 0;
 
     for (const tx of this.filterBy(period)) {
       if (tx.kind !== 'expense') continue;
-      const index = this.mealIndexOf(tx);
-      if (index < 0) continue;
-      meals[index].total += tx.amount;
-      meals[index].count += 1;
+      // แท็กย่อยมาก่อน เพื่อไม่ให้นับซ้ำเมื่อเลือกไว้ทั้งแท็กแม่และแท็กย่อย
+      const key =
+        tx.subCategoryId && picked.has(tx.subCategoryId)
+          ? tx.subCategoryId
+          : picked.has(tx.categoryId)
+            ? tx.categoryId
+            : null;
+      if (!key) continue;
+
+      const bucket = buckets.get(key) ?? { total: 0, count: 0 };
+      bucket.total += tx.amount;
+      bucket.count += 1;
+      buckets.set(key, bucket);
       total += tx.amount;
       count += 1;
     }
 
-    return { total, count, meals };
+    const items = [...buckets.entries()]
+      .map(([id, bucket]) => ({ id, label: this.tagLabel(id), ...bucket }))
+      .sort((a, b) => b.total - a.total);
+
+    return { total, count, items };
   }
 
-  /** มื้อไหนของ MEALS — เทียบ id ของแท็กเริ่มต้นก่อน ถ้าไม่ตรงค่อยเทียบชื่อ */
-  private mealIndexOf(tx: Transaction): number {
-    if (!tx.subCategoryId) return -1;
-    const byId = MEALS.findIndex((meal) => meal.id === tx.subCategoryId);
-    if (byId >= 0) return byId;
-    const name = this.subCategoryById(tx.categoryId, tx.subCategoryId)?.name.trim();
-    return name ? MEALS.findIndex((meal) => meal.label === name) : -1;
+  /** ชื่อแท็กจาก id ไม่ว่าจะเป็นระดับ 1 หรือ 2 */
+  tagLabel(id: string): string {
+    const category = this.categoryById(id);
+    if (category) return category.name;
+    for (const cat of this._categories()) {
+      const sub = cat.children.find((s) => s.id === id);
+      if (sub) return sub.name;
+    }
+    return 'แท็กที่ถูกลบ';
+  }
+
+  isMealTag(id: string): boolean {
+    return this._mealTagIds().includes(id);
+  }
+
+  toggleMealTag(id: string): void {
+    this._mealTagIds.update((ids) =>
+      ids.includes(id) ? ids.filter((x) => x !== id) : [...ids, id],
+    );
+  }
+
+  /** คืนค่าแท็กอาหารกลับเป็นสามมื้อเริ่มต้น */
+  resetMealTags(): void {
+    this._mealTagIds.set(defaultMealTagIds(this._categories()));
   }
 
   /** รายการที่จ่ายมากที่สุดในช่วงที่ระบุ */
@@ -279,8 +315,10 @@ export class FinanceStore {
 
   /** ลบแท็กระดับ 1 พร้อมรายการที่ใช้แท็กนั้น */
   deleteCategory(id: string): void {
+    const removed = new Set([id, ...(this.categoryById(id)?.children.map((s) => s.id) ?? [])]);
     this._categories.update((list) => list.filter((c) => c.id !== id));
     this._transactions.update((list) => list.filter((t) => t.categoryId !== id));
+    this._mealTagIds.update((ids) => ids.filter((x) => !removed.has(x)));
   }
 
   addSubCategory(categoryId: string, name: string): void {
@@ -311,6 +349,7 @@ export class FinanceStore {
     this._transactions.update((list) =>
       list.map((t) => (t.subCategoryId === subId ? { ...t, subCategoryId: null } : t)),
     );
+    this._mealTagIds.update((ids) => ids.filter((x) => x !== subId));
   }
 
   /** จำนวนรายการที่ใช้แท็กนี้ */
@@ -331,6 +370,7 @@ export class FinanceStore {
         exportedAt: new Date().toISOString(),
         categories: this._categories(),
         transactions: this._transactions(),
+        mealTagIds: this._mealTagIds(),
       },
       null,
       2,
@@ -364,6 +404,7 @@ export class FinanceStore {
       if (!Array.isArray(parsed.categories) || !Array.isArray(parsed.transactions)) return false;
       this._categories.set(parsed.categories);
       this._transactions.set(parsed.transactions);
+      this._mealTagIds.set(parsed.mealTagIds ?? defaultMealTagIds(parsed.categories));
       return true;
     } catch {
       return false;
@@ -377,8 +418,10 @@ export class FinanceStore {
 
   /** คืนค่าเริ่มต้นทั้งหมด */
   resetAll(): void {
-    this._categories.set(structuredClone(DEFAULT_CATEGORIES));
+    const categories = structuredClone(DEFAULT_CATEGORIES);
+    this._categories.set(categories);
     this._transactions.set([]);
+    this._mealTagIds.set(defaultMealTagIds(categories));
   }
 
   private load(): void {
@@ -389,11 +432,29 @@ export class FinanceStore {
     } catch {
       data = null;
     }
-    this._categories.set(
-      data?.categories?.length ? data.categories : structuredClone(DEFAULT_CATEGORIES),
-    );
+    const categories = data?.categories?.length
+      ? data.categories
+      : structuredClone(DEFAULT_CATEGORIES);
+    this._categories.set(categories);
     this._transactions.set(data?.transactions ?? []);
+    // ข้อมูลที่บันทึกไว้ก่อนมีหน้าตั้งค่านี้ ให้เริ่มจากสามมื้อเริ่มต้นเหมือนเดิม
+    this._mealTagIds.set(data?.mealTagIds ?? defaultMealTagIds(categories));
   }
+}
+
+/** หา id ของแท็กสามมื้อเริ่มต้น เทียบทั้ง id และชื่อ เผื่อผู้ใช้สร้างแท็กเอง */
+function defaultMealTagIds(categories: Category[]): string[] {
+  const ids: string[] = [];
+  for (const meal of MEALS) {
+    for (const cat of categories) {
+      const sub = cat.children.find((s) => s.id === meal.id || s.name.trim() === meal.label);
+      if (sub) {
+        ids.push(sub.id);
+        break;
+      }
+    }
+  }
+  return ids;
 }
 
 function summarize(rows: Transaction[]): Summary {

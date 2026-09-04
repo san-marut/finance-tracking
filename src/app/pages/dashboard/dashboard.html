@@ -97,20 +97,25 @@
 
   @if (mealSummary().count) {
     <div class="meal-grid">
-      @for (meal of mealSummary().meals; track meal.label) {
+      @for (item of mealSummary().items; track item.id) {
         <div>
-          <small>{{ meal.label }}</small>
-          <b class="tabular">{{ meal.total | money: 0 }}</b>
-          <span class="faint">{{ meal.count }} มื้อ</span>
+          <small>{{ item.label }}</small>
+          <b class="tabular">{{ item.total | money: 0 }}</b>
+          <span class="faint">{{ item.count }} รายการ</span>
         </div>
       }
     </div>
     <p class="meal-foot faint">
-      รวม {{ mealSummary().total | money: 0 }} บาท · {{ mealSummary().count }} มื้อ ·
+      รวม {{ mealSummary().total | money: 0 }} บาท · {{ mealSummary().count }} รายการ ·
       เฉลี่ยจาก {{ mealDays() }} วัน
     </p>
+  } @else if (!store.mealTagIds().length) {
+    <p class="meal-foot faint">
+      ยังไม่ได้เลือกแท็กที่นับเป็นค่าอาหาร
+      <a class="link" routerLink="/settings">ไปตั้งค่า ›</a>
+    </p>
   } @else {
-    <p class="meal-foot faint">ยังไม่มีรายการอาหารเช้า/กลางวัน/เย็นในช่วงนี้</p>
+    <p class="meal-foot faint">ยังไม่มีรายการในแท็กที่เลือกในช่วงนี้</p>
   }
 </section>
 

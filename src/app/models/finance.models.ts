@@ -36,6 +36,8 @@ export interface FinanceData {
   version: number;
   categories: Category[];
   transactions: Transaction[];
+  /** id ของแท็ก (ระดับ 1 หรือ 2) ที่นับเป็นค่าอาหารในแดชบอร์ด */
+  mealTagIds?: string[];
 }
 
 /** ยอดสรุปของช่วงเวลาหนึ่ง */
@@ -66,11 +68,18 @@ export interface SubCategoryStat {
   count: number;
 }
 
-/** ยอดค่าอาหารแยกตามมื้อ */
+/** ยอดค่าอาหารแยกตามแท็กที่เลือกไว้ */
 export interface MealSummary {
   total: number;
   count: number;
-  meals: { label: string; total: number; count: number }[];
+  items: MealItem[];
+}
+
+export interface MealItem {
+  id: string;
+  label: string;
+  total: number;
+  count: number;
 }
 
 /** ยอดรวมรายเดือนสำหรับกราฟแนวโน้ม */

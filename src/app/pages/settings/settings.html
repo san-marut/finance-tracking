@@ -18,6 +18,68 @@
 </section>
 
 <section class="block">
+  <h2 class="section-title">ค่าอาหารเฉลี่ยต่อวัน</h2>
+  <div class="card rows">
+    <button type="button" class="row" (click)="mealOpen.set(!mealOpen())">
+      <span class="row-icon">🍽️</span>
+      <span class="row-text">
+        <b>แท็กที่นับเป็นค่าอาหาร</b>
+        <small class="faint">{{ mealTagLabels() }}</small>
+      </span>
+      <span class="chev" [class.open]="mealOpen()">›</span>
+    </button>
+
+    @if (mealOpen()) {
+      <div class="meal-picker">
+        <p class="hint faint">
+          เลือกได้ทั้งแท็กระดับ 1 (นับทั้งแท็ก) และแท็กย่อยเฉพาะบางอัน
+          ยอดที่เลือกจะถูกนำไปหารด้วยจำนวนวันในการ์ดค่าอาหารบนแดชบอร์ด
+        </p>
+
+        @for (cat of expenseCategories(); track cat.id) {
+          <div class="pick-cat">
+            <label class="pick-row">
+              <input
+                type="checkbox"
+                [checked]="store.isMealTag(cat.id)"
+                (change)="toggleMealTag(cat.id)"
+              />
+              <span class="pick-icon" [style.background]="cat.color + '22'" [style.color]="cat.color">
+                {{ cat.icon }}
+              </span>
+              <span class="pick-name">
+                {{ cat.name }}
+                <small class="faint">ทั้งแท็ก</small>
+              </span>
+            </label>
+
+            @if (cat.children.length) {
+              <div class="pick-subs">
+                @for (sub of cat.children; track sub.id) {
+                  <label class="pick-sub" [class.locked]="store.isMealTag(cat.id)">
+                    <input
+                      type="checkbox"
+                      [checked]="isSubPicked(cat.id, sub.id)"
+                      [disabled]="store.isMealTag(cat.id)"
+                      (change)="toggleMealTag(sub.id)"
+                    />
+                    <span>{{ sub.name }}</span>
+                  </label>
+                }
+              </div>
+            }
+          </div>
+        }
+
+        <button type="button" class="btn reset-meal" (click)="resetMealTags()">
+          คืนค่าเป็นสามมื้อเริ่มต้น
+        </button>
+      </div>
+    }
+  </div>
+</section>
+
+<section class="block">
   <h2 class="section-title">สำรอง / ย้ายข้อมูล</h2>
   <div class="card rows">
     <button type="button" class="row" (click)="exportJson()">
