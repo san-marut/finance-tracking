@@ -40,20 +40,10 @@
 
   <div class="segmented block">
     <button type="button" [class.on]="kindFilter() === 'all'" (click)="setKind('all')">ทั้งหมด</button>
-    <button
-      type="button"
-      class="expense"
-      [class.on]="kindFilter() === 'expense'"
-      (click)="setKind('expense')"
-    >
+    <button type="button" [class.on]="kindFilter() === 'expense'" (click)="setKind('expense')">
       รายจ่าย
     </button>
-    <button
-      type="button"
-      class="income"
-      [class.on]="kindFilter() === 'income'"
-      (click)="setKind('income')"
-    >
+    <button type="button" [class.on]="kindFilter() === 'income'" (click)="setKind('income')">
       รายรับ
     </button>
   </div>
@@ -70,19 +60,15 @@
   <div class="stat-row">
     <span class="stat">
       <span class="stat-label">รายรับ</span>
-      <span class="stat-value amount-pos">{{ total().income | money: 0 }}</span>
+      <span class="stat-value display amount-pos">{{ total().income | money: 0 }}</span>
     </span>
     <span class="stat">
       <span class="stat-label">รายจ่าย</span>
-      <span class="stat-value amount-neg">{{ total().expense | money: 0 }}</span>
+      <span class="stat-value display amount-neg">{{ total().expense | money: 0 }}</span>
     </span>
     <span class="stat">
       <span class="stat-label">สุทธิ</span>
-      <span
-        class="stat-value"
-        [class.amount-pos]="total().balance >= 0"
-        [class.amount-neg]="total().balance < 0"
-      >
+      <span class="stat-value display" [class.amount-neg]="total().balance < 0">
         {{ total().balance | money: 0 }}
       </span>
     </span>

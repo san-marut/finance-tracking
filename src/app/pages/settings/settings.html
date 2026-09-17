@@ -1,35 +1,23 @@
-<p class="intro">ข้อมูลทั้งหมดเก็บในเครื่องนี้เท่านั้น ไม่ถูกส่งออกไปที่ไหน</p>
-
 <section class="card card-pad overview">
   <div class="stat-row">
     <span class="stat">
       <span class="stat-label">รายการทั้งหมด</span>
-      <span class="stat-value">{{ stats().count }}</span>
+      <span class="stat-value display">{{ stats().count | money: 0 }}</span>
     </span>
     <span class="stat">
       <span class="stat-label">แท็กหลัก</span>
-      <span class="stat-value">{{ stats().categories }}</span>
+      <span class="stat-value display">{{ stats().categories }}</span>
     </span>
     <span class="stat">
       <span class="stat-label">แท็กย่อย</span>
-      <span class="stat-value">{{ stats().subCategories }}</span>
+      <span class="stat-value display">{{ stats().subCategories }}</span>
     </span>
   </div>
-  <div class="stat-row second">
-    <span class="stat">
-      <span class="stat-label">สุทธิสะสม</span>
-      <span class="stat-value" [class.amount-pos]="stats().balance >= 0" [class.amount-neg]="stats().balance < 0">
-        {{ stats().balance | money: 0 }}
-      </span>
-    </span>
-    <span class="stat">
-      <span class="stat-label">รายการแรก</span>
-      <span class="stat-value small">{{ stats().firstDate }}</span>
-    </span>
-    <span class="stat">
-      <span class="stat-label">รายการล่าสุด</span>
-      <span class="stat-value small">{{ stats().lastDate }}</span>
-    </span>
+  <div class="overview-foot">
+    <span>{{ stats().count ? 'ข้อมูลตั้งแต่ ' + stats().firstDate : 'ยังไม่มีรายการ' }}</span>
+    <b [class.amount-pos]="stats().balance >= 0" [class.amount-neg]="stats().balance < 0">
+      สุทธิ {{ stats().balance >= 0 ? '+' : '' }}{{ stats().balance | money: 0 }}
+    </b>
   </div>
 </section>
 
@@ -165,7 +153,10 @@
   </div>
 </section>
 
-<p class="foot">ติดตั้งเป็นแอปได้จากเมนูเบราว์เซอร์ → "เพิ่มไปยังหน้าจอโฮม" แล้วใช้งานแบบออฟไลน์ได้</p>
+<p class="foot">
+  ข้อมูลทั้งหมดเก็บในเครื่องนี้เท่านั้น ไม่ถูกส่งออกไปที่ไหน<br />
+  ติดตั้งเป็นแอปได้จากเมนูเบราว์เซอร์ → "เพิ่มไปยังหน้าจอโฮม" แล้วใช้งานแบบออฟไลน์ได้
+</p>
 
 @if (toast()) {
   <div class="toast" role="status">{{ toast() }}</div>

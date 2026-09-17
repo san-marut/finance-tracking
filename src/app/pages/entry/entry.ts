@@ -48,6 +48,14 @@ export class Entry {
 
   protected readonly dateText = computed(() => dateLabelLong(this.date()));
 
+  /** สรุปบนแถบบันทึกด้านล่าง ให้เห็นวันที่และแท็กก่อนกดบันทึก */
+  protected readonly summaryTag = computed(() => {
+    const catId = this.categoryId();
+    if (!catId) return 'ยังไม่ได้เลือกแท็ก';
+    const sub = this.store.subCategoryById(catId, this.subCategoryId());
+    return sub?.name ?? this.store.categoryById(catId)?.name ?? '';
+  });
+
   protected readonly canSave = computed(
     () => (this.amount() ?? 0) > 0 && !!this.categoryId() && !!this.date(),
   );

@@ -2,24 +2,30 @@
   display: block;
 }
 
-.intro {
-  margin: 0 var(--sp-1) var(--sp-3);
+.overview {
+  margin-bottom: var(--sp-6);
+
+  .stat-value {
+    font-size: 22px;
+  }
+}
+
+.overview-foot {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--sp-3);
+  margin-top: var(--sp-3);
+  padding-top: var(--sp-3);
+  border-top: 1px solid var(--border);
   font-size: var(--fs-sm);
   color: var(--text-dim);
 }
 
-.overview {
-  margin-bottom: var(--sp-6);
-
-  .second {
-    margin-top: var(--sp-4);
-    padding-top: var(--sp-4);
-    border-top: 1px solid var(--border);
-  }
-
-  .stat-value.small {
-    font-size: var(--fs-md);
-  }
+/* กล่องไอคอนแถวตั้งค่าตามแบบ */
+.list-row .tile {
+  width: 42px;
+  height: 42px;
+  border-radius: 14px;
 }
 
 .caret {
@@ -32,8 +38,8 @@
 }
 
 .meal-tile {
-  color: var(--warn);
-  background: color-mix(in srgb, var(--warn) 14%, transparent);
+  color: var(--meal);
+  background: var(--meal-soft);
 }
 
 .danger {
@@ -136,6 +142,7 @@
 .foot {
   padding: 0 var(--sp-4);
   font-size: var(--fs-sm);
+  line-height: 1.7;
   text-align: center;
   color: var(--text-faint);
 }

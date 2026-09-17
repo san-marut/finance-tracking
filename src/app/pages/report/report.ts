@@ -4,7 +4,6 @@ import { FinanceStore } from '../../core/finance-store';
 import { MonthlyPoint, TxKind } from '../../models/finance.models';
 import { dateLabel, monthLabel } from '../../core/utils';
 import { CategoryBreakdown } from '../../shared/category-breakdown';
-import { Icon } from '../../shared/icon';
 import { YearPicker } from '../../shared/year-picker';
 import { TrendChart } from '../../shared/trend-chart';
 import { MoneyPipe } from '../../shared/money.pipe';
@@ -12,7 +11,7 @@ import { MoneyPipe } from '../../shared/money.pipe';
 @Component({
   selector: 'app-report',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CategoryBreakdown, Icon, TrendChart, YearPicker, MoneyPipe],
+  imports: [CategoryBreakdown, TrendChart, YearPicker, MoneyPipe],
   templateUrl: './report.html',
   styleUrl: './report.scss',
 })

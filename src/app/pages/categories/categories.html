@@ -1,6 +1,4 @@
-<p class="intro">
-  แท็กมี 2 ชั้น — <b>แท็กหลัก</b> เช่น อาหารและเครื่องดื่ม และ <b>แท็กย่อย</b> ข้างใน เช่น อาหารกลางวัน
-</p>
+<p class="intro">แท็กมี 2 ชั้น — <b>แท็กหลัก</b> และ <b>แท็กย่อย</b> ข้างใน</p>
 
 <div class="segmented block kind">
   <button type="button" [class.on]="kind() === 'expense'" (click)="kind.set('expense')">แท็กรายจ่าย</button>
@@ -92,7 +90,7 @@
           [attr.aria-expanded]="isOpen(cat.id)"
           (click)="toggle(cat.id)"
         >
-          <span class="tile" [style.background]="cat.color + '1f'">{{ cat.icon }}</span>
+          <span class="tile" [style.background]="cat.color + '26'">{{ cat.icon }}</span>
           <span class="list-text">
             <b class="ellipsis">{{ cat.name }}</b>
             <small class="ellipsis">{{ cat.children.length }} แท็กย่อย · {{ usage(cat.id) }} รายการ</small>

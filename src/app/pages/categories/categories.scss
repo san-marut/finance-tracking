@@ -3,20 +3,35 @@
 }
 
 .intro {
-  margin: 0 var(--sp-1) var(--sp-3);
-  font-size: var(--fs-sm);
+  margin: 0 var(--sp-1) var(--sp-4);
+  font-size: var(--fs-md);
   color: var(--text-dim);
+
+  b {
+    color: var(--text);
+  }
+}
+
+/* กล่องไอคอนแท็กใหญ่ขึ้นตามแบบ */
+.cat-main .tile {
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  font-size: 22px;
 }
 
 .kind {
-  margin-bottom: var(--sp-3);
+  margin-bottom: var(--sp-4);
 }
 
 .add-btn {
-  margin-bottom: var(--sp-3);
-  border-style: dashed;
-  color: var(--brand);
+  min-height: 48px;
+  margin-bottom: var(--sp-4);
+  border: 2px dashed var(--brand);
+  color: var(--brand-text);
   background: transparent;
+  font-size: var(--fs-base);
+  font-weight: 700;
 }
 
 /* ---------- ฟอร์มเพิ่ม/แก้ไข ---------- */
@@ -82,7 +97,7 @@
 
 .cat-main {
   width: 100%;
-  min-height: 64px;
+  min-height: 68px;
   display: flex;
   align-items: center;
   gap: var(--sp-3);
@@ -123,8 +138,8 @@
 .subs {
   display: flex;
   flex-direction: column;
-  gap: 4px;
-  padding: 0 var(--sp-3) var(--sp-4) 68px;
+  gap: 6px;
+  padding: 0 var(--sp-3) 14px 72px;
 }
 
 .sub-row {
@@ -143,12 +158,12 @@
 .sub-input {
   flex: 1;
   min-width: 0;
-  min-height: 38px;
+  min-height: 40px;
   padding: 0 var(--sp-3);
   border: 1px solid transparent;
-  border-radius: var(--radius-sm);
+  border-radius: 12px;
   background: var(--surface-2);
-  font-size: var(--fs-md);
+  font-size: var(--fs-base);
   outline: none;
 
   &:focus {
@@ -172,8 +187,12 @@
   display: flex;
   justify-content: space-between;
   gap: var(--sp-2);
-  margin-top: var(--sp-2);
+  margin-top: var(--sp-1);
   margin-left: calc(-1 * var(--sp-3));
+
+  .btn:not(.remove) {
+    color: var(--text-dim);
+  }
 
   .btn {
     min-height: 38px;
@@ -194,6 +213,8 @@
   .input {
     flex: 1;
     min-width: 0;
+    border-radius: 999px;
+    background: var(--surface);
   }
 
   .btn {

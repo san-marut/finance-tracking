@@ -6,27 +6,35 @@
 :root {
   color-scheme: light dark;
 
-  /* ---------- สี ---------- */
-  --bg: #f3f5fa;
+  /* ---------- สี: ธีม "ครีมพาสเทล" ---------- */
+  --bg: #fff7ee;
   --surface: #ffffff;
-  --surface-2: #f4f6fb;
-  --surface-3: #e9edf5;
-  --border: #e4e8f0;
-  --text: #121826;
-  --text-dim: #4f5a70;
-  --text-faint: #7a849b;
+  --surface-2: #fff1e4;
+  --surface-3: #f5e4d3;
+  --border: #f1e2d3;
+  --text: #2b2118;
+  --text-dim: #5e4e40;
+  --text-faint: #76655a;
 
-  --brand: #4f46e5;
-  --brand-2: #22b8cf;
-  --brand-soft: #eceefe;
+  /* --brand ใช้กับพื้นที่ตกแต่ง/ขอบ ส่วน --brand-strong ใช้กับปุ่มที่มีตัวหนังสือ ให้ contrast ผ่าน */
+  --brand: #e8503a;
+  --brand-strong: #c63e2a;
+  --brand-text: #b93a27;
+  --brand-2: #f26a52;
+  --brand-soft: #ffe4dd;
   --on-brand: #ffffff;
-  --seg-track: #e9edf5;
+  --seg-track: #f5e4d3;
   --seg-on: #ffffff;
-  --income: #0f9f6e;
-  --income-soft: #e3f6ee;
-  --expense: #e11d48;
-  --expense-soft: #fde8ed;
-  --warn: #d97706;
+  --income: #137a5c;
+  --income-soft: #ddf4ea;
+  --expense: #c23d2b;
+  --expense-soft: #fde5e0;
+  --warn: #b26b00;
+  --meal: #9a5b00;
+  --meal-soft: #ffefc7;
+
+  --font-display: 'Mali', 'Anuphan', sans-serif;
+  --font-body: 'Anuphan', 'Noto Sans Thai', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 
   /* ---------- ตัวอักษร (ไม่มีขนาดเล็กกว่า 12px เพื่อให้อ่านภาษาไทยได้สบาย) ---------- */
   --fs-xs: 12px;
@@ -46,39 +54,44 @@
   --sp-5: 20px;
   --sp-6: 24px;
 
-  /* ---------- มุมโค้งและเงา ---------- */
-  --radius: 20px;
-  --radius-md: 14px;
-  --radius-sm: 10px;
-  --shadow: 0 1px 2px rgba(16, 24, 40, 0.04), 0 8px 24px -16px rgba(16, 24, 40, 0.18);
-  --shadow-lg: 0 18px 44px -18px rgba(16, 24, 40, 0.35);
+  /* ---------- มุมโค้งและเงา (เงาโทนน้ำตาลอุ่น) ---------- */
+  --radius: 24px;
+  --radius-md: 18px;
+  --radius-sm: 12px;
+  --shadow: 0 10px 30px -18px rgba(120, 72, 30, 0.35);
+  --shadow-lg: 0 18px 44px -18px rgba(90, 50, 20, 0.4);
 
-  --nav-h: 64px;
+  --nav-h: 76px;
   --header-h: 56px;
   --max-w: 720px;
 }
 
 @mixin dark-tokens {
-  --bg: #0b0f1c;
-  --surface: #141a2e;
-  --surface-2: #1b2240;
-  --surface-3: #232c4f;
-  --border: #252e4d;
-  --text: #eef1f8;
-  --text-dim: #aeb7cf;
-  --text-faint: #8b95b1;
+  /* ธีมมืดโทนอุ่น เข้าชุดกับครีมพาสเทล */
+  --bg: #17120e;
+  --surface: #221a15;
+  --surface-2: #2c231d;
+  --surface-3: #3a2f27;
+  --border: #3a2e25;
+  --text: #f7ede4;
+  --text-dim: #d4c3b4;
+  --text-faint: #ae9c8d;
 
-  --brand: #818cf8;
-  --brand-2: #22d3ee;
-  --brand-soft: #232a55;
-  --on-brand: #0b0f1c;
-  --seg-track: #0f1426;
-  --seg-on: #2a3360;
-  --income: #34d399;
-  --income-soft: #10291f;
-  --expense: #fb7185;
-  --expense-soft: #2c1422;
-  --warn: #fbbf24;
+  --brand: #ff7a63;
+  --brand-strong: #ff7a63;
+  --brand-text: #ff9a87;
+  --brand-2: #ff9178;
+  --brand-soft: #3b241d;
+  --on-brand: #2a140f;
+  --seg-track: #120e0b;
+  --seg-on: #3a2f27;
+  --income: #52d3a2;
+  --income-soft: #173228;
+  --expense: #ff8b7a;
+  --expense-soft: #3b1f1a;
+  --warn: #ffc766;
+  --meal: #ffc766;
+  --meal-soft: #3a2c12;
 
   --shadow: 0 1px 2px rgba(0, 0, 0, 0.35), 0 10px 26px -18px rgba(0, 0, 0, 0.8);
   --shadow-lg: 0 20px 48px -22px rgba(0, 0, 0, 0.9);
@@ -108,8 +121,7 @@ body {
 body {
   background: var(--bg);
   color: var(--text);
-  font-family: 'Noto Sans Thai', 'IBM Plex Sans Thai', -apple-system, BlinkMacSystemFont,
-    'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+  font-family: var(--font-body);
   font-size: var(--fs-base);
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
@@ -122,8 +134,14 @@ h2,
 h3,
 h4 {
   margin: 0;
+  font-family: var(--font-display);
   font-weight: 700;
-  letter-spacing: -0.01em;
+}
+
+/* ตัวเลขเด่นและหัวข้อใช้ฟอนต์กลม Mali */
+.display {
+  font-family: var(--font-display);
+  font-weight: 700;
 }
 
 p {
@@ -211,10 +229,12 @@ a {
   gap: var(--sp-3);
   min-height: 36px;
   margin: 0 var(--sp-1) var(--sp-2);
-  font-size: var(--fs-lg);
+  font-family: var(--font-display);
+  font-size: 18px;
   font-weight: 700;
 
   .hint {
+    font-family: var(--font-body);
     font-size: var(--fs-sm);
     font-weight: 500;
     color: var(--text-faint);
@@ -227,7 +247,7 @@ a {
   gap: 2px;
   font-size: var(--fs-md);
   font-weight: 600;
-  color: var(--brand);
+  color: var(--brand-text);
 }
 
 /* รายการในการ์ดเดียว คั่นด้วยเส้น */
@@ -268,7 +288,7 @@ a {
   line-height: 1.35;
 
   b {
-    font-size: var(--fs-base);
+    font-size: 16px;
     font-weight: 600;
   }
 
@@ -351,7 +371,7 @@ a {
 }
 
 .btn-primary {
-  background: var(--brand);
+  background: var(--brand-strong);
   border-color: transparent;
   color: var(--on-brand);
 }
@@ -414,12 +434,12 @@ a {
   background: var(--seg-track);
 
   button {
-    min-height: 34px;
+    min-height: 42px;
     padding: 0 var(--sp-4);
     border: none;
     border-radius: 999px;
     background: transparent;
-    font-size: var(--fs-md);
+    font-size: var(--fs-base);
     font-weight: 600;
     color: var(--text-dim);
     white-space: nowrap;
@@ -430,7 +450,8 @@ a {
   button.on {
     background: var(--seg-on);
     color: var(--text);
-    box-shadow: 0 1px 3px rgba(16, 24, 40, 0.12);
+    font-weight: 700;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
   }
 
   button.on.expense {
@@ -449,12 +470,12 @@ a {
   }
 
   &.lg button {
-    min-height: 42px;
+    min-height: 44px;
     font-size: var(--fs-base);
   }
 
   &.sm button {
-    min-height: 30px;
+    min-height: 34px;
     padding: 0 var(--sp-3);
     font-size: var(--fs-sm);
   }
@@ -489,7 +510,7 @@ a {
 
   &:focus {
     border-color: var(--brand);
-    box-shadow: 0 0 0 3px color-mix(in srgb, var(--brand) 18%, transparent);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--brand) 20%, transparent);
   }
 }
 
@@ -501,9 +522,15 @@ a {
 .search-box {
   position: relative;
 
+  .input {
+    min-height: 46px;
+    border-radius: 999px;
+  }
+
+
   app-icon {
     position: absolute;
-    left: 12px;
+    left: 14px;
     top: 50%;
     transform: translateY(-50%);
     color: var(--text-faint);
@@ -511,7 +538,7 @@ a {
   }
 
   .input {
-    padding-left: 40px;
+    padding-left: 44px;
   }
 }
 
@@ -532,7 +559,12 @@ input[type='checkbox'] {
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 999px;
-  box-shadow: var(--shadow);
+
+  > .icon-btn {
+    width: 44px;
+    height: 44px;
+    color: var(--text);
+  }
 }
 
 .picker-label {
@@ -556,7 +588,8 @@ input[type='checkbox'] {
     align-items: center;
     gap: 4px;
     max-width: 100%;
-    font-size: var(--fs-lg);
+    font-family: var(--font-display);
+    font-size: 18px;
     font-weight: 700;
     white-space: nowrap;
 
@@ -596,7 +629,8 @@ input[type='checkbox'] {
   margin-bottom: var(--sp-2);
 
   b {
-    font-size: var(--fs-lg);
+    font-family: var(--font-display);
+    font-size: 18px;
   }
 }
 
@@ -617,12 +651,12 @@ input[type='checkbox'] {
   }
 
   button.now {
-    border-color: color-mix(in srgb, var(--brand) 50%, transparent);
-    color: var(--brand);
+    border-color: color-mix(in srgb, var(--brand) 55%, transparent);
+    color: var(--brand-text);
   }
 
   button.on {
-    background: var(--brand);
+    background: var(--brand-strong);
     border-color: transparent;
     color: var(--on-brand);
   }
@@ -637,7 +671,7 @@ input[type='checkbox'] {
   background: var(--brand-soft);
   font-size: var(--fs-md);
   font-weight: 600;
-  color: var(--brand);
+  color: var(--brand-text);
   cursor: pointer;
 }
 
@@ -681,9 +715,9 @@ input[type='checkbox'] {
 
 .meter {
   display: block;
-  height: 6px;
+  height: 8px;
   border-radius: 999px;
-  background: var(--surface-3);
+  background: var(--surface-2);
   overflow: hidden;
 
   > span {

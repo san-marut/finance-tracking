@@ -21,62 +21,46 @@ interface Bar {
   selector: 'app-trend-chart',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    @if (rangeLabel(); as range) {
-      <div class="range">{{ range }}</div>
-    }
-    <div class="wrap">
-      <div class="axis">
-        <span>{{ maxLabel() }}</span>
-        <span>0</span>
-      </div>
-      <div class="bars">
-        @for (bar of bars(); track bar.month) {
-          <button
-            type="button"
-            class="col"
-            [class.current]="bar.current"
-            [title]="bar.tip"
-            (click)="pick.emit(bar.month)"
-          >
-            <span class="stack">
-              <span class="bar income" [class.zero]="!bar.income" [style.height.%]="bar.incomeH"></span>
-              <span class="bar expense" [class.zero]="!bar.expense" [style.height.%]="bar.expenseH"></span>
-            </span>
-            <span class="tick" [class.skip]="!bar.showTick">{{ bar.tick }}</span>
-          </button>
-        }
-      </div>
+    <div class="top">
+      <span>{{ maxLabel() }}</span>
+      <span>{{ rangeLabel() }}</span>
+    </div>
+    <div class="bars">
+      @for (bar of bars(); track bar.month) {
+        <button
+          type="button"
+          class="col"
+          [class.current]="bar.current"
+          [title]="bar.tip"
+          [attr.aria-label]="bar.tip"
+          (click)="pick.emit(bar.month)"
+        >
+          <span class="stack">
+            <span class="bar income" [class.zero]="!bar.income" [style.height.%]="bar.incomeH"></span>
+            <span class="bar expense" [class.zero]="!bar.expense" [style.height.%]="bar.expenseH"></span>
+          </span>
+          <span class="tick" [class.skip]="!bar.showTick">{{ bar.tick }}</span>
+        </button>
+      }
     </div>
   `,
   styles: `
-    .range {
-      margin: -4px 0 8px;
-      text-align: right;
-      font-size: var(--fs-xs);
-      color: var(--text-faint);
-    }
-    .wrap { display: flex; gap: 8px; }
-    /* ความสูงแกน = ความสูงแท่ง (130) + ป้ายเดือน (18) + ช่องไฟ (6) ให้เลข 0 ตรงฐานของแท่งพอดี */
-    .axis {
+    :host { display: block; }
+
+    /* แถวบน: ยอดสูงสุดของกราฟทางซ้าย ช่วงเวลาทางขวา */
+    .top {
       display: flex;
-      flex-direction: column;
       justify-content: space-between;
-      height: 154px;
-      padding-bottom: 24px;
+      margin-bottom: var(--sp-2);
       font-size: var(--fs-xs);
-      line-height: 1;
       color: var(--text-faint);
     }
+
     .bars {
-      flex: 1;
       display: flex;
-      align-items: flex-end;
-      gap: 3px;
-      overflow-x: auto;
-      scrollbar-width: none;
-      padding-bottom: 2px;
+      gap: 2px;
     }
-    .bars::-webkit-scrollbar { display: none; }
+
     .col {
       flex: 1 1 0;
       min-width: 0;
@@ -88,37 +72,35 @@ interface Bar {
       background: transparent;
       padding: 0;
       cursor: pointer;
-      border-radius: 8px;
     }
-    .col.current .tick { color: var(--brand); font-weight: 700; }
-    .col.current .stack { background-color: var(--brand-soft); }
+
     .stack {
       display: flex;
       align-items: flex-end;
       justify-content: center;
       gap: 2px;
-      height: 130px;
+      height: 124px;
       width: 100%;
       border-radius: 8px;
-      padding: 0 2px;
-      background: repeating-linear-gradient(
-        to top,
-        transparent 0 32px,
-        color-mix(in srgb, var(--border) 60%, transparent) 32px 33px
-      );
     }
+
+    .col.current .stack { background: var(--brand-soft); }
+    .col.current .tick { color: var(--brand-text); font-weight: 700; }
+
     .bar {
       display: block;
-      width: 38%;
-      max-width: 11px;
-      min-height: 3px;
+      width: 8px;
+      max-width: 38%;
       border-radius: 4px 4px 2px 2px;
       transition: height 0.25s ease;
     }
-    /* เดือนที่ไม่มีข้อมูลไม่ต้องมีขีดเล็กๆ ให้ดูเหมือนมียอด แต่ยังกินที่ไว้ให้แท่งเรียงตรง */
+
+    /* เดือนที่ไม่มีข้อมูลไม่ต้องวาดแท่ง แต่ยังกินที่ไว้ให้แท่งอื่นเรียงตรง */
     .bar.zero { visibility: hidden; }
+    .bar:not(.zero) { min-height: 3px; }
     .income { background: var(--income); }
     .expense { background: var(--expense); }
+
     /* ป้ายเดือนบรรทัดเดียว สูงเท่ากันทุกช่อง ฐานของแท่งจึงอยู่ระดับเดียวกันเสมอ */
     .tick {
       height: 18px;
@@ -127,7 +109,7 @@ interface Bar {
       color: var(--text-faint);
       white-space: nowrap;
     }
-    /* ซ่อนแบบยังกินที่ ให้แท่งกราฟยังเรียงตรงกัน */
+
     .tick.skip { visibility: hidden; }
   `,
 })

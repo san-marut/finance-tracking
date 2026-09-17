@@ -76,8 +76,8 @@
   "lang": "th",
   "dir": "ltr",
   "orientation": "portrait",
-  "theme_color": "#4f46e5",
-  "background_color": "#f4f6fb",
+  "theme_color": "#e8503a",
+  "background_color": "#fff7ee",
   "categories": [
     "finance",
     "productivity"

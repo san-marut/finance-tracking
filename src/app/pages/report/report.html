@@ -9,48 +9,34 @@
   <!-- สรุปทั้งปี -->
   <section class="card hero">
     <span class="hero-label">คงเหลือทั้งปี {{ yearLabel() }}</span>
-    <strong
-      class="hero-amount tabular"
-      [class.amount-pos]="summary().balance >= 0"
-      [class.amount-neg]="summary().balance < 0"
-    >
+    <strong class="hero-amount display tabular" [class.amount-neg]="summary().balance < 0">
       {{ summary().balance | money }} <small>฿</small>
     </strong>
 
     <div class="flow">
       <div class="flow-item income">
-        <span class="flow-icon"><app-icon name="arrowDown" [size]="18" /></span>
-        <span class="stat">
-          <span class="stat-label">รายรับ</span>
-          <span class="stat-value">{{ summary().income | money: 0 }}</span>
-          @if (incomeDelta() !== null) {
-            <!-- รายรับเพิ่มขึ้นคือดี -->
-            <span class="stat-sub" [class.good]="incomeDelta()! > 0" [class.bad]="incomeDelta()! <= 0">
-              {{ incomeDelta()! > 0 ? '▲' : '▼' }} {{ abs(incomeDelta()!) | money: 0 }}%
-            </span>
-          }
-        </span>
+        <span class="flow-label">รายรับ</span>
+        <span class="flow-value tabular">{{ summary().income | money: 0 }}</span>
+        @if (incomeDelta() !== null) {
+          <!-- รายรับเพิ่มขึ้นคือดี -->
+          <span class="flow-delta" [class.good]="incomeDelta()! > 0" [class.bad]="incomeDelta()! <= 0">
+            {{ incomeDelta()! > 0 ? '▲' : '▼' }} {{ abs(incomeDelta()!) | money: 0 }}% จากปี {{ yearLabel() - 1 }}
+          </span>
+        }
       </div>
       <div class="flow-item expense">
-        <span class="flow-icon"><app-icon name="arrowUp" [size]="18" /></span>
-        <span class="stat">
-          <span class="stat-label">รายจ่าย</span>
-          <span class="stat-value">{{ summary().expense | money: 0 }}</span>
-          @if (expenseDelta() !== null) {
-            <!-- รายจ่ายเพิ่มขึ้นคือไม่ดี -->
-            <span class="stat-sub" [class.bad]="expenseDelta()! > 0" [class.good]="expenseDelta()! <= 0">
-              {{ expenseDelta()! > 0 ? '▲' : '▼' }} {{ abs(expenseDelta()!) | money: 0 }}%
-            </span>
-          }
-        </span>
+        <span class="flow-label">รายจ่าย</span>
+        <span class="flow-value tabular">{{ summary().expense | money: 0 }}</span>
+        @if (expenseDelta() !== null) {
+          <!-- รายจ่ายเพิ่มขึ้นคือไม่ดี -->
+          <span class="flow-delta" [class.bad]="expenseDelta()! > 0" [class.good]="expenseDelta()! <= 0">
+            {{ expenseDelta()! > 0 ? '▲' : '▼' }} {{ abs(expenseDelta()!) | money: 0 }}% จากปี {{ yearLabel() - 1 }}
+          </span>
+        }
       </div>
     </div>
 
-    @if (hasPrevYear()) {
-      <p class="compare">% ใต้ตัวเลขคือเทียบกับปี {{ yearLabel() - 1 }}</p>
-    }
-
-    <div class="stat-row mini" style="--cols: 3">
+    <div class="mini">
       <span class="stat">
         <span class="stat-label">เฉลี่ยรับ/เดือน</span>
         <span class="stat-value">{{ avgIncome() | money: 0 }}</span>
@@ -184,10 +170,9 @@
         </button>
       </div>
     </div>
-    <div class="card card-pad">
+    <div class="card list-card">
       <app-category-breakdown
         [stats]="stats()"
-        [caption]="kindView() === 'expense' ? 'รายจ่ายทั้งปี' : 'รายรับทั้งปี'"
         [emptyText]="'ยังไม่มี' + (kindView() === 'expense' ? 'รายจ่าย' : 'รายรับ') + 'ในปีนี้'"
       />
     </div>

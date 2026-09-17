@@ -36,6 +36,8 @@ export class App {
   protected readonly showFab = signal(true);
   protected readonly heading = signal('');
   protected readonly showBack = signal(false);
+  /** หน้าฟอร์มมีแถบบันทึกของตัวเองที่ขอบล่าง จึงซ่อนเมนูหลัก */
+  protected readonly showNav = signal(true);
   protected readonly updateReady = signal(false);
   protected readonly installEvent = signal<InstallPromptEvent | null>(null);
 
@@ -58,6 +60,7 @@ export class App {
       const data = child?.snapshot.data ?? {};
       this.heading.set((data['heading'] as string) ?? '');
       this.showBack.set(!!data['back']);
+      this.showNav.set(!data['back']);
     });
 
     if (this.swUpdate.isEnabled) {

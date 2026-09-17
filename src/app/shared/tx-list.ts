@@ -48,7 +48,7 @@ interface DayGroup {
         <div class="card list-card">
           @for (row of group.rows; track row.tx.id) {
             <a class="list-row" [routerLink]="['/entry', row.tx.id]">
-              <span class="tile" [style.background]="row.color + '1f'">{{ row.icon }}</span>
+              <span class="tile" [style.background]="row.color + '26'">{{ row.icon }}</span>
               <span class="list-text">
                 <b class="ellipsis">{{ row.title }}</b>
                 <small class="ellipsis">{{ row.detail }}</small>
@@ -81,7 +81,7 @@ interface DayGroup {
       justify-content: space-between;
       gap: var(--sp-3);
       padding: 0 var(--sp-1) var(--sp-2);
-      font-size: var(--fs-sm);
+      font-size: var(--fs-md);
     }
 
     .day-label { font-weight: 700; color: var(--text-dim); }

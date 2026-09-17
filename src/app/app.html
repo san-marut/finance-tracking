@@ -1,4 +1,4 @@
-<div class="shell" [class.with-fab]="showFab()">
+<div class="shell" [class.with-fab]="showFab()" [class.no-nav]="!showNav()">
   <header class="topbar">
     <div class="topbar-inner">
       @if (showBack()) {
@@ -7,7 +7,7 @@
         </button>
       } @else {
         <a routerLink="/dashboard" aria-label="กลับหน้าภาพรวม">
-          <img class="brand-mark" src="icons/icon.svg" alt="" width="34" height="34" />
+          <img class="brand-mark" src="icons/icon.svg" alt="" width="40" height="40" />
         </a>
       }
 
@@ -35,16 +35,19 @@
 
   @if (showFab()) {
     <a class="fab" routerLink="/entry" aria-label="เพิ่มรายการใหม่">
-      <app-icon name="plus" [size]="28" [stroke]="2.4" />
+      <app-icon name="plus" [size]="28" [stroke]="2.6" />
     </a>
   }
 
-  <nav class="bottom-nav" aria-label="เมนูหลัก">
-    @for (item of navItems; track item.path) {
-      <a [routerLink]="item.path" routerLinkActive="active" class="nav-item">
-        <span class="nav-icon"><app-icon [name]="item.icon" [size]="22" /></span>
-        <span class="nav-label">{{ item.label }}</span>
-      </a>
-    }
-  </nav>
+  @if (showNav()) {
+    <nav class="bottom-nav" aria-label="เมนูหลัก">
+      @for (item of navItems; track item.path) {
+        <a [routerLink]="item.path" routerLinkActive="active" class="nav-item">
+          <app-icon [name]="item.icon" [size]="22" />
+          <span class="nav-label">{{ item.label }}</span>
+          <span class="nav-dot" aria-hidden="true"></span>
+        </a>
+      }
+    </nav>
+  }
 </div>

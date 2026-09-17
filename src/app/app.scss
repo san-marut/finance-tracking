@@ -2,14 +2,19 @@
   display: block;
 }
 
+/* เมนูลอยสูง 64px + ระยะห่างจากขอบล่าง 16px */
 .shell {
   min-height: 100dvh;
-  padding-bottom: calc(var(--nav-h) + env(safe-area-inset-bottom) + var(--sp-4));
+  padding-bottom: calc(var(--nav-h) + env(safe-area-inset-bottom) + var(--sp-6));
 }
 
 /* เผื่อที่ให้เลื่อนเนื้อหาพ้นปุ่มลอย ไม่ให้ปุ่มไปทับตัวควบคุมท้ายหน้า */
 .shell.with-fab {
-  padding-bottom: calc(var(--nav-h) + env(safe-area-inset-bottom) + 92px);
+  padding-bottom: calc(var(--nav-h) + env(safe-area-inset-bottom) + 96px);
+}
+
+.shell.no-nav {
+  padding-bottom: 0;
 }
 
 /* ---------- แถบหัว ---------- */
@@ -18,33 +23,42 @@
   top: 0;
   z-index: 30;
   padding-top: env(safe-area-inset-top);
-  background: color-mix(in srgb, var(--bg) 85%, transparent);
-  backdrop-filter: saturate(160%) blur(14px);
-  -webkit-backdrop-filter: saturate(160%) blur(14px);
-  border-bottom: 1px solid color-mix(in srgb, var(--border) 70%, transparent);
+  background: color-mix(in srgb, var(--bg) 92%, transparent);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
 }
 
 .topbar-inner {
   max-width: var(--max-w);
-  height: var(--header-h);
+  height: 72px;
   margin: 0 auto;
-  padding: 0 var(--sp-4);
+  padding: 0 var(--sp-5);
   display: flex;
   align-items: center;
   gap: var(--sp-3);
+
+  > .icon-btn {
+    width: 44px;
+    height: 44px;
+    background: var(--surface);
+    color: var(--text);
+  }
 }
 
 .brand-mark {
   display: block;
-  width: 34px;
-  height: 34px;
-  border-radius: 10px;
+  width: 40px;
+  height: 40px;
+  border-radius: 13px;
 }
 
+/* ต้องมีช่องบรรทัดพอ ไม่งั้น overflow: hidden ตัดวรรณยุกต์ที่ซ้อนบนสระ เช่น "พิ่" ในฟอนต์ Mali */
 .heading {
   flex: 1;
   min-width: 0;
-  font-size: var(--fs-xl);
+  padding: 4px 0;
+  font-size: 24px;
+  line-height: 1.6;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -58,7 +72,7 @@
 
 .update-banner {
   max-width: calc(var(--max-w) - 32px);
-  margin: var(--sp-3) auto 0;
+  margin: var(--sp-1) auto var(--sp-2);
   padding: var(--sp-2) var(--sp-2) var(--sp-2) var(--sp-4);
   display: flex;
   align-items: center;
@@ -78,23 +92,23 @@
 .content {
   max-width: var(--max-w);
   margin: 0 auto;
-  padding: var(--sp-4);
+  padding: var(--sp-1) var(--sp-5) var(--sp-4);
 }
 
-/* ---------- ปุ่มลอย ---------- */
+/* ---------- ปุ่มลอย: วงกลมสีคอรัล ---------- */
 .fab {
   position: fixed;
-  right: max(var(--sp-4), calc(50vw - var(--max-w) / 2 + var(--sp-4)));
-  bottom: calc(var(--nav-h) + env(safe-area-inset-bottom) + var(--sp-4));
+  right: max(var(--sp-6), calc(50vw - var(--max-w) / 2 + var(--sp-6)));
+  bottom: calc(var(--nav-h) + env(safe-area-inset-bottom) + var(--sp-6));
   z-index: 35;
-  width: 56px;
-  height: 56px;
+  width: 60px;
+  height: 60px;
   display: grid;
   place-items: center;
-  border-radius: 18px;
-  background: linear-gradient(135deg, var(--brand), var(--brand-2));
+  border-radius: 999px;
+  background: var(--brand);
   color: #fff;
-  box-shadow: 0 12px 26px -10px color-mix(in srgb, var(--brand) 75%, transparent);
+  box-shadow: 0 14px 26px -10px color-mix(in srgb, var(--brand) 75%, transparent);
   transition: transform 0.14s ease;
 
   &:active {
@@ -102,50 +116,51 @@
   }
 }
 
-/* ---------- เมนูล่าง ---------- */
+/* ---------- เมนูล่าง: แคปซูลลอย ---------- */
 .bottom-nav {
   position: fixed;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  left: max(var(--sp-4), calc(50vw - var(--max-w) / 2));
+  right: max(var(--sp-4), calc(50vw - var(--max-w) / 2));
+  bottom: calc(env(safe-area-inset-bottom) + var(--sp-4));
   z-index: 30;
-  height: calc(var(--nav-h) + env(safe-area-inset-bottom));
-  padding: 0 var(--sp-2) env(safe-area-inset-bottom);
   display: flex;
-  justify-content: center;
-  background: color-mix(in srgb, var(--surface) 90%, transparent);
-  backdrop-filter: saturate(160%) blur(16px);
-  -webkit-backdrop-filter: saturate(160%) blur(16px);
-  border-top: 1px solid var(--border);
+  padding: 6px;
+  border-radius: 26px;
+  background: var(--surface);
+  box-shadow: 0 12px 30px -12px rgba(90, 50, 20, 0.35);
 }
 
 .nav-item {
   flex: 1;
-  max-width: 120px;
+  min-height: 52px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 2px;
+  gap: 3px;
+  border-radius: 20px;
   color: var(--text-faint);
   font-size: var(--fs-xs);
   font-weight: 600;
   transition: color 0.15s ease;
+
+  &:active {
+    background: var(--surface-2);
+  }
 }
 
-.nav-icon {
-  display: grid;
-  place-items: center;
-  width: 52px;
-  height: 30px;
+.nav-dot {
+  width: 5px;
+  height: 5px;
   border-radius: 999px;
-  transition: background 0.18s ease;
+  background: transparent;
 }
 
 .nav-item.active {
-  color: var(--brand);
+  color: var(--brand-text);
+  font-weight: 700;
 
-  .nav-icon {
-    background: var(--brand-soft);
+  .nav-dot {
+    background: var(--brand);
   }
 }

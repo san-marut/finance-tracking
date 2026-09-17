@@ -13,7 +13,7 @@
   <div class="amount-row">
     <input
       id="amount"
-      class="amount-input tabular"
+      class="amount-input display tabular"
       type="text"
       inputmode="decimal"
       placeholder="0"
@@ -30,11 +30,11 @@
   </div>
 
   @if (isExpression() && amount() !== null) {
-    <p class="calc">= {{ amount()! | money }} บาท</p>
+    <p class="calc">{{ amountText() }} = {{ amount()! | money }} บาท</p>
   } @else if (amountText() && amount() === null) {
     <p class="calc warn">ใส่ได้เฉพาะตัวเลขและ + − × ÷</p>
   } @else {
-    <p class="calc">พิมพ์เป็นสูตรได้ เช่น 120+35*2</p>
+    <p class="calc">พิมพ์เป็นสูตรได้ เช่น 120+35</p>
   }
 
   <div class="quick">
@@ -46,19 +46,18 @@
 
 <!-- แท็กหลัก -->
 <section class="section">
-  <div class="section-title">
-    <span>แท็กหลัก</span>
-  </div>
+  <div class="section-title"><span>แท็กหลัก</span></div>
   <div class="cat-grid">
     @for (c of categories(); track c.id) {
       <button
         type="button"
         class="cat-chip"
         [class.on]="categoryId() === c.id"
+        [attr.aria-pressed]="categoryId() === c.id"
         [style.--chip]="c.color"
         (click)="pickCategory(c.id)"
       >
-        <span class="chip-icon">{{ c.icon }}</span>
+        <span class="tile chip-tile" [style.background]="c.color + '26'">{{ c.icon }}</span>
         <span class="chip-name">{{ c.name }}</span>
       </button>
     } @empty {
@@ -75,7 +74,13 @@
     </div>
     <div class="sub-grid">
       @for (s of subCategories(); track s.id) {
-        <button type="button" class="sub-chip" [class.on]="subCategoryId() === s.id" (click)="pickSub(s.id)">
+        <button
+          type="button"
+          class="sub-chip"
+          [class.on]="subCategoryId() === s.id"
+          [attr.aria-pressed]="subCategoryId() === s.id"
+          (click)="pickSub(s.id)"
+        >
           {{ s.name }}
         </button>
       } @empty {
@@ -98,7 +103,6 @@
         <app-icon name="chevronRight" />
       </button>
     </div>
-    <small class="date-text">{{ dateText() }}</small>
   </div>
 
   <label class="field note">
@@ -106,17 +110,6 @@
     <textarea class="textarea" rows="2" placeholder="เช่น ข้าวมันไก่หน้าปากซอย" [(ngModel)]="note"></textarea>
   </label>
 </section>
-
-<div class="actions">
-  <button type="button" class="btn btn-primary btn-block save" [disabled]="!canSave()" (click)="save()">
-    {{ isEdit() ? 'บันทึกการแก้ไข' : 'บันทึกรายการ' }}
-  </button>
-  @if (!isEdit()) {
-    <button type="button" class="btn btn-block" [disabled]="!canSave()" (click)="save(true)">
-      บันทึกและเพิ่มต่อ
-    </button>
-  }
-</div>
 
 @if (isEdit()) {
   <div class="danger-zone">
@@ -136,6 +129,22 @@
   </div>
 }
 
+<!-- แถบบันทึกติดขอบล่าง -->
+<div class="save-bar">
+  <div class="save-bar-inner">
+    <div class="summary">
+      <app-icon name="calendar" [size]="16" />
+      <span class="ellipsis">{{ dateText() }} · {{ summaryTag() }}</span>
+      @if (!isEdit()) {
+        <button type="button" class="more" [disabled]="!canSave()" (click)="save(true)">บันทึกและเพิ่มต่อ</button>
+      }
+    </div>
+    <button type="button" class="btn btn-primary btn-block save display" [disabled]="!canSave()" (click)="save()">
+      {{ isEdit() ? 'บันทึกการแก้ไข' : 'บันทึกรายการ' }}
+    </button>
+  </div>
+</div>
+
 @if (toast()) {
-  <div class="toast" role="status">{{ toast() }}</div>
+  <div class="toast save-toast" role="status">{{ toast() }}</div>
 }
