@@ -1,29 +1,19 @@
-<div class="page-head">
-  <h1>จัดการแท็ก</h1>
-  <p class="muted">แท็กมี 2 ระดับ — ระดับ 1 คือประเภทหลัก ระดับ 2 คือหมวดย่อยข้างใน</p>
-</div>
+<p class="intro">
+  แท็กมี 2 ชั้น — <b>แท็กหลัก</b> เช่น อาหารและเครื่องดื่ม และ <b>แท็กย่อย</b> ข้างใน เช่น อาหารกลางวัน
+</p>
 
-<div class="kind-switch">
-  <button type="button" [class.on]="kind() === 'expense'" (click)="kind.set('expense')">
-    แท็กรายจ่าย
-  </button>
-  <button type="button" [class.on]="kind() === 'income'" (click)="kind.set('income')">
-    แท็กรายรับ
-  </button>
+<div class="segmented block kind">
+  <button type="button" [class.on]="kind() === 'expense'" (click)="kind.set('expense')">แท็กรายจ่าย</button>
+  <button type="button" [class.on]="kind() === 'income'" (click)="kind.set('income')">แท็กรายรับ</button>
 </div>
 
 @if (showAdd()) {
-  <section class="card add-form">
-    <h2>เพิ่มแท็กระดับ 1</h2>
+  <section class="card card-pad form-card">
+    <h2 class="form-title">เพิ่มแท็กหลัก</h2>
 
     <label class="field">
       <span class="label">ชื่อแท็ก</span>
-      <input
-        class="input"
-        placeholder="เช่น สัตว์เลี้ยง"
-        [(ngModel)]="newName"
-        (keyup.enter)="addCategory()"
-      />
+      <input class="input" placeholder="เช่น สัตว์เลี้ยง" [(ngModel)]="newName" (keyup.enter)="addCategory()" />
     </label>
 
     <div class="field">
@@ -59,16 +49,21 @@
     </div>
   </section>
 } @else {
-  <button type="button" class="btn add-btn" (click)="openAdd()">＋ เพิ่มแท็กระดับ 1</button>
+  <button type="button" class="btn btn-block add-btn" (click)="openAdd()">
+    <app-icon name="plus" [size]="18" /> เพิ่มแท็กหลัก
+  </button>
 }
 
-<ul class="cat-list">
+<div class="card list-card cats">
   @for (cat of list(); track cat.id) {
-    <li class="card cat">
+    <div class="cat">
       @if (editingId() === cat.id) {
         <div class="edit-box">
-          <input class="input" [(ngModel)]="editName" (keyup.enter)="saveEdit()" />
-          <div class="icon-grid compact">
+          <label class="field">
+            <span class="label">ชื่อแท็ก</span>
+            <input class="input" [(ngModel)]="editName" (keyup.enter)="saveEdit()" />
+          </label>
+          <div class="icon-grid">
             @for (i of icons; track i) {
               <button type="button" [class.on]="editIcon() === i" (click)="editIcon.set(i)">{{ i }}</button>
             }
@@ -91,39 +86,27 @@
           </div>
         </div>
       } @else {
-        <div class="cat-head">
-          <button type="button" class="cat-main" (click)="toggle(cat.id)">
-            <span class="icon" [style.background]="cat.color + '22'" [style.color]="cat.color">
-              {{ cat.icon }}
-            </span>
-            <span class="text">
-              <b>{{ cat.name }}</b>
-              <small class="faint">
-                {{ cat.children.length }} หมวดย่อย · ใช้ใน {{ usage(cat.id) }} รายการ
-              </small>
-            </span>
-            <span class="caret" [class.open]="isOpen(cat.id)">›</span>
-          </button>
-          <button type="button" class="icon-btn" (click)="startEdit(cat)" aria-label="แก้ไขแท็ก">✏️</button>
-          <button
-            type="button"
-            class="icon-btn"
-            (click)="deletingId.set(cat.id)"
-            aria-label="ลบแท็ก"
-          >🗑</button>
-        </div>
+        <button
+          type="button"
+          class="cat-main"
+          [attr.aria-expanded]="isOpen(cat.id)"
+          (click)="toggle(cat.id)"
+        >
+          <span class="tile" [style.background]="cat.color + '1f'">{{ cat.icon }}</span>
+          <span class="list-text">
+            <b class="ellipsis">{{ cat.name }}</b>
+            <small class="ellipsis">{{ cat.children.length }} แท็กย่อย · {{ usage(cat.id) }} รายการ</small>
+          </span>
+          <app-icon class="caret" [class.open]="isOpen(cat.id)" name="chevronDown" [size]="18" />
+        </button>
       }
 
       @if (deletingId() === cat.id) {
-        <div class="danger">
-          <span>
-            ลบ "{{ cat.name }}" จะลบรายการที่ใช้แท็กนี้ {{ usage(cat.id) }} รายการไปด้วย
-          </span>
+        <div class="delete-confirm">
+          <span>ลบ "{{ cat.name }}" และรายการที่ใช้แท็กนี้ {{ usage(cat.id) }} รายการ?</span>
           <div class="form-actions">
             <button type="button" class="btn" (click)="deletingId.set(null)">ยกเลิก</button>
-            <button type="button" class="btn btn-danger" (click)="removeCategory(cat.id)">
-              ลบถาวร
-            </button>
+            <button type="button" class="btn btn-danger" (click)="removeCategory(cat.id)">ลบถาวร</button>
           </div>
         </div>
       }
@@ -132,48 +115,50 @@
         <div class="subs">
           @for (sub of cat.children; track sub.id) {
             <div class="sub-row">
-              <span class="bullet" [style.background]="cat.color"></span>
+              <span class="dot" [style.background]="cat.color"></span>
               <input
                 class="sub-input"
                 [value]="sub.name"
+                [attr.aria-label]="'ชื่อแท็กย่อย ' + sub.name"
                 (change)="renameSub(cat.id, sub.id, $event)"
               />
-              <small class="faint">{{ subUsage(sub.id) }}</small>
-              <button
-                type="button"
-                class="icon-btn"
-                (click)="removeSub(cat.id, sub.id)"
-                aria-label="ลบหมวดย่อย"
-              >✕</button>
+              <span class="usage tabular">{{ subUsage(sub.id) }}</span>
+              <button type="button" class="icon-btn" (click)="removeSub(cat.id, sub.id)" aria-label="ลบแท็กย่อย">
+                <app-icon name="close" [size]="16" />
+              </button>
             </div>
           } @empty {
-            <p class="muted small">ยังไม่มีหมวดย่อย</p>
+            <p class="none">ยังไม่มีแท็กย่อย</p>
           }
 
           <div class="sub-add">
             <input
               class="input"
-              placeholder="เพิ่มหมวดย่อยใหม่"
+              placeholder="เพิ่มแท็กย่อยใหม่"
               [value]="draftOf(cat.id)"
               (input)="setDraft(cat.id, $event)"
               (keyup.enter)="addSub(cat.id)"
             />
-            <button
-              type="button"
-              class="btn btn-primary"
-              [disabled]="!draftOf(cat.id).trim()"
-              (click)="addSub(cat.id)"
-            >
+            <button type="button" class="btn btn-primary" [disabled]="!draftOf(cat.id).trim()" (click)="addSub(cat.id)">
               เพิ่ม
+            </button>
+          </div>
+
+          <div class="cat-actions">
+            <button type="button" class="btn btn-ghost" (click)="startEdit(cat)">
+              <app-icon name="edit" [size]="16" /> แก้ไขชื่อ ไอคอน สี
+            </button>
+            <button type="button" class="btn btn-ghost remove" (click)="deletingId.set(cat.id)">
+              <app-icon name="trash" [size]="16" /> ลบแท็ก
             </button>
           </div>
         </div>
       }
-    </li>
+    </div>
   } @empty {
-    <li class="card empty">
+    <div class="empty">
       <div class="empty-icon">🏷️</div>
       <div>ยังไม่มีแท็กในประเภทนี้</div>
-    </li>
+    </div>
   }
-</ul>
+</div>

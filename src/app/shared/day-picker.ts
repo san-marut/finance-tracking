@@ -1,77 +1,42 @@
 import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
 import { relativeDateLabel, shiftDay, todayIso } from '../core/utils';
+import { Icon } from './icon';
 
-/** ตัวเลือกวันแบบเลื่อนซ้าย-ขวา แตะตรงกลางเพื่อเปิดปฏิทินของเครื่อง */
+/** ตัวเลือกวันแบบเลื่อนซ้าย-ขวา แตะตรงกลางเพื่อเปิดปฏิทินของเครื่อง (สไตล์หลักอยู่ใน styles.scss) */
 @Component({
   selector: 'app-day-picker',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [Icon],
   template: `
-    <div class="picker">
-      <button type="button" class="arrow" (click)="shift(-1)" aria-label="วันก่อนหน้า">‹</button>
+    <div class="picker-bar">
+      <button type="button" class="icon-btn soft" (click)="shift(-1)" aria-label="วันก่อนหน้า">
+        <app-icon name="chevronLeft" />
+      </button>
 
-      <label class="label">
-        <span class="text">{{ label() }}</span>
-        <small>แตะเพื่อเลือกวัน</small>
-        <input type="date" [value]="date()" (change)="pick($event)" />
+      <label class="picker-label">
+        <span class="picker-title ellipsis">
+          {{ label() }} <app-icon name="chevronDown" [size]="16" />
+        </span>
+        <span class="picker-caption">แตะเพื่อเลือกวัน</span>
+        <input type="date" [value]="date()" [max]="today" (change)="pick($event)" />
       </label>
 
       <button
         type="button"
-        class="arrow"
+        class="icon-btn soft"
         [disabled]="isFuture()"
         (click)="shift(1)"
         aria-label="วันถัดไป"
       >
-        ›
+        <app-icon name="chevronRight" />
       </button>
     </div>
   `,
   styles: `
-    .picker {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 999px;
-      padding: 4px;
-      box-shadow: var(--shadow);
-    }
-    .arrow {
-      width: 38px;
-      height: 38px;
-      border: none;
-      border-radius: 999px;
-      background: var(--surface-2);
-      color: var(--text-dim);
-      font-size: 22px;
-      line-height: 1;
-      cursor: pointer;
-    }
-    .arrow:active { transform: scale(0.94); }
-    .arrow:disabled { opacity: 0.35; cursor: not-allowed; }
-    .label {
-      position: relative;
-      flex: 1;
-      min-width: 0;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      line-height: 1.2;
-      padding: 2px 4px;
-      cursor: pointer;
-    }
-    .text {
-      font-size: 15px;
-      font-weight: 700;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      max-width: 100%;
-    }
-    .label small { font-size: 10px; color: var(--text-faint); }
-    /* ทับทับตัวหนังสือไว้ทั้งกล่อง แตะแล้วเด้งปฏิทินของเครื่องขึ้นมาเลย */
-    .label input {
+    :host { display: block; }
+
+    /* ทับไว้ทั้งกล่อง แตะแล้วเด้งปฏิทินของเครื่องขึ้นมาเลย */
+    .picker-label input {
       position: absolute;
       inset: 0;
       width: 100%;
@@ -86,6 +51,8 @@ import { relativeDateLabel, shiftDay, todayIso } from '../core/utils';
 export class DayPicker {
   readonly date = input.required<string>();
   readonly dateChange = output<string>();
+
+  protected readonly today = todayIso();
 
   protected label(): string {
     return relativeDateLabel(this.date());

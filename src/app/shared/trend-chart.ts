@@ -12,6 +12,8 @@ interface Bar {
   tip: string;
   tick: string;
   year: string;
+  /** จอแคบใส่ชื่อเดือนครบ 12 ช่องไม่พอ จึงแสดงเดือนเว้นเดือน โดยให้เดือนล่าสุดแสดงเสมอ */
+  showTick: boolean;
   current: boolean;
 }
 
@@ -38,7 +40,7 @@ interface Bar {
               <span class="bar income" [style.height.%]="bar.incomeH"></span>
               <span class="bar expense" [style.height.%]="bar.expenseH"></span>
             </span>
-            <span class="tick">
+            <span class="tick" [class.skip]="!bar.showTick">
               {{ bar.tick }}
               @if (bar.year) {
                 <small>{{ bar.year }}</small>
@@ -55,10 +57,10 @@ interface Bar {
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      height: 150px;
-      font-size: 10px;
+      height: 160px;
+      font-size: var(--fs-xs);
       color: var(--text-faint);
-      padding-bottom: 20px;
+      padding-bottom: 30px;
     }
     .bars {
       flex: 1;
@@ -84,7 +86,7 @@ interface Bar {
       border-radius: 8px;
     }
     .col.current .tick { color: var(--brand); font-weight: 700; }
-    .col.current .stack { background: var(--surface-2); }
+    .col.current .stack { background-color: var(--brand-soft); }
     .stack {
       display: flex;
       align-items: flex-end;
@@ -92,8 +94,13 @@ interface Bar {
       gap: 2px;
       height: 130px;
       width: 100%;
-      border-radius: 7px 7px 0 0;
-      padding: 0 3px;
+      border-radius: 8px;
+      padding: 0 2px;
+      background: repeating-linear-gradient(
+        to top,
+        transparent 0 32px,
+        color-mix(in srgb, var(--border) 60%, transparent) 32px 33px
+      );
     }
     .bar {
       display: block;
@@ -110,11 +117,13 @@ interface Bar {
       flex-direction: column;
       align-items: center;
       line-height: 1.1;
-      font-size: 9.5px;
+      font-size: var(--fs-xs);
       color: var(--text-faint);
       white-space: nowrap;
     }
-    .tick small { font-size: 8px; opacity: 0.75; }
+    .tick small { font-size: var(--fs-xs); opacity: 0.8; }
+    /* ซ่อนแบบยังกินที่ ให้แท่งกราฟยังเรียงตรงกัน */
+    .tick.skip { visibility: hidden; }
   `,
 })
 export class TrendChart {
@@ -140,8 +149,13 @@ export class TrendChart {
       expenseH: (p.expense / this.max()) * 100,
       tip: `${p.label} · รับ ${formatMoney(p.income, 0)} / จ่าย ${formatMoney(p.expense, 0)}`,
       tick: monthTick(p.month).m,
+      showTick: (this.points().length - 1 - index) % 2 === 0,
       // แสดงปีเฉพาะช่องแรกและทุกต้นปี เพื่อไม่ให้แกนแน่นเกินไป
-      year: index === 0 || p.month.endsWith('-01') ? monthTick(p.month).y : '',
+      year:
+        (index <= 1 || p.month.endsWith('-01') || p.month.endsWith('-02')) &&
+        (this.points().length - 1 - index) % 2 === 0
+          ? monthTick(p.month).y
+          : '',
       current: p.month === this.activeMonth(),
     })),
   );

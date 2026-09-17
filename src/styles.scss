@@ -1,55 +1,100 @@
-/* ---------- ตัวแปรธีม ---------- */
+/* ==========================================================================
+   ระบบดีไซน์กลางของแอป — สี ขนาดตัวอักษร ระยะห่าง และส่วนประกอบที่ใช้ซ้ำ
+   หน้าต่างๆ ควรใช้คลาสจากไฟล์นี้ แทนการเขียนสไตล์ปุ่ม/สวิตช์ซ้ำเอง
+   ========================================================================== */
+
 :root {
   color-scheme: light dark;
 
-  --bg: #f4f6fb;
-  --bg-soft: #eaeef7;
+  /* ---------- สี ---------- */
+  --bg: #f3f5fa;
   --surface: #ffffff;
-  --surface-2: #f7f8fc;
-  --border: #e3e7f0;
-  --text: #131a2b;
-  --text-dim: #5c6780;
-  --text-faint: #8b95ab;
+  --surface-2: #f4f6fb;
+  --surface-3: #e9edf5;
+  --border: #e4e8f0;
+  --text: #121826;
+  --text-dim: #4f5a70;
+  --text-faint: #7a849b;
 
   --brand: #4f46e5;
-  --brand-soft: #eef0ff;
-  --income: #10b981;
-  --income-soft: #e6f8f1;
-  --expense: #f43f5e;
-  --expense-soft: #ffecef;
+  --brand-2: #22b8cf;
+  --brand-soft: #eceefe;
+  --on-brand: #ffffff;
+  --seg-track: #e9edf5;
+  --seg-on: #ffffff;
+  --income: #0f9f6e;
+  --income-soft: #e3f6ee;
+  --expense: #e11d48;
+  --expense-soft: #fde8ed;
+  --warn: #d97706;
 
-  --radius: 18px;
-  --radius-sm: 12px;
-  --shadow: 0 1px 2px rgba(16, 24, 40, 0.05), 0 12px 28px -18px rgba(16, 24, 40, 0.35);
-  --shadow-lg: 0 20px 48px -24px rgba(16, 24, 40, 0.45);
+  /* ---------- ตัวอักษร (ไม่มีขนาดเล็กกว่า 12px เพื่อให้อ่านภาษาไทยได้สบาย) ---------- */
+  --fs-xs: 12px;
+  --fs-sm: 13px;
+  --fs-md: 14px;
+  --fs-base: 15px;
+  --fs-lg: 17px;
+  --fs-xl: 20px;
+  --fs-2xl: 26px;
+  --fs-3xl: 34px;
 
-  --nav-h: 68px;
-  --max-w: 960px;
+  /* ---------- ระยะห่าง (ตาราง 4px) ---------- */
+  --sp-1: 4px;
+  --sp-2: 8px;
+  --sp-3: 12px;
+  --sp-4: 16px;
+  --sp-5: 20px;
+  --sp-6: 24px;
+
+  /* ---------- มุมโค้งและเงา ---------- */
+  --radius: 20px;
+  --radius-md: 14px;
+  --radius-sm: 10px;
+  --shadow: 0 1px 2px rgba(16, 24, 40, 0.04), 0 8px 24px -16px rgba(16, 24, 40, 0.18);
+  --shadow-lg: 0 18px 44px -18px rgba(16, 24, 40, 0.35);
+
+  --nav-h: 64px;
+  --header-h: 56px;
+  --max-w: 720px;
+}
+
+@mixin dark-tokens {
+  --bg: #0b0f1c;
+  --surface: #141a2e;
+  --surface-2: #1b2240;
+  --surface-3: #232c4f;
+  --border: #252e4d;
+  --text: #eef1f8;
+  --text-dim: #aeb7cf;
+  --text-faint: #8b95b1;
+
+  --brand: #818cf8;
+  --brand-2: #22d3ee;
+  --brand-soft: #232a55;
+  --on-brand: #0b0f1c;
+  --seg-track: #0f1426;
+  --seg-on: #2a3360;
+  --income: #34d399;
+  --income-soft: #10291f;
+  --expense: #fb7185;
+  --expense-soft: #2c1422;
+  --warn: #fbbf24;
+
+  --shadow: 0 1px 2px rgba(0, 0, 0, 0.35), 0 10px 26px -18px rgba(0, 0, 0, 0.8);
+  --shadow-lg: 0 20px 48px -22px rgba(0, 0, 0, 0.9);
 }
 
 @media (prefers-color-scheme: dark) {
-  :root {
-    --bg: #0c1020;
-    --bg-soft: #121830;
-    --surface: #161c33;
-    --surface-2: #1d2543;
-    --border: #26304f;
-    --text: #eef1f9;
-    --text-dim: #a3adc8;
-    --text-faint: #7c88a6;
-
-    --brand: #818cf8;
-    --brand-soft: #232a55;
-    --income: #34d399;
-    --income-soft: #10291f;
-    --expense: #fb7185;
-    --expense-soft: #2c1420;
-
-    --shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 14px 30px -20px rgba(0, 0, 0, 0.8);
-    --shadow-lg: 0 24px 50px -28px rgba(0, 0, 0, 0.9);
+  :root:not([data-theme='light']) {
+    @include dark-tokens;
   }
 }
 
+:root[data-theme='dark'] {
+  @include dark-tokens;
+}
+
+/* ---------- พื้นฐาน ---------- */
 * {
   box-sizing: border-box;
 }
@@ -65,21 +110,36 @@ body {
   color: var(--text);
   font-family: 'Noto Sans Thai', 'IBM Plex Sans Thai', -apple-system, BlinkMacSystemFont,
     'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
-  font-size: 15px;
-  line-height: 1.55;
+  font-size: var(--fs-base);
+  line-height: 1.5;
   -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
   overscroll-behavior-y: none;
 }
 
-h1, h2, h3, h4 {
+h1,
+h2,
+h3,
+h4 {
   margin: 0;
   font-weight: 700;
   letter-spacing: -0.01em;
 }
 
-button, input, select, textarea {
+p {
+  margin: 0;
+}
+
+button,
+input,
+select,
+textarea {
   font: inherit;
   color: inherit;
+}
+
+button {
+  -webkit-tap-highlight-color: transparent;
 }
 
 a {
@@ -87,24 +147,12 @@ a {
   text-decoration: none;
 }
 
-/* ---------- องค์ประกอบร่วม ---------- */
-.card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow);
+:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 2px;
 }
 
-.section-title {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  margin: 0 0 10px;
-  font-size: 15px;
-  font-weight: 700;
-}
-
+/* ---------- ตัวช่วยข้อความ ---------- */
 .muted {
   color: var(--text-dim);
 }
@@ -113,28 +161,180 @@ a {
   color: var(--text-faint);
 }
 
-.empty {
-  padding: 34px 20px;
-  text-align: center;
-  color: var(--text-dim);
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
 
-  .empty-icon {
-    font-size: 34px;
-    line-height: 1;
-    margin-bottom: 10px;
+.amount-pos {
+  color: var(--income);
+}
+
+.amount-neg {
+  color: var(--expense);
+}
+
+.ellipsis {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* ---------- การ์ดและหมวด ---------- */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+.card-pad {
+  padding: var(--sp-4);
+}
+
+.section {
+  margin-bottom: var(--sp-6);
+}
+
+.section-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-3);
+  min-height: 36px;
+  margin: 0 var(--sp-1) var(--sp-2);
+  font-size: var(--fs-lg);
+  font-weight: 700;
+
+  .hint {
+    font-size: var(--fs-sm);
+    font-weight: 500;
+    color: var(--text-faint);
   }
 }
 
+.link {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  font-size: var(--fs-md);
+  font-weight: 600;
+  color: var(--brand);
+}
+
+/* รายการในการ์ดเดียว คั่นด้วยเส้น */
+.list-card {
+  overflow: hidden;
+
+  > .list-row + .list-row {
+    border-top: 1px solid var(--border);
+  }
+}
+
+.list-row {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  min-height: 60px;
+  padding: var(--sp-3) var(--sp-4);
+  border: none;
+  background: transparent;
+  text-align: left;
+  color: inherit;
+
+  &:is(button, a, label) {
+    cursor: pointer;
+  }
+
+  &:is(button, a, label):active {
+    background: var(--surface-2);
+  }
+}
+
+.list-text {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  line-height: 1.35;
+
+  b {
+    font-size: var(--fs-base);
+    font-weight: 600;
+  }
+
+  small {
+    font-size: var(--fs-sm);
+    color: var(--text-faint);
+  }
+}
+
+/* กล่องไอคอนหน้ารายการ */
+.tile {
+  flex: none;
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  border-radius: 12px;
+  background: var(--surface-2);
+  color: var(--text-dim);
+  font-size: 19px;
+  line-height: 1;
+}
+
+/* ตัวเลขสถิติ: ป้ายเล็ก + ค่าตัวใหญ่ */
+.stat {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  line-height: 1.25;
+
+  .stat-label {
+    font-size: var(--fs-xs);
+    color: var(--text-faint);
+  }
+
+  .stat-value {
+    font-size: var(--fs-lg);
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .stat-sub {
+    font-size: var(--fs-xs);
+    color: var(--text-faint);
+  }
+}
+
+.stat-row {
+  display: grid;
+  grid-template-columns: repeat(var(--cols, 3), minmax(0, 1fr));
+  gap: var(--sp-3);
+}
+
+/* ---------- ปุ่ม ---------- */
 .btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  padding: 10px 16px;
+  gap: var(--sp-2);
+  min-height: 44px;
+  padding: 0 var(--sp-4);
   border: 1px solid var(--border);
   border-radius: 999px;
   background: var(--surface);
-  font-size: 14px;
+  font-size: var(--fs-md);
   font-weight: 600;
   cursor: pointer;
   transition: transform 0.12s ease, background 0.15s ease, border-color 0.15s ease;
@@ -144,20 +344,21 @@ a {
   }
 
   &:disabled {
-    opacity: 0.5;
+    opacity: 0.45;
     cursor: not-allowed;
+    transform: none;
   }
 }
 
 .btn-primary {
   background: var(--brand);
   border-color: transparent;
-  color: #fff;
+  color: var(--on-brand);
 }
 
 .btn-danger {
   color: var(--expense);
-  border-color: color-mix(in srgb, var(--expense) 35%, transparent);
+  border-color: color-mix(in srgb, var(--expense) 30%, transparent);
   background: var(--expense-soft);
 }
 
@@ -167,14 +368,107 @@ a {
   color: var(--text-dim);
 }
 
+.btn-block {
+  width: 100%;
+}
+
+.icon-btn {
+  flex: none;
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  border: none;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--text-dim);
+  cursor: pointer;
+  transition: background 0.15s ease;
+
+  &:active {
+    background: var(--surface-2);
+  }
+
+  &:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+  }
+
+  &.soft {
+    background: var(--surface-2);
+  }
+
+  &.danger {
+    color: var(--expense);
+  }
+}
+
+/* ---------- สวิตช์แบ่งช่อง (ใช้แทนทุกที่ที่เคยเขียนซ้ำ) ---------- */
+.segmented {
+  display: inline-grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
+  gap: 2px;
+  padding: 3px;
+  border-radius: 999px;
+  background: var(--seg-track);
+
+  button {
+    min-height: 34px;
+    padding: 0 var(--sp-4);
+    border: none;
+    border-radius: 999px;
+    background: transparent;
+    font-size: var(--fs-md);
+    font-weight: 600;
+    color: var(--text-dim);
+    white-space: nowrap;
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease;
+  }
+
+  button.on {
+    background: var(--seg-on);
+    color: var(--text);
+    box-shadow: 0 1px 3px rgba(16, 24, 40, 0.12);
+  }
+
+  button.on.expense {
+    background: var(--expense);
+    color: #fff;
+  }
+
+  button.on.income {
+    background: var(--income);
+    color: #fff;
+  }
+
+  &.block {
+    display: grid;
+    width: 100%;
+  }
+
+  &.lg button {
+    min-height: 42px;
+    font-size: var(--fs-base);
+  }
+
+  &.sm button {
+    min-height: 30px;
+    padding: 0 var(--sp-3);
+    font-size: var(--fs-sm);
+  }
+}
+
+/* ---------- ช่องกรอก ---------- */
 .field {
   display: block;
-  margin-bottom: 16px;
+  margin-bottom: var(--sp-4);
 
   > .label {
     display: block;
-    margin-bottom: 7px;
-    font-size: 13px;
+    margin-bottom: 6px;
+    font-size: var(--fs-sm);
     font-weight: 600;
     color: var(--text-dim);
   }
@@ -184,10 +478,12 @@ a {
 .select,
 .textarea {
   width: 100%;
-  padding: 12px 14px;
+  min-height: 44px;
+  padding: 10px 14px;
   border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-md);
   background: var(--surface-2);
+  font-size: var(--fs-base);
   outline: none;
   transition: border-color 0.15s ease, box-shadow 0.15s ease;
 
@@ -199,21 +495,218 @@ a {
 
 .textarea {
   resize: vertical;
-  min-height: 76px;
+  min-height: 72px;
 }
 
-.amount-pos { color: var(--income); }
-.amount-neg { color: var(--expense); }
+.search-box {
+  position: relative;
 
-.tabular {
-  font-variant-numeric: tabular-nums;
+  app-icon {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-faint);
+    pointer-events: none;
+  }
+
+  .input {
+    padding-left: 40px;
+  }
 }
 
-.sr-only {
+input[type='checkbox'] {
+  accent-color: var(--brand);
+  width: 18px;
+  height: 18px;
+  flex: none;
+}
+
+/* ---------- ตัวเลือกช่วงเวลา (วัน / เดือน / ปี) ---------- */
+.picker-bar {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--sp-1);
+  padding: 4px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  box-shadow: var(--shadow);
+}
+
+.picker-label {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  min-height: 44px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0 var(--sp-2);
+  border: none;
+  border-radius: 999px;
+  background: transparent;
+  line-height: 1.2;
+  cursor: pointer;
+
+  .picker-title {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    max-width: 100%;
+    font-size: var(--fs-lg);
+    font-weight: 700;
+    white-space: nowrap;
+
+    app-icon {
+      color: var(--text-faint);
+      transition: transform 0.18s ease;
+    }
+
+    &.open app-icon {
+      transform: rotate(180deg);
+    }
+  }
+
+  .picker-caption {
+    font-size: var(--fs-xs);
+    color: var(--text-faint);
+  }
+}
+
+.picker-panel {
   position: absolute;
-  width: 1px;
-  height: 1px;
+  top: calc(100% + 8px);
+  left: 0;
+  right: 0;
+  z-index: 40;
+  padding: var(--sp-3);
+  border-radius: var(--radius);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-lg);
+}
+
+.picker-panel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--sp-2);
+
+  b {
+    font-size: var(--fs-lg);
+  }
+}
+
+.picker-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+
+  button {
+    min-height: 44px;
+    border: 1px solid transparent;
+    border-radius: var(--radius-md);
+    background: var(--surface-2);
+    font-size: var(--fs-md);
+    font-weight: 600;
+    color: var(--text-dim);
+    cursor: pointer;
+  }
+
+  button.now {
+    border-color: color-mix(in srgb, var(--brand) 50%, transparent);
+    color: var(--brand);
+  }
+
+  button.on {
+    background: var(--brand);
+    border-color: transparent;
+    color: var(--on-brand);
+  }
+}
+
+.picker-now {
+  width: 100%;
+  min-height: 40px;
+  margin-top: var(--sp-3);
+  border: none;
+  border-radius: 999px;
+  background: var(--brand-soft);
+  font-size: var(--fs-md);
+  font-weight: 600;
+  color: var(--brand);
+  cursor: pointer;
+}
+
+/* ---------- สถานะว่างและข้อความลอย ---------- */
+.empty {
+  padding: 32px 20px;
+  text-align: center;
+  color: var(--text-dim);
+  font-size: var(--fs-md);
+
+  .empty-icon {
+    font-size: 32px;
+    line-height: 1;
+    margin-bottom: var(--sp-2);
+  }
+}
+
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: calc(var(--nav-h) + env(safe-area-inset-bottom) + 24px);
+  transform: translateX(-50%);
+  z-index: 60;
+  max-width: calc(100vw - 32px);
+  padding: 10px 18px;
+  border-radius: 999px;
+  background: var(--text);
+  color: var(--bg);
+  font-size: var(--fs-md);
+  font-weight: 600;
+  box-shadow: var(--shadow-lg);
+  animation: toast-in 0.2s ease;
+}
+
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 8px);
+  }
+}
+
+.meter {
+  display: block;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--surface-3);
   overflow: hidden;
-  clip: rect(0 0 0 0);
-  white-space: nowrap;
+
+  > span {
+    display: block;
+    height: 100%;
+    max-width: 100%;
+    border-radius: 999px;
+    transition: width 0.3s ease;
+  }
+}
+
+.legend-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex: none;
+
+  &.income {
+    background: var(--income);
+  }
+
+  &.expense {
+    background: var(--expense);
+  }
 }

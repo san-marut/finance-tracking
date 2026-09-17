@@ -1,6 +1,15 @@
 import { Component, inject, signal } from '@angular/core';
-import { NavigationEnd, Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { Location } from '@angular/common';
+import {
+  ActivatedRoute,
+  NavigationEnd,
+  Router,
+  RouterLink,
+  RouterLinkActive,
+  RouterOutlet,
+} from '@angular/router';
 import { SwUpdate } from '@angular/service-worker';
+import { Icon } from './shared/icon';
 
 interface InstallPromptEvent extends Event {
   prompt(): Promise<void>;
@@ -9,13 +18,15 @@ interface InstallPromptEvent extends Event {
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, RouterLink, RouterLinkActive],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, Icon],
   templateUrl: './app.html',
   styleUrl: './app.scss',
 })
 export class App {
   private readonly swUpdate = inject(SwUpdate);
   private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
+  private readonly location = inject(Location);
 
   /**
    * แสดงปุ่มลอยเฉพาะหน้าที่ "เพิ่มรายการ" เป็นสิ่งที่ผู้ใช้น่าจะทำต่อ
@@ -23,23 +34,30 @@ export class App {
    */
   private static readonly FAB_ROUTES = ['/dashboard', '/transactions'];
   protected readonly showFab = signal(true);
+  protected readonly heading = signal('');
+  protected readonly showBack = signal(false);
   protected readonly updateReady = signal(false);
   protected readonly installEvent = signal<InstallPromptEvent | null>(null);
 
   protected readonly navItems = [
-    { path: '/dashboard', label: 'แดชบอร์ด', icon: '📊' },
-    { path: '/transactions', label: 'รายการ', icon: '🧾' },
-    { path: '/report', label: 'รายปี', icon: '📅' },
-    { path: '/categories', label: 'แท็ก', icon: '🏷️' },
-    { path: '/settings', label: 'ตั้งค่า', icon: '⚙️' },
+    { path: '/dashboard', label: 'ภาพรวม', icon: 'dashboard' },
+    { path: '/transactions', label: 'รายการ', icon: 'list' },
+    { path: '/report', label: 'รายปี', icon: 'calendar' },
+    { path: '/categories', label: 'แท็ก', icon: 'tag' },
+    { path: '/settings', label: 'ตั้งค่า', icon: 'settings' },
   ];
 
   constructor() {
     this.router.events.subscribe((event) => {
-      if (event instanceof NavigationEnd) {
-        const path = event.urlAfterRedirects.split('?')[0];
-        this.showFab.set(App.FAB_ROUTES.includes(path));
-      }
+      if (!(event instanceof NavigationEnd)) return;
+      const path = event.urlAfterRedirects.split('?')[0];
+      this.showFab.set(App.FAB_ROUTES.includes(path));
+
+      let child = this.route.firstChild;
+      while (child?.firstChild) child = child.firstChild;
+      const data = child?.snapshot.data ?? {};
+      this.heading.set((data['heading'] as string) ?? '');
+      this.showBack.set(!!data['back']);
     });
 
     if (this.swUpdate.isEnabled) {
@@ -54,6 +72,11 @@ export class App {
     });
 
     window.addEventListener('appinstalled', () => this.installEvent.set(null));
+  }
+
+  protected goBack(): void {
+    if (history.length > 1) this.location.back();
+    else this.router.navigate(['/dashboard']);
   }
 
   protected reloadApp(): void {

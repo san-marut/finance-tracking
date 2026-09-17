@@ -1,56 +1,64 @@
-<div class="page-head">
-  <h1>ตั้งค่า</h1>
-  <p class="muted">ข้อมูลทั้งหมดเก็บไว้ในเครื่องของคุณเท่านั้น (localStorage) ไม่ถูกส่งออกไปที่ไหน</p>
-</div>
+<p class="intro">ข้อมูลทั้งหมดเก็บในเครื่องนี้เท่านั้น ไม่ถูกส่งออกไปที่ไหน</p>
 
-<section class="card stats">
-  <div><small>รายการทั้งหมด</small><b class="tabular">{{ stats().count }}</b></div>
-  <div><small>แท็กระดับ 1</small><b class="tabular">{{ stats().categories }}</b></div>
-  <div><small>แท็กระดับ 2</small><b class="tabular">{{ stats().subCategories }}</b></div>
-  <div>
-    <small>ยอดสุทธิสะสม</small>
-    <b class="tabular" [class.amount-pos]="stats().balance >= 0" [class.amount-neg]="stats().balance < 0">
-      {{ stats().balance | money: 0 }}
-    </b>
+<section class="card card-pad overview">
+  <div class="stat-row">
+    <span class="stat">
+      <span class="stat-label">รายการทั้งหมด</span>
+      <span class="stat-value">{{ stats().count }}</span>
+    </span>
+    <span class="stat">
+      <span class="stat-label">แท็กหลัก</span>
+      <span class="stat-value">{{ stats().categories }}</span>
+    </span>
+    <span class="stat">
+      <span class="stat-label">แท็กย่อย</span>
+      <span class="stat-value">{{ stats().subCategories }}</span>
+    </span>
   </div>
-  <div class="wide"><small>รายการแรกสุด</small><b>{{ stats().firstDate }}</b></div>
-  <div class="wide"><small>รายการล่าสุด</small><b>{{ stats().lastDate }}</b></div>
+  <div class="stat-row second">
+    <span class="stat">
+      <span class="stat-label">สุทธิสะสม</span>
+      <span class="stat-value" [class.amount-pos]="stats().balance >= 0" [class.amount-neg]="stats().balance < 0">
+        {{ stats().balance | money: 0 }}
+      </span>
+    </span>
+    <span class="stat">
+      <span class="stat-label">รายการแรก</span>
+      <span class="stat-value small">{{ stats().firstDate }}</span>
+    </span>
+    <span class="stat">
+      <span class="stat-label">รายการล่าสุด</span>
+      <span class="stat-value small">{{ stats().lastDate }}</span>
+    </span>
+  </div>
 </section>
 
-<section class="block">
-  <h2 class="section-title">ค่าอาหารเฉลี่ยต่อวัน</h2>
-  <div class="card rows">
-    <button type="button" class="row" (click)="mealOpen.set(!mealOpen())">
-      <span class="row-icon">🍽️</span>
-      <span class="row-text">
+<!-- ค่าอาหาร -->
+<section class="section">
+  <div class="section-title"><span>ค่าอาหารเฉลี่ยต่อวัน</span></div>
+  <div class="card list-card">
+    <button type="button" class="list-row" [attr.aria-expanded]="mealOpen()" (click)="mealOpen.set(!mealOpen())">
+      <span class="tile meal-tile"><app-icon name="utensils" /></span>
+      <span class="list-text">
         <b>แท็กที่นับเป็นค่าอาหาร</b>
-        <small class="faint">{{ mealTagLabels() }}</small>
+        <small class="ellipsis">{{ mealTagLabels() }}</small>
       </span>
-      <span class="chev" [class.open]="mealOpen()">›</span>
+      <app-icon class="caret" [class.open]="mealOpen()" name="chevronDown" [size]="18" />
     </button>
 
     @if (mealOpen()) {
       <div class="meal-picker">
-        <p class="hint faint">
-          เลือกได้ทั้งแท็กระดับ 1 (นับทั้งแท็ก) และแท็กย่อยเฉพาะบางอัน
-          ยอดที่เลือกจะถูกนำไปหารด้วยจำนวนวันในการ์ดค่าอาหารบนแดชบอร์ด
+        <p class="hint">
+          ติ๊กแท็กหลักเพื่อนับทั้งแท็ก หรือเลือกเฉพาะแท็กย่อยก็ได้
+          ยอดรวมจะถูกหารด้วยจำนวนวันในการ์ดค่าอาหารหน้าภาพรวม
         </p>
 
         @for (cat of expenseCategories(); track cat.id) {
           <div class="pick-cat">
             <label class="pick-row">
-              <input
-                type="checkbox"
-                [checked]="store.isMealTag(cat.id)"
-                (change)="toggleMealTag(cat.id)"
-              />
-              <span class="pick-icon" [style.background]="cat.color + '22'" [style.color]="cat.color">
-                {{ cat.icon }}
-              </span>
-              <span class="pick-name">
-                {{ cat.name }}
-                <small class="faint">ทั้งแท็ก</small>
-              </span>
+              <input type="checkbox" [checked]="store.isMealTag(cat.id)" (change)="toggleMealTag(cat.id)" />
+              <span class="tile small" [style.background]="cat.color + '1f'">{{ cat.icon }}</span>
+              <span class="pick-name">{{ cat.name }} <small>ทั้งแท็ก</small></span>
             </label>
 
             @if (cat.children.length) {
@@ -71,61 +79,63 @@
           </div>
         }
 
-        <button type="button" class="btn reset-meal" (click)="resetMealTags()">
-          คืนค่าเป็นสามมื้อเริ่มต้น
+        <button type="button" class="btn btn-block reset-meal" (click)="resetMealTags()">
+          <app-icon name="reset" [size]="16" /> คืนค่าเป็นสามมื้อเริ่มต้น
         </button>
       </div>
     }
   </div>
 </section>
 
-<section class="block">
-  <h2 class="section-title">สำรอง / ย้ายข้อมูล</h2>
-  <div class="card rows">
-    <button type="button" class="row" (click)="exportJson()">
-      <span class="row-icon">💾</span>
-      <span class="row-text">
+<!-- สำรองข้อมูล -->
+<section class="section">
+  <div class="section-title"><span>สำรอง / ย้ายข้อมูล</span></div>
+  <div class="card list-card">
+    <button type="button" class="list-row" (click)="exportJson()">
+      <span class="tile"><app-icon name="download" /></span>
+      <span class="list-text">
         <b>ส่งออกไฟล์สำรอง (JSON)</b>
-        <small class="faint">เก็บไว้ย้ายเครื่องหรือกู้คืนภายหลัง</small>
+        <small>เก็บไว้ย้ายเครื่องหรือกู้คืนภายหลัง</small>
       </span>
-      <span class="chev">›</span>
+      <app-icon class="caret" name="chevronRight" [size]="18" />
     </button>
 
-    <button type="button" class="row" (click)="exportCsv()">
-      <span class="row-icon">📄</span>
-      <span class="row-text">
+    <button type="button" class="list-row" (click)="exportCsv()">
+      <span class="tile"><app-icon name="file" /></span>
+      <span class="list-text">
         <b>ส่งออกเป็น CSV</b>
-        <small class="faint">เปิดต่อใน Excel / Google Sheets</small>
+        <small>เปิดต่อใน Excel หรือ Google Sheets</small>
       </span>
-      <span class="chev">›</span>
+      <app-icon class="caret" name="chevronRight" [size]="18" />
     </button>
 
-    <label class="row">
-      <span class="row-icon">📥</span>
-      <span class="row-text">
+    <label class="list-row">
+      <span class="tile"><app-icon name="upload" /></span>
+      <span class="list-text">
         <b>นำเข้าไฟล์สำรอง</b>
-        <small class="faint">ข้อมูลเดิมในเครื่องจะถูกแทนที่ทั้งหมด</small>
+        <small>ข้อมูลเดิมในเครื่องจะถูกแทนที่ทั้งหมด</small>
       </span>
-      <span class="chev">›</span>
+      <app-icon class="caret" name="chevronRight" [size]="18" />
       <input class="sr-only" type="file" accept="application/json,.json" (change)="importFile($event)" />
     </label>
   </div>
 </section>
 
-<section class="block">
-  <h2 class="section-title">ล้างข้อมูล</h2>
-  <div class="card rows">
+<!-- ล้างข้อมูล -->
+<section class="section">
+  <div class="section-title"><span>ล้างข้อมูล</span></div>
+  <div class="card list-card">
     @if (!confirmClear()) {
-      <button type="button" class="row danger" (click)="confirmClear.set(true)">
-        <span class="row-icon">🧹</span>
-        <span class="row-text">
+      <button type="button" class="list-row danger" (click)="confirmClear.set(true)">
+        <span class="tile"><app-icon name="eraser" /></span>
+        <span class="list-text">
           <b>ลบรายการรับ-จ่ายทั้งหมด</b>
-          <small class="faint">เก็บแท็กที่ตั้งไว้เอาไว้</small>
+          <small>แท็กที่ตั้งไว้ยังอยู่</small>
         </span>
-        <span class="chev">›</span>
+        <app-icon class="caret" name="chevronRight" [size]="18" />
       </button>
     } @else {
-      <div class="confirm">
+      <div class="list-row confirm">
         <span>ลบรายการทั้งหมด {{ stats().count }} รายการ?</span>
         <div class="confirm-actions">
           <button type="button" class="btn" (click)="confirmClear.set(false)">ยกเลิก</button>
@@ -135,16 +145,16 @@
     }
 
     @if (!confirmReset()) {
-      <button type="button" class="row danger" (click)="confirmReset.set(true)">
-        <span class="row-icon">♻️</span>
-        <span class="row-text">
+      <button type="button" class="list-row danger" (click)="confirmReset.set(true)">
+        <span class="tile"><app-icon name="reset" /></span>
+        <span class="list-text">
           <b>คืนค่าเริ่มต้นทั้งหมด</b>
-          <small class="faint">ลบทั้งรายการและแท็กที่แก้ไขไว้</small>
+          <small>ลบทั้งรายการและแท็กที่แก้ไขไว้</small>
         </span>
-        <span class="chev">›</span>
+        <app-icon class="caret" name="chevronRight" [size]="18" />
       </button>
     } @else {
-      <div class="confirm">
+      <div class="list-row confirm">
         <span>ล้างทุกอย่างและกลับไปใช้แท็กเริ่มต้น?</span>
         <div class="confirm-actions">
           <button type="button" class="btn" (click)="confirmReset.set(false)">ยกเลิก</button>
@@ -155,10 +165,8 @@
   </div>
 </section>
 
-<p class="foot faint">
-  ติดตั้งเป็นแอปได้จากเมนูเบราว์เซอร์ → "เพิ่มไปยังหน้าจอโฮม" ใช้งานออฟไลน์ได้เต็มรูปแบบ
-</p>
+<p class="foot">ติดตั้งเป็นแอปได้จากเมนูเบราว์เซอร์ → "เพิ่มไปยังหน้าจอโฮม" แล้วใช้งานแบบออฟไลน์ได้</p>
 
 @if (toast()) {
-  <div class="toast">{{ toast() }}</div>
+  <div class="toast" role="status">{{ toast() }}</div>
 }

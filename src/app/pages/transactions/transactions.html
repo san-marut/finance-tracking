@@ -1,5 +1,5 @@
-<div class="head">
-  <div class="mode-switch" role="tablist" aria-label="ช่วงเวลาที่ดู">
+<section class="controls">
+  <div class="segmented block" role="tablist" aria-label="ช่วงเวลาที่ดู">
     <button
       type="button"
       role="tab"
@@ -25,23 +25,24 @@
   } @else {
     <app-day-picker [date]="store.selectedDate()" (dateChange)="setDate($event)" />
   }
-</div>
+</section>
 
-<div class="card filters">
-  <input
-    class="input search"
-    type="search"
-    placeholder="ค้นหาบันทึก / แท็ก / จำนวนเงิน"
-    [(ngModel)]="query"
-  />
+<section class="card filters">
+  <div class="search-box">
+    <app-icon name="search" [size]="18" />
+    <input
+      class="input"
+      type="search"
+      placeholder="ค้นหาบันทึก แท็ก หรือจำนวนเงิน"
+      [(ngModel)]="query"
+    />
+  </div>
 
-  <div class="chip-row">
-    <button type="button" class="fchip" [class.on]="kindFilter() === 'all'" (click)="setKind('all')">
-      ทั้งหมด
-    </button>
+  <div class="segmented block">
+    <button type="button" [class.on]="kindFilter() === 'all'" (click)="setKind('all')">ทั้งหมด</button>
     <button
       type="button"
-      class="fchip expense"
+      class="expense"
       [class.on]="kindFilter() === 'expense'"
       (click)="setKind('expense')"
     >
@@ -49,7 +50,7 @@
     </button>
     <button
       type="button"
-      class="fchip income"
+      class="income"
       [class.on]="kindFilter() === 'income'"
       (click)="setKind('income')"
     >
@@ -57,47 +58,50 @@
     </button>
   </div>
 
-  <select class="select" [(ngModel)]="categoryFilter">
-    <option value="">ทุกแท็กระดับ 1</option>
+  <select class="select" [(ngModel)]="categoryFilter" aria-label="กรองตามแท็กหลัก">
+    <option value="">ทุกแท็กหลัก</option>
     @for (c of categoryOptions(); track c.id) {
       <option [value]="c.id">{{ c.icon }} {{ c.name }}</option>
     }
   </select>
+</section>
 
-  @if (hasFilter()) {
-    <button type="button" class="btn btn-ghost clear-btn" (click)="clearFilters()">
-      ล้างตัวกรอง ✕
-    </button>
-  }
-</div>
+<section class="card totals">
+  <div class="stat-row">
+    <span class="stat">
+      <span class="stat-label">รายรับ</span>
+      <span class="stat-value amount-pos">{{ total().income | money: 0 }}</span>
+    </span>
+    <span class="stat">
+      <span class="stat-label">รายจ่าย</span>
+      <span class="stat-value amount-neg">{{ total().expense | money: 0 }}</span>
+    </span>
+    <span class="stat">
+      <span class="stat-label">สุทธิ</span>
+      <span
+        class="stat-value"
+        [class.amount-pos]="total().balance >= 0"
+        [class.amount-neg]="total().balance < 0"
+      >
+        {{ total().balance | money: 0 }}
+      </span>
+    </span>
+  </div>
+</section>
 
-<div class="totals card">
-  <div>
-    <small>รายรับ</small>
-    <b class="tabular amount-pos">{{ total().income | money: 0 }}</b>
+<section class="section">
+  <div class="section-title">
+    <span>{{ periodLabel() }} <span class="hint">{{ total().count }} รายการ</span></span>
+    @if (hasFilter()) {
+      <button type="button" class="link clear-btn" (click)="clearFilters()">
+        <app-icon name="close" [size]="16" /> ล้างตัวกรอง
+      </button>
+    }
   </div>
-  <div>
-    <small>รายจ่าย</small>
-    <b class="tabular amount-neg">{{ total().expense | money: 0 }}</b>
-  </div>
-  <div>
-    <small>สุทธิ</small>
-    <b
-      class="tabular"
-      [class.amount-pos]="total().balance >= 0"
-      [class.amount-neg]="total().balance < 0"
-    >
-      {{ total().balance | money: 0 }}
-    </b>
-  </div>
-  <div>
-    <small>จำนวน</small>
-    <b class="tabular">{{ total().count }}</b>
-  </div>
-</div>
 
-<app-tx-list
-  [transactions]="filtered()"
-  [emptyText]="emptyText()"
-  [showDayHeader]="mode() === 'month'"
-/>
+  <app-tx-list
+    [transactions]="filtered()"
+    [emptyText]="emptyText()"
+    [showDayHeader]="mode() === 'month'"
+  />
+</section>

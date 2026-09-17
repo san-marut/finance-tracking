@@ -5,12 +5,13 @@ import { Router } from '@angular/router';
 import { FinanceStore } from '../../core/finance-store';
 import { TxKind } from '../../models/finance.models';
 import { dateLabelLong, evalAmount, shiftDay, todayIso } from '../../core/utils';
+import { Icon } from '../../shared/icon';
 import { MoneyPipe } from '../../shared/money.pipe';
 
 @Component({
   selector: 'app-entry',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [FormsModule, MoneyPipe],
+  imports: [FormsModule, Icon, MoneyPipe],
   templateUrl: './entry.html',
   styleUrl: './entry.scss',
 })
@@ -135,11 +136,6 @@ export class Entry {
     if (!editId) return;
     this.store.deleteTransaction(editId);
     this.router.navigate(['/transactions']);
-  }
-
-  protected cancel(): void {
-    if (this.isEdit()) this.location.back();
-    else this.router.navigate(['/dashboard']);
   }
 
   private flash(message: string): void {

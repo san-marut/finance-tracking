@@ -1,12 +1,13 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { FinanceStore } from '../../core/finance-store';
-import { todayIso } from '../../core/utils';
+import { dateLabel, todayIso } from '../../core/utils';
+import { Icon } from '../../shared/icon';
 import { MoneyPipe } from '../../shared/money.pipe';
 
 @Component({
   selector: 'app-settings',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [MoneyPipe],
+  imports: [Icon, MoneyPipe],
   templateUrl: './settings.html',
   styleUrl: './settings.scss',
 })
@@ -25,8 +26,8 @@ export class Settings {
       count: txs.length,
       categories: this.store.categories().length,
       subCategories: this.store.categories().reduce((n, c) => n + c.children.length, 0),
-      firstDate: dates.at(0) ?? '-',
-      lastDate: dates.at(-1) ?? '-',
+      firstDate: dates.length ? dateLabel(dates[0]) : '—',
+      lastDate: dates.length ? dateLabel(dates[dates.length - 1]) : '—',
       balance: this.store.allTimeSummary().balance,
     };
   });

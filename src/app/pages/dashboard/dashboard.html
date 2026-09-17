@@ -1,7 +1,5 @@
-<section class="head">
-  <app-month-picker [month]="store.selectedMonth()" (monthChange)="setMonth($event)" />
-
-  <div class="scope-switch" role="tablist" aria-label="ช่วงข้อมูล">
+<section class="controls">
+  <div class="segmented block" role="tablist" aria-label="ช่วงข้อมูล">
     <button
       type="button"
       role="tab"
@@ -21,108 +19,107 @@
       ทั้งหมด
     </button>
   </div>
-</section>
 
-<section class="card balance">
-  <div class="balance-top">
-    <span class="cap">คงเหลือ · {{ scopeLabel() }}</span>
-    <strong
-      class="big tabular"
-      [class.amount-pos]="summary().balance >= 0"
-      [class.amount-neg]="summary().balance < 0"
-    >
-      {{ summary().balance | money }} ฿
-    </strong>
-  </div>
-
-  <div class="balance-split">
-    <div class="split-item">
-      <span class="dot income"></span>
-      <div>
-        <small>รายรับ</small>
-        <b class="tabular amount-pos">{{ summary().income | money: 0 }}</b>
-      </div>
-    </div>
-    <div class="split-item">
-      <span class="dot expense"></span>
-      <div>
-        <small>รายจ่าย</small>
-        <b class="tabular amount-neg">{{ summary().expense | money: 0 }}</b>
-      </div>
-    </div>
-    <div class="split-item">
-      <span class="dot neutral"></span>
-      <div>
-        <small>เฉลี่ย/วันที่ใช้จ่าย</small>
-        <b class="tabular">{{ avgPerDay() | money: 0 }}</b>
-      </div>
-    </div>
-  </div>
-
-  @if (expenseDelta() !== null) {
-    <div class="delta" [class.up]="expenseDelta()! > 0" [class.down]="expenseDelta()! <= 0">
-      @if (expenseDelta()! > 0) {
-        ▲ รายจ่ายเพิ่มขึ้น {{ expenseDelta()! | money: 1 }}% จากเดือนก่อน
-      } @else {
-        ▼ รายจ่ายลดลง {{ -expenseDelta()! | money: 1 }}% จากเดือนก่อน
-      }
-    </div>
+  @if (scope() === 'month') {
+    <app-month-picker [month]="store.selectedMonth()" (monthChange)="setMonth($event)" />
   }
+</section>
 
-  <div class="bar-track" [attr.aria-label]="'สัดส่วนรายจ่ายเทียบรายรับ'">
-    @if (summary().income > 0) {
-      <span
-        class="bar-fill"
-        [style.width.%]="summary().income ? (summary().expense / summary().income) * 100 : 0"
-      ></span>
+<!-- ยอดคงเหลือ -->
+<section class="card hero">
+  <div class="hero-top">
+    <span class="hero-label">{{ scope() === 'month' ? 'คงเหลือเดือนนี้' : 'คงเหลือทั้งหมด' }}</span>
+    @if (expenseDelta() !== null) {
+      <!-- รายจ่ายลดลงคือดี จึงเป็นสีเขียว -->
+      <span class="delta" [class.good]="expenseDelta()! <= 0" [class.bad]="expenseDelta()! > 0">
+        รายจ่าย {{ expenseDelta()! > 0 ? '▲' : '▼' }} {{ abs(expenseDelta()!) | money: 0 }}% จากเดือนก่อน
+      </span>
     }
   </div>
-  <div class="bar-cap faint">
-    @if (summary().income > 0) {
-      ใช้ไปแล้ว {{ (summary().expense / summary().income) * 100 | money: 0 }}% ของรายรับ
-    } @else {
-      ยังไม่มีรายรับในช่วงนี้
-    }
+
+  <strong
+    class="hero-amount tabular"
+    [class.amount-pos]="summary().balance >= 0"
+    [class.amount-neg]="summary().balance < 0"
+  >
+    {{ summary().balance | money }} <small>฿</small>
+  </strong>
+
+  <div class="flow">
+    <div class="flow-item income">
+      <span class="flow-icon"><app-icon name="arrowDown" [size]="18" /></span>
+      <span class="stat">
+        <span class="stat-label">รายรับ</span>
+        <span class="stat-value">{{ summary().income | money: 0 }}</span>
+      </span>
+    </div>
+    <div class="flow-item expense">
+      <span class="flow-icon"><app-icon name="arrowUp" [size]="18" /></span>
+      <span class="stat">
+        <span class="stat-label">รายจ่าย</span>
+        <span class="stat-value">{{ summary().expense | money: 0 }}</span>
+      </span>
+    </div>
+  </div>
+
+  <div class="usage">
+    <div class="usage-line">
+      <span>
+        @if (spentPct() !== null) {
+          ใช้ไป <b [class]="'tone-' + spentTone()">{{ spentPct()! | money: 0 }}%</b> ของรายรับ
+        } @else {
+          ยังไม่มีรายรับในช่วงนี้
+        }
+      </span>
+      <span class="faint">เฉลี่ย {{ avgPerDay() | money: 0 }} ฿/วันที่จ่าย</span>
+    </div>
+    <span class="meter">
+      <span [class]="'fill-' + spentTone()" [style.width.%]="spentPct() ?? 0"></span>
+    </span>
   </div>
 </section>
 
+<!-- ค่าอาหารเฉลี่ยต่อวัน -->
 <section class="card meal">
   <div class="meal-top">
-    <span class="meal-icon">🍽️</span>
-    <div class="meal-head">
-      <small>ค่าอาหารเฉลี่ยต่อวัน</small>
-      <b class="tabular">{{ mealPerDay() | money }} ฿</b>
-    </div>
+    <span class="tile meal-tile"><app-icon name="utensils" [size]="20" /></span>
+    <span class="stat">
+      <span class="stat-label">ค่าอาหารเฉลี่ยต่อวัน</span>
+      <span class="stat-value meal-value">{{ mealPerDay() | money }} ฿</span>
+    </span>
+    <a class="icon-btn" routerLink="/settings" aria-label="ตั้งค่าแท็กที่นับเป็นค่าอาหาร">
+      <app-icon name="settings" [size]="18" />
+    </a>
   </div>
 
   @if (mealSummary().count) {
-    <div class="meal-grid">
+    <div class="stat-row meal-items">
       @for (item of mealSummary().items; track item.id) {
-        <div>
-          <small>{{ item.label }}</small>
-          <b class="tabular">{{ item.total | money: 0 }}</b>
-          <span class="faint">{{ item.count }} รายการ</span>
-        </div>
+        <span class="stat">
+          <span class="stat-label ellipsis">{{ item.label }}</span>
+          <span class="stat-value">{{ item.total | money: 0 }}</span>
+          <span class="stat-sub">{{ item.count }} รายการ</span>
+        </span>
       }
     </div>
-    <p class="meal-foot faint">
-      รวม {{ mealSummary().total | money: 0 }} บาท · {{ mealSummary().count }} รายการ ·
-      เฉลี่ยจาก {{ mealDays() }} วัน
+    <p class="meal-foot">
+      รวม {{ mealSummary().total | money: 0 }} ฿ · หารด้วย {{ mealDays() }} วัน
     </p>
   } @else if (!store.mealTagIds().length) {
-    <p class="meal-foot faint">
+    <p class="meal-foot">
       ยังไม่ได้เลือกแท็กที่นับเป็นค่าอาหาร
-      <a class="link" routerLink="/settings">ไปตั้งค่า ›</a>
+      <a class="link" routerLink="/settings">ไปตั้งค่า</a>
     </p>
   } @else {
-    <p class="meal-foot faint">ยังไม่มีรายการในแท็กที่เลือกในช่วงนี้</p>
+    <p class="meal-foot">ยังไม่มีรายการในแท็กที่เลือกในช่วงนี้</p>
   }
 </section>
 
-<section class="block">
+<!-- แยกตามแท็ก -->
+<section class="section">
   <div class="section-title">
     <span>แยกตามแท็ก</span>
-    <div class="kind-switch">
+    <div class="segmented sm">
       <button type="button" [class.on]="kindView() === 'expense'" (click)="kindView.set('expense')">
         รายจ่าย
       </button>
@@ -132,7 +129,7 @@
     </div>
   </div>
 
-  <div class="card breakdown">
+  <div class="card card-pad">
     <app-category-breakdown
       [stats]="stats()"
       [caption]="kindView() === 'expense' ? 'รายจ่ายรวม' : 'รายรับรวม'"
@@ -141,14 +138,16 @@
   </div>
 </section>
 
-<section class="block">
+<!-- แนวโน้ม -->
+<section class="section">
   <div class="section-title">
     <span>แนวโน้ม 12 เดือน</span>
-    <span class="legend-inline faint">
-      <span class="chip income"></span>รับ <span class="chip expense"></span>จ่าย
+    <span class="hint legend">
+      <span class="legend-dot income"></span>รับ
+      <span class="legend-dot expense"></span>จ่าย
     </span>
   </div>
-  <div class="card pad">
+  <div class="card card-pad">
     <app-trend-chart
       [points]="store.monthlyTrend()"
       [activeMonth]="store.selectedMonth()"
@@ -157,13 +156,17 @@
   </div>
 </section>
 
-<section class="block">
+<!-- รายการวันนี้ -->
+<section class="section">
   <div class="section-title">
-    <span>รายการวันนี้ <small class="faint">{{ todayLabel() }}</small></span>
-    <a class="link" routerLink="/transactions">ดูทั้งหมด ›</a>
+    <span>รายการวันนี้ <span class="hint">{{ todayLabel() }}</span></span>
+    <a class="link" routerLink="/transactions">
+      ดูทั้งหมด <app-icon name="chevronRight" [size]="16" />
+    </a>
   </div>
   <app-tx-list
     [transactions]="todayList()"
+    [showDayHeader]="false"
     emptyText="วันนี้ยังไม่มีรายการ กดปุ่ม ＋ เพื่อเพิ่มรายการแรกของวัน"
   />
 </section>

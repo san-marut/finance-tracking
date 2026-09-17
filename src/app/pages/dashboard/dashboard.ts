@@ -4,6 +4,7 @@ import { FinanceStore } from '../../core/finance-store';
 import { TxKind } from '../../models/finance.models';
 import { currentMonth, dateLabel, daysBetween, monthLabel, todayIso } from '../../core/utils';
 import { CategoryBreakdown } from '../../shared/category-breakdown';
+import { Icon } from '../../shared/icon';
 import { MonthPicker } from '../../shared/month-picker';
 import { TrendChart } from '../../shared/trend-chart';
 import { TxList } from '../../shared/tx-list';
@@ -14,7 +15,7 @@ type Scope = 'month' | 'all';
 @Component({
   selector: 'app-dashboard',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RouterLink, CategoryBreakdown, MonthPicker, TrendChart, TxList, MoneyPipe],
+  imports: [RouterLink, CategoryBreakdown, Icon, MonthPicker, TrendChart, TxList, MoneyPipe],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.scss',
 })
@@ -55,6 +56,18 @@ export class Dashboard {
     this.scope() === 'month' ? monthLabel(this.store.selectedMonth()) : 'ทั้งหมดตั้งแต่เริ่มใช้งาน',
   );
 
+  /** ใช้ไปกี่ % ของรายรับ — null เมื่อไม่มีรายรับให้เทียบ */
+  protected readonly spentPct = computed(() => {
+    const { income, expense } = this.summary();
+    return income > 0 ? (expense / income) * 100 : null;
+  });
+
+  /** สีของแถบ: ต่ำกว่า 70% ปลอดภัย, 70–100% เริ่มตึง, เกิน 100% ใช้เกินรายรับ */
+  protected readonly spentTone = computed(() => {
+    const pct = this.spentPct() ?? 0;
+    return pct > 100 ? 'bad' : pct >= 70 ? 'warn' : 'good';
+  });
+
   protected readonly avgPerDay = computed(() => {
     const rows =
       this.scope() === 'month' ? this.store.monthTransactions() : this.store.transactions();
@@ -93,6 +106,11 @@ export class Dashboard {
     const days = this.mealDays();
     return days ? this.mealSummary().total / days : 0;
   });
+
+  /** ค่าสัมบูรณ์ ไว้แสดงคู่กับลูกศรขึ้น-ลง (pipe ใน template ครอบ ternary ทั้งก้อนไม่ได้) */
+  protected abs(value: number): number {
+    return Math.abs(value);
+  }
 
   protected setMonth(month: string): void {
     this.store.selectedMonth.set(month);

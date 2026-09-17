@@ -9,8 +9,10 @@ interface Row {
   tx: Transaction;
   icon: string;
   color: string;
-  categoryName: string;
-  subName: string;
+  /** ชื่อแท็กที่เจาะจงที่สุด (แท็กย่อยถ้ามี) — อ่านบรรทัดเดียวรู้เลยว่าจ่ายค่าอะไร */
+  title: string;
+  /** บรรทัดรอง: แท็กหลัก · บันทึกช่วยจำ */
+  detail: string;
 }
 
 interface DayGroup {
@@ -37,35 +39,25 @@ interface DayGroup {
                 <span class="amount-pos">+{{ group.income | money: 0 }}</span>
               }
               @if (group.expense > 0) {
-                <span class="amount-neg">-{{ group.expense | money: 0 }}</span>
+                <span class="amount-neg">−{{ group.expense | money: 0 }}</span>
               }
             </span>
           </div>
         }
 
-        <div class="card rows">
+        <div class="card list-card">
           @for (row of group.rows; track row.tx.id) {
-            <a class="row" [routerLink]="['/entry', row.tx.id]">
-              <span class="icon" [style.background]="row.color + '22'" [style.color]="row.color">
-                {{ row.icon }}
-              </span>
-              <span class="info">
-                <span class="title">
-                  {{ row.categoryName }}
-                  @if (row.subName) {
-                    <span class="chev">›</span><span class="sub">{{ row.subName }}</span>
-                  }
-                </span>
-                @if (row.tx.note) {
-                  <span class="note">{{ row.tx.note }}</span>
-                }
+            <a class="list-row" [routerLink]="['/entry', row.tx.id]">
+              <span class="tile" [style.background]="row.color + '1f'">{{ row.icon }}</span>
+              <span class="list-text">
+                <b class="ellipsis">{{ row.title }}</b>
+                <small class="ellipsis">{{ row.detail }}</small>
               </span>
               <span
                 class="amount tabular"
                 [class.amount-pos]="row.tx.kind === 'income'"
-                [class.amount-neg]="row.tx.kind === 'expense'"
               >
-                {{ row.tx.kind === 'income' ? '+' : '-' }}{{ row.tx.amount | money }}
+                {{ row.tx.kind === 'income' ? '+' : '−' }}{{ row.tx.amount | money }}
               </span>
             </a>
           }
@@ -79,48 +71,28 @@ interface DayGroup {
     }
   `,
   styles: `
-    .day { margin-bottom: 18px; }
+    :host { display: block; }
+
+    .day + .day { margin-top: var(--sp-5); }
+
     .day-head {
       display: flex;
       align-items: baseline;
       justify-content: space-between;
-      padding: 0 6px 7px;
-      font-size: 12.5px;
+      gap: var(--sp-3);
+      padding: 0 var(--sp-1) var(--sp-2);
+      font-size: var(--fs-sm);
     }
+
     .day-label { font-weight: 700; color: var(--text-dim); }
-    .day-sum { display: flex; gap: 10px; font-weight: 600; }
-    .rows { overflow: hidden; }
-    .row {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 12px 14px;
-      border-bottom: 1px solid var(--border);
-      transition: background 0.14s ease;
-    }
-    .row:last-child { border-bottom: none; }
-    .row:active { background: var(--surface-2); }
-    .icon {
+    .day-sum { display: flex; gap: var(--sp-3); font-weight: 600; }
+
+    .amount {
       flex: none;
-      width: 40px;
-      height: 40px;
-      display: grid;
-      place-items: center;
-      border-radius: 13px;
-      font-size: 19px;
-    }
-    .info { flex: 1; min-width: 0; display: flex; flex-direction: column; }
-    .title { font-weight: 600; font-size: 14px; }
-    .chev { color: var(--text-faint); margin: 0 4px; }
-    .sub { color: var(--text-dim); font-weight: 500; }
-    .note {
-      font-size: 12px;
-      color: var(--text-faint);
-      overflow: hidden;
-      text-overflow: ellipsis;
+      font-size: var(--fs-base);
+      font-weight: 700;
       white-space: nowrap;
     }
-    .amount { font-weight: 700; font-size: 14.5px; white-space: nowrap; }
   `,
 })
 export class TxList {
@@ -138,16 +110,11 @@ export class TxList {
     for (const tx of this.transactions()) {
       const cat = this.store.categoryById(tx.categoryId);
       const sub = this.store.subCategoryById(tx.categoryId, tx.subCategoryId);
+      const categoryName = cat?.name ?? 'แท็กที่ถูกลบ';
 
       let group = map.get(tx.date);
       if (!group) {
-        group = {
-          date: tx.date,
-          label: relativeDateLabel(tx.date),
-          income: 0,
-          expense: 0,
-          rows: [],
-        };
+        group = { date: tx.date, label: relativeDateLabel(tx.date), income: 0, expense: 0, rows: [] };
         map.set(tx.date, group);
       }
 
@@ -158,8 +125,8 @@ export class TxList {
         tx,
         icon: cat?.icon ?? '🏷️',
         color: cat?.color ?? '#64748b',
-        categoryName: cat?.name ?? 'แท็กที่ถูกลบ',
-        subName: sub?.name ?? '',
+        title: sub?.name ?? categoryName,
+        detail: [sub ? categoryName : '', tx.note].filter(Boolean).join(' · ') || 'ไม่มีบันทึก',
       });
     }
 

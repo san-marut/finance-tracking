@@ -1,4 +1,4 @@
-<app-year-picker [year]="year()" (yearChange)="year.set($event)" />
+<app-year-picker class="year" [year]="year()" (yearChange)="year.set($event)" />
 
 @if (!hasData()) {
   <div class="card empty">
@@ -6,71 +6,89 @@
     <div>ยังไม่มีรายการในปี {{ yearLabel() }}</div>
   </div>
 } @else {
-  <section class="card summary">
-    <div class="sum-row">
-      <div class="sum-item">
-        <small>รายรับทั้งปี</small>
-        <b class="tabular amount-pos">{{ summary().income | money: 0 }}</b>
-        @if (incomeDelta() !== null) {
-          <!-- รายรับเพิ่มขึ้นคือดี รายจ่ายเพิ่มขึ้นคือไม่ดี สีจึงสลับกัน -->
-          <span class="delta" [class.good]="incomeDelta()! > 0" [class.bad]="incomeDelta()! <= 0">
-            {{ incomeDelta()! > 0 ? '▲' : '▼' }} {{ abs(incomeDelta()!) | money: 1 }}%
-            <small>จากปีก่อน</small>
-          </span>
-        }
+  <!-- สรุปทั้งปี -->
+  <section class="card hero">
+    <span class="hero-label">คงเหลือทั้งปี {{ yearLabel() }}</span>
+    <strong
+      class="hero-amount tabular"
+      [class.amount-pos]="summary().balance >= 0"
+      [class.amount-neg]="summary().balance < 0"
+    >
+      {{ summary().balance | money }} <small>฿</small>
+    </strong>
+
+    <div class="flow">
+      <div class="flow-item income">
+        <span class="flow-icon"><app-icon name="arrowDown" [size]="18" /></span>
+        <span class="stat">
+          <span class="stat-label">รายรับ</span>
+          <span class="stat-value">{{ summary().income | money: 0 }}</span>
+          @if (incomeDelta() !== null) {
+            <!-- รายรับเพิ่มขึ้นคือดี -->
+            <span class="stat-sub" [class.good]="incomeDelta()! > 0" [class.bad]="incomeDelta()! <= 0">
+              {{ incomeDelta()! > 0 ? '▲' : '▼' }} {{ abs(incomeDelta()!) | money: 0 }}%
+            </span>
+          }
+        </span>
       </div>
-      <div class="sum-item">
-        <small>รายจ่ายทั้งปี</small>
-        <b class="tabular amount-neg">{{ summary().expense | money: 0 }}</b>
-        @if (expenseDelta() !== null) {
-          <span class="delta" [class.bad]="expenseDelta()! > 0" [class.good]="expenseDelta()! <= 0">
-            {{ expenseDelta()! > 0 ? '▲' : '▼' }} {{ abs(expenseDelta()!) | money: 1 }}%
-            <small>จากปีก่อน</small>
-          </span>
-        }
+      <div class="flow-item expense">
+        <span class="flow-icon"><app-icon name="arrowUp" [size]="18" /></span>
+        <span class="stat">
+          <span class="stat-label">รายจ่าย</span>
+          <span class="stat-value">{{ summary().expense | money: 0 }}</span>
+          @if (expenseDelta() !== null) {
+            <!-- รายจ่ายเพิ่มขึ้นคือไม่ดี -->
+            <span class="stat-sub" [class.bad]="expenseDelta()! > 0" [class.good]="expenseDelta()! <= 0">
+              {{ expenseDelta()! > 0 ? '▲' : '▼' }} {{ abs(expenseDelta()!) | money: 0 }}%
+            </span>
+          }
+        </span>
       </div>
     </div>
 
-    <div class="balance-line">
-      <span class="cap">คงเหลือทั้งปี</span>
-      <strong
-        class="tabular"
-        [class.amount-pos]="summary().balance >= 0"
-        [class.amount-neg]="summary().balance < 0"
-      >
-        {{ summary().balance | money }} ฿
-      </strong>
-    </div>
+    @if (hasPrevYear()) {
+      <p class="compare">% ใต้ตัวเลขคือเทียบกับปี {{ yearLabel() - 1 }}</p>
+    }
 
-    <div class="mini-grid">
-      <div><small>เฉลี่ยรับ/เดือน</small><b class="tabular">{{ avgIncome() | money: 0 }}</b></div>
-      <div><small>เฉลี่ยจ่าย/เดือน</small><b class="tabular">{{ avgExpense() | money: 0 }}</b></div>
-      <div>
-        <small>อัตราการออม</small>
-        <b class="tabular">{{ savingRate() === null ? '—' : (savingRate()! | money: 1) + '%' }}</b>
-      </div>
-      <div><small>จำนวนรายการ</small><b class="tabular">{{ summary().count }}</b></div>
+    <div class="stat-row mini" style="--cols: 3">
+      <span class="stat">
+        <span class="stat-label">เฉลี่ยรับ/เดือน</span>
+        <span class="stat-value">{{ avgIncome() | money: 0 }}</span>
+      </span>
+      <span class="stat">
+        <span class="stat-label">เฉลี่ยจ่าย/เดือน</span>
+        <span class="stat-value">{{ avgExpense() | money: 0 }}</span>
+      </span>
+      <span class="stat">
+        <span class="stat-label">อัตราการออม</span>
+        <span class="stat-value">{{ savingRate() === null ? '—' : (savingRate()! | money: 0) + '%' }}</span>
+      </span>
     </div>
 
     @if (!hasPrevYear()) {
-      <p class="foot faint">ยังไม่มีข้อมูลปี {{ yearLabel() - 1 }} จึงเทียบกับปีก่อนหน้าไม่ได้</p>
+      <p class="foot">ยังไม่มีข้อมูลปี {{ yearLabel() - 1 }} จึงยังเทียบกับปีก่อนไม่ได้</p>
     }
   </section>
 
-  <section class="block">
+  <!-- กราฟรายเดือน -->
+  <section class="section">
     <div class="section-title">
       <span>รับ-จ่ายรายเดือน</span>
-      <span class="legend-inline faint">
-        <span class="chip income"></span>รับ <span class="chip expense"></span>จ่าย
+      <span class="hint legend">
+        <span class="legend-dot income"></span>รับ
+        <span class="legend-dot expense"></span>จ่าย
       </span>
     </div>
-    <div class="card pad">
+    <div class="card card-pad">
       <app-trend-chart [points]="points()" (pick)="openMonth($event)" />
     </div>
   </section>
 
-  <section class="block">
-    <div class="section-title"><span>สรุปรายเดือน</span></div>
+  <!-- ตารางรายเดือน -->
+  <section class="section">
+    <div class="section-title">
+      <span>สรุปรายเดือน <span class="hint">แตะเพื่อดูรายละเอียด</span></span>
+    </div>
     <div class="card table">
       <div class="tr th">
         <span>เดือน</span>
@@ -79,97 +97,85 @@
         <span class="num">คงเหลือ</span>
       </div>
       @for (p of points(); track p.month) {
-        <button
-          type="button"
-          class="tr"
-          [class.blank]="p.income === 0 && p.expense === 0"
-          (click)="openMonth(p.month)"
-        >
-          <span class="mth">{{ monthName(p.month) }}</span>
-          @if (p.income === 0 && p.expense === 0) {
-            <span class="num faint">—</span>
-            <span class="num faint">—</span>
-            <span class="num faint">—</span>
-          } @else {
+        @if (p.income === 0 && p.expense === 0) {
+          <div class="tr blank">
+            <span class="mth">{{ monthName(p.month) }}</span>
+            <span class="num">—</span>
+            <span class="num">—</span>
+            <span class="num">—</span>
+          </div>
+        } @else {
+          <button type="button" class="tr" (click)="openMonth(p.month)">
+            <span class="mth">{{ monthName(p.month) }}</span>
             <span class="num tabular amount-pos">{{ p.income | money: 0 }}</span>
             <span class="num tabular amount-neg">{{ p.expense | money: 0 }}</span>
-            <span
-              class="num tabular"
-              [class.amount-pos]="p.balance >= 0"
-              [class.amount-neg]="p.balance < 0"
-            >
-              {{ p.balance | money: 0 }}
-            </span>
-          }
-        </button>
+            <span class="num tabular" [class.amount-neg]="p.balance < 0">{{ p.balance | money: 0 }}</span>
+          </button>
+        }
       }
       <div class="tr total">
         <span>รวมทั้งปี</span>
         <span class="num tabular amount-pos">{{ summary().income | money: 0 }}</span>
         <span class="num tabular amount-neg">{{ summary().expense | money: 0 }}</span>
-        <span
-          class="num tabular"
-          [class.amount-pos]="summary().balance >= 0"
-          [class.amount-neg]="summary().balance < 0"
-        >
+        <span class="num tabular" [class.amount-neg]="summary().balance < 0">
           {{ summary().balance | money: 0 }}
         </span>
       </div>
     </div>
   </section>
 
-  <section class="block">
+  <!-- ไฮไลต์ -->
+  <section class="section">
     <div class="section-title"><span>ไฮไลต์ของปี</span></div>
-    <div class="card rows">
+    <div class="card list-card">
       @if (topMonth(); as top) {
-        <div class="hl">
-          <span class="hl-icon">🔥</span>
-          <span class="hl-text">
+        <div class="list-row">
+          <span class="tile">🔥</span>
+          <span class="list-text">
             <b>เดือนที่ใช้จ่ายมากที่สุด</b>
-            <small class="faint">{{ monthName(top.month) }}</small>
+            <small>{{ monthName(top.month) }}</small>
           </span>
-          <span class="tabular amount-neg">{{ top.expense | money: 0 }}</span>
+          <b class="tabular amount-neg">{{ top.expense | money: 0 }}</b>
         </div>
       }
       @if (lowMonth(); as low) {
-        <div class="hl">
-          <span class="hl-icon">🍃</span>
-          <span class="hl-text">
+        <div class="list-row">
+          <span class="tile">🍃</span>
+          <span class="list-text">
             <b>เดือนที่ใช้จ่ายน้อยที่สุด</b>
-            <small class="faint">{{ monthName(low.month) }}</small>
+            <small>{{ monthName(low.month) }}</small>
           </span>
-          <span class="tabular">{{ low.expense | money: 0 }}</span>
+          <b class="tabular">{{ low.expense | money: 0 }}</b>
         </div>
       }
       @if (largestExpense(); as tx) {
-        <div class="hl">
-          <span class="hl-icon">💸</span>
-          <span class="hl-text">
+        <div class="list-row">
+          <span class="tile">💸</span>
+          <span class="list-text">
             <b>รายจ่ายก้อนใหญ่ที่สุด</b>
-            <small class="faint">
-              {{ largestExpenseLabel() }} · {{ txDate(tx.date) }}
-            </small>
+            <small class="ellipsis">{{ largestExpenseLabel() }} · {{ txDate(tx.date) }}</small>
           </span>
-          <span class="tabular amount-neg">{{ tx.amount | money: 0 }}</span>
+          <b class="tabular amount-neg">{{ tx.amount | money: 0 }}</b>
         </div>
       }
       @if (stats().length && kindView() === 'expense') {
-        <div class="hl">
-          <span class="hl-icon">🏷️</span>
-          <span class="hl-text">
+        <div class="list-row">
+          <span class="tile">🏷️</span>
+          <span class="list-text">
             <b>แท็กที่ใช้เงินมากที่สุด</b>
-            <small class="faint">{{ stats()[0].name }} · {{ stats()[0].count }} รายการ</small>
+            <small class="ellipsis">{{ stats()[0].name }} · {{ stats()[0].count }} รายการ</small>
           </span>
-          <span class="tabular amount-neg">{{ stats()[0].total | money: 0 }}</span>
+          <b class="tabular amount-neg">{{ stats()[0].total | money: 0 }}</b>
         </div>
       }
     </div>
   </section>
 
-  <section class="block">
+  <!-- แยกตามแท็ก -->
+  <section class="section">
     <div class="section-title">
       <span>แยกตามแท็กทั้งปี</span>
-      <div class="kind-switch">
+      <div class="segmented sm">
         <button type="button" [class.on]="kindView() === 'expense'" (click)="kindView.set('expense')">
           รายจ่าย
         </button>
@@ -178,7 +184,7 @@
         </button>
       </div>
     </div>
-    <div class="card pad">
+    <div class="card card-pad">
       <app-category-breakdown
         [stats]="stats()"
         [caption]="kindView() === 'expense' ? 'รายจ่ายทั้งปี' : 'รายรับทั้งปี'"

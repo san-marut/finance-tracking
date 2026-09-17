@@ -4,6 +4,7 @@ import { FinanceStore } from '../../core/finance-store';
 import { TxKind } from '../../models/finance.models';
 import { dateLabel, monthLabel, monthOf, todayIso } from '../../core/utils';
 import { DayPicker } from '../../shared/day-picker';
+import { Icon } from '../../shared/icon';
 import { MonthPicker } from '../../shared/month-picker';
 import { TxList } from '../../shared/tx-list';
 import { MoneyPipe } from '../../shared/money.pipe';
@@ -14,7 +15,7 @@ type ViewMode = 'month' | 'day';
 @Component({
   selector: 'app-transactions',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [FormsModule, DayPicker, MonthPicker, TxList, MoneyPipe],
+  imports: [FormsModule, DayPicker, Icon, MonthPicker, TxList, MoneyPipe],
   templateUrl: './transactions.html',
   styleUrl: './transactions.scss',
 })

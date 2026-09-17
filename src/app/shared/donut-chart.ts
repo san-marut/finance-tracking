@@ -13,7 +13,7 @@ interface Arc extends DonutSegment {
   offset: number;
 }
 
-const R = 60;
+const R = 62;
 const CIRC = 2 * Math.PI * R;
 
 /** โดนัทชาร์ตแบบ SVG ล้วน ไม่พึ่งไลบรารีภายนอก */
@@ -24,14 +24,14 @@ const CIRC = 2 * Math.PI * R;
   template: `
     <div class="donut">
       <svg viewBox="0 0 160 160" role="img" [attr.aria-label]="caption()">
-        <circle class="track" cx="80" cy="80" [attr.r]="r" fill="none" stroke-width="20" />
+        <circle class="track" cx="80" cy="80" [attr.r]="r" fill="none" stroke-width="16" />
         @for (arc of arcs(); track arc.label) {
           <circle
             cx="80"
             cy="80"
             [attr.r]="r"
             fill="none"
-            stroke-width="20"
+            stroke-width="16"
             stroke-linecap="butt"
             [attr.stroke]="arc.color"
             [attr.stroke-dasharray]="arc.dash + ' ' + arc.gap"
@@ -48,7 +48,7 @@ const CIRC = 2 * Math.PI * R;
     </div>
   `,
   styles: `
-    .donut { position: relative; width: 168px; height: 168px; flex: none; }
+    .donut { position: relative; width: 176px; height: 176px; flex: none; }
     svg { width: 100%; height: 100%; display: block; }
     .track { stroke: var(--surface-2); }
     .center {
@@ -61,9 +61,9 @@ const CIRC = 2 * Math.PI * R;
       line-height: 1.2;
       pointer-events: none;
     }
-    .center-cap { font-size: 11px; color: var(--text-faint); }
-    .center strong { font-size: 22px; }
-    .center-unit { font-size: 11px; color: var(--text-faint); }
+    .center-cap { font-size: var(--fs-xs); color: var(--text-faint); }
+    .center strong { font-size: var(--fs-2xl); letter-spacing: -0.02em; }
+    .center-unit { font-size: var(--fs-xs); color: var(--text-faint); }
   `,
 })
 export class DonutChart {
@@ -83,9 +83,11 @@ export class DonutChart {
     return this.segments()
       .filter((s) => s.value > 0)
       .map((s) => {
-        const dash = (s.value / total) * CIRC;
+        const full = (s.value / total) * CIRC;
+        // เว้นช่องไฟเล็กๆ ระหว่างชิ้น ยกเว้นกรณีมีชิ้นเดียว
+        const dash = this.segments().length > 1 ? Math.max(full - 2, 0.5) : full;
         const arc: Arc = { ...s, dash, gap: CIRC - dash, offset: -acc };
-        acc += dash;
+        acc += full;
         return arc;
       });
   });

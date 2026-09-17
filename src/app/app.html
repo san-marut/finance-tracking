@@ -1,17 +1,22 @@
 <div class="shell" [class.with-fab]="showFab()">
   <header class="topbar">
     <div class="topbar-inner">
-      <a class="brand" routerLink="/dashboard">
-        <img class="brand-mark" src="icons/icon.svg" alt="" width="36" height="36" />
-        <span class="brand-text">
-          <strong>บันทึกรายรับรายจ่าย</strong>
-          <small>Finance Tracker</small>
-        </span>
-      </a>
+      @if (showBack()) {
+        <button type="button" class="icon-btn soft" (click)="goBack()" aria-label="ย้อนกลับ">
+          <app-icon name="back" [size]="22" />
+        </button>
+      } @else {
+        <a routerLink="/dashboard" aria-label="กลับหน้าภาพรวม">
+          <img class="brand-mark" src="icons/icon.svg" alt="" width="34" height="34" />
+        </a>
+      }
+
+      <h1 class="heading">{{ heading() }}</h1>
 
       @if (installEvent()) {
         <button type="button" class="btn install-btn" (click)="install()">
-          ⬇️ ติดตั้งแอป
+          <app-icon name="install" [size]="16" />
+          ติดตั้งแอป
         </button>
       }
     </div>
@@ -29,17 +34,15 @@
   </main>
 
   @if (showFab()) {
-    <a class="fab" routerLink="/entry" aria-label="เพิ่มรายการใหม่">＋</a>
+    <a class="fab" routerLink="/entry" aria-label="เพิ่มรายการใหม่">
+      <app-icon name="plus" [size]="28" [stroke]="2.4" />
+    </a>
   }
 
-  <nav class="bottom-nav">
+  <nav class="bottom-nav" aria-label="เมนูหลัก">
     @for (item of navItems; track item.path) {
-      <a
-        [routerLink]="item.path"
-        routerLinkActive="active"
-        class="nav-item"
-      >
-        <span class="nav-icon">{{ item.icon }}</span>
+      <a [routerLink]="item.path" routerLinkActive="active" class="nav-item">
+        <span class="nav-icon"><app-icon [name]="item.icon" [size]="22" /></span>
         <span class="nav-label">{{ item.label }}</span>
       </a>
     }

@@ -10,41 +10,49 @@ import {
   signal,
 } from '@angular/core';
 import { TH_MONTHS_SHORT, currentMonth, monthLabel, shiftMonth } from '../core/utils';
+import { Icon } from './icon';
 
-/** ตัวเลือกเดือน — เลื่อนทีละเดือน หรือแตะตรงกลางเพื่อเลือกเดือนและปีจากแผง */
+/** ตัวเลือกเดือน — เลื่อนทีละเดือน หรือแตะตรงกลางเพื่อเลือกเดือนและปีจากแผง (สไตล์อยู่ใน styles.scss) */
 @Component({
   selector: 'app-month-picker',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [Icon],
   template: `
-    <div class="picker">
-      <button type="button" class="arrow" (click)="shift(-1)" aria-label="เดือนก่อนหน้า">‹</button>
+    <div class="picker-bar">
+      <button type="button" class="icon-btn soft" (click)="shift(-1)" aria-label="เดือนก่อนหน้า">
+        <app-icon name="chevronLeft" />
+      </button>
 
       <button
         type="button"
-        class="label"
+        class="picker-label"
         [attr.aria-expanded]="open()"
         aria-haspopup="dialog"
         (click)="togglePanel()"
       >
-        <span class="text">{{ label() }} <span class="caret" [class.up]="open()">▾</span></span>
-        <small>แตะเพื่อเลือกเดือนและปี</small>
+        <span class="picker-title" [class.open]="open()">
+          {{ label() }} <app-icon name="chevronDown" [size]="16" />
+        </span>
+        <span class="picker-caption">แตะเพื่อเลือกเดือนและปี</span>
       </button>
 
-      <button type="button" class="arrow" (click)="shift(1)" aria-label="เดือนถัดไป">›</button>
+      <button type="button" class="icon-btn soft" (click)="shift(1)" aria-label="เดือนถัดไป">
+        <app-icon name="chevronRight" />
+      </button>
 
       @if (open()) {
-        <div class="panel" role="dialog" aria-label="เลือกเดือนและปี">
-          <div class="panel-head">
-            <button type="button" class="arrow sm" (click)="shiftYear(-1)" aria-label="ปีก่อนหน้า">
-              ‹
+        <div class="picker-panel" role="dialog" aria-label="เลือกเดือนและปี">
+          <div class="picker-panel-head">
+            <button type="button" class="icon-btn soft" (click)="shiftYear(-1)" aria-label="ปีก่อนหน้า">
+              <app-icon name="chevronLeft" [size]="18" />
             </button>
             <b>{{ panelYear() + 543 }}</b>
-            <button type="button" class="arrow sm" (click)="shiftYear(1)" aria-label="ปีถัดไป">
-              ›
+            <button type="button" class="icon-btn soft" (click)="shiftYear(1)" aria-label="ปีถัดไป">
+              <app-icon name="chevronRight" [size]="18" />
             </button>
           </div>
 
-          <div class="grid">
+          <div class="picker-grid">
             @for (name of monthNames; track $index; let i = $index) {
               <button
                 type="button"
@@ -57,123 +65,12 @@ import { TH_MONTHS_SHORT, currentMonth, monthLabel, shiftMonth } from '../core/u
             }
           </div>
 
-          <button type="button" class="now-btn" (click)="jumpToNow()">กลับเดือนปัจจุบัน</button>
+          <button type="button" class="picker-now" (click)="jumpToNow()">กลับเดือนปัจจุบัน</button>
         </div>
       }
     </div>
   `,
-  styles: `
-    :host { display: block; }
-
-    .picker {
-      position: relative;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 999px;
-      padding: 4px;
-      box-shadow: var(--shadow);
-    }
-
-    .arrow {
-      width: 38px;
-      height: 38px;
-      border: none;
-      border-radius: 999px;
-      background: var(--surface-2);
-      color: var(--text-dim);
-      font-size: 22px;
-      line-height: 1;
-      cursor: pointer;
-    }
-    .arrow:active { transform: scale(0.94); }
-    .arrow.sm { width: 32px; height: 32px; font-size: 19px; }
-
-    .label {
-      flex: 1;
-      min-width: 0;
-      border: none;
-      background: transparent;
-      cursor: pointer;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      line-height: 1.2;
-      padding: 2px 4px;
-    }
-    .text { font-size: 15px; font-weight: 700; white-space: nowrap; }
-    .label small { font-size: 10px; font-weight: 500; color: var(--text-faint); }
-
-    .caret {
-      display: inline-block;
-      font-size: 11px;
-      color: var(--text-faint);
-      transition: transform 0.18s ease;
-    }
-    .caret.up { transform: rotate(180deg); }
-
-    .panel {
-      position: absolute;
-      top: calc(100% + 8px);
-      left: 0;
-      right: 0;
-      z-index: 40;
-      padding: 12px;
-      border-radius: var(--radius);
-      background: var(--surface);
-      border: 1px solid var(--border);
-      box-shadow: var(--shadow-lg);
-    }
-
-    .panel-head {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 10px;
-
-      b { font-size: 16px; }
-    }
-
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 6px;
-
-      button {
-        padding: 10px 4px;
-        border: 1px solid transparent;
-        border-radius: var(--radius-sm);
-        background: var(--surface-2);
-        font-size: 13px;
-        font-weight: 600;
-        color: var(--text-dim);
-        cursor: pointer;
-      }
-
-      button.now { border-color: color-mix(in srgb, var(--brand) 45%, transparent); }
-
-      button.on {
-        background: var(--brand);
-        border-color: transparent;
-        color: #fff;
-      }
-    }
-
-    .now-btn {
-      width: 100%;
-      margin-top: 10px;
-      padding: 9px;
-      border: 1px solid var(--border);
-      border-radius: 999px;
-      background: transparent;
-      font-size: 13px;
-      font-weight: 600;
-      color: var(--brand);
-      cursor: pointer;
-    }
-  `,
+  styles: `:host { display: block; }`,
 })
 export class MonthPicker {
   private readonly host = inject(ElementRef<HTMLElement>);

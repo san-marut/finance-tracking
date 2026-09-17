@@ -3,11 +3,12 @@ import { FormsModule } from '@angular/forms';
 import { FinanceStore } from '../../core/finance-store';
 import { Category, TxKind } from '../../models/finance.models';
 import { ICON_CHOICES, PALETTE } from '../../core/seed-data';
+import { Icon } from '../../shared/icon';
 
 @Component({
   selector: 'app-categories',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [FormsModule],
+  imports: [FormsModule, Icon],
   templateUrl: './categories.html',
   styleUrl: './categories.scss',
 })

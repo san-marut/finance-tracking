@@ -1,17 +1,13 @@
-<div class="page-head">
-  <button type="button" class="btn btn-ghost back" (click)="cancel()">‹ ยกเลิก</button>
-  <h1>{{ isEdit() ? 'แก้ไขรายการ' : 'เพิ่มรายการ' }}</h1>
-</div>
-
-<div class="kind-toggle" [class.income]="kind() === 'income'">
-  <button type="button" [class.on]="kind() === 'expense'" (click)="switchKind('expense')">
-    ↗ รายจ่าย
+<div class="segmented block lg kind">
+  <button type="button" class="expense" [class.on]="kind() === 'expense'" (click)="switchKind('expense')">
+    รายจ่าย
   </button>
-  <button type="button" [class.on]="kind() === 'income'" (click)="switchKind('income')">
-    ↙ รายรับ
+  <button type="button" class="income" [class.on]="kind() === 'income'" (click)="switchKind('income')">
+    รายรับ
   </button>
 </div>
 
+<!-- จำนวนเงิน -->
 <section class="card amount-card">
   <label class="amount-label" for="amount">จำนวนเงิน (บาท)</label>
   <div class="amount-row">
@@ -20,35 +16,38 @@
       class="amount-input tabular"
       type="text"
       inputmode="decimal"
-      placeholder="0.00"
+      placeholder="0"
       autocomplete="off"
       [class.amount-pos]="kind() === 'income'"
       [class.amount-neg]="kind() === 'expense'"
       [(ngModel)]="amountText"
     />
     @if (amountText()) {
-      <button type="button" class="clear" (click)="clearAmount()" aria-label="ล้างจำนวนเงิน">✕</button>
+      <button type="button" class="icon-btn soft clear" (click)="clearAmount()" aria-label="ล้างจำนวนเงิน">
+        <app-icon name="close" [size]="16" />
+      </button>
     }
   </div>
 
   @if (isExpression() && amount() !== null) {
-    <div class="calc faint">= {{ amount()! | money }} บาท</div>
+    <p class="calc">= {{ amount()! | money }} บาท</p>
   } @else if (amountText() && amount() === null) {
-    <div class="calc warn">กรอกได้เฉพาะตัวเลขและเครื่องหมาย + - * / เท่านั้น</div>
+    <p class="calc warn">ใส่ได้เฉพาะตัวเลขและ + − × ÷</p>
   } @else {
-    <div class="calc faint">พิมพ์เป็นสูตรได้ เช่น 120+35*2</div>
+    <p class="calc">พิมพ์เป็นสูตรได้ เช่น 120+35*2</p>
   }
 
   <div class="quick">
     @for (q of quickAdds; track q) {
-      <button type="button" class="btn quick-btn" (click)="quickAdd(q)">+{{ q }}</button>
+      <button type="button" class="quick-btn tabular" (click)="quickAdd(q)">+{{ q }}</button>
     }
   </div>
 </section>
 
-<section class="block">
+<!-- แท็กหลัก -->
+<section class="section">
   <div class="section-title">
-    <span>แท็กระดับ 1 · ประเภท{{ kind() === 'expense' ? 'รายจ่าย' : 'รายรับ' }}</span>
+    <span>แท็กหลัก</span>
   </div>
   <div class="cat-grid">
     @for (c of categories(); track c.id) {
@@ -63,61 +62,57 @@
         <span class="chip-name">{{ c.name }}</span>
       </button>
     } @empty {
-      <p class="muted">ยังไม่มีแท็ก เพิ่มได้ที่หน้า "แท็ก"</p>
+      <p class="muted">ยังไม่มีแท็ก เพิ่มได้ที่เมนู "แท็ก"</p>
     }
   </div>
 </section>
 
+<!-- แท็กย่อย -->
 @if (categoryId()) {
-  <section class="block">
+  <section class="section">
     <div class="section-title">
-      <span>แท็กระดับ 2 <small class="faint">(ไม่บังคับ)</small></span>
+      <span>แท็กย่อย <span class="hint">ไม่บังคับ</span></span>
     </div>
     <div class="sub-grid">
       @for (s of subCategories(); track s.id) {
-        <button
-          type="button"
-          class="sub-chip"
-          [class.on]="subCategoryId() === s.id"
-          (click)="pickSub(s.id)"
-        >
+        <button type="button" class="sub-chip" [class.on]="subCategoryId() === s.id" (click)="pickSub(s.id)">
           {{ s.name }}
         </button>
       } @empty {
-        <p class="muted">แท็กนี้ยังไม่มีหมวดย่อย เพิ่มได้ที่หน้า "แท็ก"</p>
+        <p class="muted">แท็กนี้ยังไม่มีแท็กย่อย เพิ่มได้ที่เมนู "แท็ก"</p>
       }
     </div>
   </section>
 }
 
-<section class="card form-card">
-  <label class="field">
+<!-- วันที่และบันทึก -->
+<section class="card card-pad details">
+  <div class="field">
     <span class="label">วันที่</span>
     <div class="date-row">
-      <button type="button" class="btn step" (click)="shiftDate(-1)">‹</button>
-      <input class="input" type="date" [(ngModel)]="date" />
-      <button type="button" class="btn step" (click)="shiftDate(1)">›</button>
+      <button type="button" class="icon-btn soft" (click)="shiftDate(-1)" aria-label="วันก่อนหน้า">
+        <app-icon name="chevronLeft" />
+      </button>
+      <input class="input" type="date" [(ngModel)]="date" aria-label="วันที่" />
+      <button type="button" class="icon-btn soft" (click)="shiftDate(1)" aria-label="วันถัดไป">
+        <app-icon name="chevronRight" />
+      </button>
     </div>
-    <small class="faint">{{ dateText() }}</small>
-  </label>
+    <small class="date-text">{{ dateText() }}</small>
+  </div>
 
-  <label class="field">
+  <label class="field note">
     <span class="label">บันทึกช่วยจำ</span>
-    <textarea
-      class="textarea"
-      rows="2"
-      placeholder="เช่น ข้าวมันไก่หน้าปากซอย"
-      [(ngModel)]="note"
-    ></textarea>
+    <textarea class="textarea" rows="2" placeholder="เช่น ข้าวมันไก่หน้าปากซอย" [(ngModel)]="note"></textarea>
   </label>
 </section>
 
 <div class="actions">
-  <button type="button" class="btn btn-primary save" [disabled]="!canSave()" (click)="save()">
+  <button type="button" class="btn btn-primary btn-block save" [disabled]="!canSave()" (click)="save()">
     {{ isEdit() ? 'บันทึกการแก้ไข' : 'บันทึกรายการ' }}
   </button>
   @if (!isEdit()) {
-    <button type="button" class="btn" [disabled]="!canSave()" (click)="save(true)">
+    <button type="button" class="btn btn-block" [disabled]="!canSave()" (click)="save(true)">
       บันทึกและเพิ่มต่อ
     </button>
   }
@@ -126,11 +121,11 @@
 @if (isEdit()) {
   <div class="danger-zone">
     @if (!confirmDelete()) {
-      <button type="button" class="btn btn-danger" (click)="confirmDelete.set(true)">
-        🗑 ลบรายการนี้
+      <button type="button" class="btn btn-ghost delete" (click)="confirmDelete.set(true)">
+        <app-icon name="trash" [size]="18" /> ลบรายการนี้
       </button>
     } @else {
-      <div class="confirm card">
+      <div class="card card-pad confirm">
         <span>ยืนยันลบรายการนี้ถาวร?</span>
         <div class="confirm-actions">
           <button type="button" class="btn" (click)="confirmDelete.set(false)">ไม่ลบ</button>
@@ -142,5 +137,5 @@
 }
 
 @if (toast()) {
-  <div class="toast">{{ toast() }}</div>
+  <div class="toast" role="status">{{ toast() }}</div>
 }
