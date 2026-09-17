@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
 import { MonthlyPoint } from '../models/finance.models';
-import { compactMoney, formatMoney, monthTick } from '../core/utils';
+import { compactMoney, formatMoney, monthLabelShort, monthTick } from '../core/utils';
 
 interface Bar {
   month: string;
@@ -11,7 +11,6 @@ interface Bar {
   expenseH: number;
   tip: string;
   tick: string;
-  year: string;
   /** จอแคบใส่ชื่อเดือนครบ 12 ช่องไม่พอ จึงแสดงเดือนเว้นเดือน โดยให้เดือนล่าสุดแสดงเสมอ */
   showTick: boolean;
   current: boolean;
@@ -22,6 +21,9 @@ interface Bar {
   selector: 'app-trend-chart',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
+    @if (rangeLabel(); as range) {
+      <div class="range">{{ range }}</div>
+    }
     <div class="wrap">
       <div class="axis">
         <span>{{ maxLabel() }}</span>
@@ -37,30 +39,33 @@ interface Bar {
             (click)="pick.emit(bar.month)"
           >
             <span class="stack">
-              <span class="bar income" [style.height.%]="bar.incomeH"></span>
-              <span class="bar expense" [style.height.%]="bar.expenseH"></span>
+              <span class="bar income" [class.zero]="!bar.income" [style.height.%]="bar.incomeH"></span>
+              <span class="bar expense" [class.zero]="!bar.expense" [style.height.%]="bar.expenseH"></span>
             </span>
-            <span class="tick" [class.skip]="!bar.showTick">
-              {{ bar.tick }}
-              @if (bar.year) {
-                <small>{{ bar.year }}</small>
-              }
-            </span>
+            <span class="tick" [class.skip]="!bar.showTick">{{ bar.tick }}</span>
           </button>
         }
       </div>
     </div>
   `,
   styles: `
+    .range {
+      margin: -4px 0 8px;
+      text-align: right;
+      font-size: var(--fs-xs);
+      color: var(--text-faint);
+    }
     .wrap { display: flex; gap: 8px; }
+    /* ความสูงแกน = ความสูงแท่ง (130) + ป้ายเดือน (18) + ช่องไฟ (6) ให้เลข 0 ตรงฐานของแท่งพอดี */
     .axis {
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      height: 160px;
+      height: 154px;
+      padding-bottom: 24px;
       font-size: var(--fs-xs);
+      line-height: 1;
       color: var(--text-faint);
-      padding-bottom: 30px;
     }
     .bars {
       flex: 1;
@@ -110,18 +115,18 @@ interface Bar {
       border-radius: 4px 4px 2px 2px;
       transition: height 0.25s ease;
     }
+    /* เดือนที่ไม่มีข้อมูลไม่ต้องมีขีดเล็กๆ ให้ดูเหมือนมียอด แต่ยังกินที่ไว้ให้แท่งเรียงตรง */
+    .bar.zero { visibility: hidden; }
     .income { background: var(--income); }
     .expense { background: var(--expense); }
+    /* ป้ายเดือนบรรทัดเดียว สูงเท่ากันทุกช่อง ฐานของแท่งจึงอยู่ระดับเดียวกันเสมอ */
     .tick {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      line-height: 1.1;
+      height: 18px;
+      line-height: 18px;
       font-size: var(--fs-xs);
       color: var(--text-faint);
       white-space: nowrap;
     }
-    .tick small { font-size: var(--fs-xs); opacity: 0.8; }
     /* ซ่อนแบบยังกินที่ ให้แท่งกราฟยังเรียงตรงกัน */
     .tick.skip { visibility: hidden; }
   `,
@@ -134,6 +139,13 @@ export class TrendChart {
   protected readonly max = computed(() =>
     Math.max(1, ...this.points().flatMap((p) => [p.income, p.expense])),
   );
+
+  /** ช่วงเวลาของกราฟ เช่น "ต.ค. 68 – ก.ย. 69" แทนการใส่ปีใต้แท่ง */
+  protected readonly rangeLabel = computed(() => {
+    const points = this.points();
+    if (!points.length) return '';
+    return `${monthLabelShort(points[0].month)} – ${monthLabelShort(points[points.length - 1].month)}`;
+  });
 
   protected maxLabel(): string {
     return compactMoney(this.max());
@@ -150,12 +162,6 @@ export class TrendChart {
       tip: `${p.label} · รับ ${formatMoney(p.income, 0)} / จ่าย ${formatMoney(p.expense, 0)}`,
       tick: monthTick(p.month).m,
       showTick: (this.points().length - 1 - index) % 2 === 0,
-      // แสดงปีเฉพาะช่องแรกและทุกต้นปี เพื่อไม่ให้แกนแน่นเกินไป
-      year:
-        (index <= 1 || p.month.endsWith('-01') || p.month.endsWith('-02')) &&
-        (this.points().length - 1 - index) % 2 === 0
-          ? monthTick(p.month).y
-          : '',
       current: p.month === this.activeMonth(),
     })),
   );
