@@ -33,6 +33,10 @@
   --meal: #9a5b00;
   --meal-soft: #ffefc7;
 
+  /* สีประจำส่วนของแอป ใช้กับปุ่มสลับบนแถบหัว */
+  --finance-text: #b93a27;
+  --workout-text: #0f6a4f;
+
   --font-display: 'Mali', 'Anuphan', sans-serif;
   --font-body: 'Anuphan', 'Noto Sans Thai', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 
@@ -93,6 +97,9 @@
   --meal: #ffc766;
   --meal-soft: #3a2c12;
 
+  --finance-text: #ff9a87;
+  --workout-text: #6fe0b4;
+
   --shadow: 0 1px 2px rgba(0, 0, 0, 0.35), 0 10px 26px -18px rgba(0, 0, 0, 0.8);
   --shadow-lg: 0 20px 48px -22px rgba(0, 0, 0, 0.9);
 }
@@ -105,6 +112,34 @@
 
 :root[data-theme='dark'] {
   @include dark-tokens;
+}
+
+/* ---------- ส่วนออกกำลังกาย: เปลี่ยนสีหลักจากคอรัลเป็นเขียว ปุ่ม/เมนู/โฟกัสเปลี่ยนตามเอง ---------- */
+.mode-workout {
+  --brand: #137a5c;
+  --brand-strong: #0f6a4f;
+  --brand-text: #0f6a4f;
+  --brand-2: #1f9a74;
+  --brand-soft: #ddf4ea;
+}
+
+@mixin dark-workout-tokens {
+  --brand: #52d3a2;
+  --brand-strong: #52d3a2;
+  --brand-text: #6fe0b4;
+  --brand-2: #6fe0b4;
+  --brand-soft: #173228;
+  --on-brand: #0b2a1f;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) .mode-workout {
+    @include dark-workout-tokens;
+  }
+}
+
+:root[data-theme='dark'] .mode-workout {
+  @include dark-workout-tokens;
 }
 
 /* ---------- พื้นฐาน ---------- */

@@ -1,0 +1,339 @@
+:host {
+  display: block;
+  /* เผื่อที่ให้แถบบันทึกด้านล่าง */
+  padding-bottom: 96px;
+}
+
+.step-label {
+  margin: 0 var(--sp-1) var(--sp-3);
+  font-size: var(--fs-md);
+  color: var(--text-dim);
+}
+
+.saved {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  margin-bottom: var(--sp-3);
+  padding: 10px 14px;
+  border-radius: var(--radius-sm);
+  background: var(--brand-soft);
+  color: var(--brand-text);
+  font-size: var(--fs-md);
+  font-weight: 600;
+}
+
+/* ---------- ขั้นที่ 1: ประเภท ---------- */
+.types {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+}
+
+.type-card {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-4);
+  padding: var(--sp-5);
+  text-align: left;
+  cursor: pointer;
+
+  b {
+    font-size: var(--fs-xl);
+  }
+
+  &:active {
+    background: var(--surface-2);
+  }
+}
+
+.type-icon {
+  flex: none;
+  width: 56px;
+  height: 56px;
+  display: grid;
+  place-items: center;
+  border-radius: var(--radius-md);
+
+  &.weight {
+    background: var(--income-soft);
+    color: var(--income);
+  }
+
+  &.cardio {
+    background: var(--meal-soft);
+    color: var(--meal);
+  }
+}
+
+/* ---------- ขั้นที่ 2: ส่วนของร่างกาย ---------- */
+.parts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.part-card {
+  min-height: 104px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: var(--sp-2);
+  padding: var(--sp-4);
+  border-radius: 20px;
+  text-align: left;
+  cursor: pointer;
+
+  small {
+    font-size: var(--fs-xs);
+    line-height: 1.4;
+    color: var(--text-faint);
+  }
+
+  &:active {
+    background: var(--surface-2);
+  }
+}
+
+.part-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--sp-2);
+
+  b {
+    font-size: var(--fs-lg);
+  }
+}
+
+.count {
+  flex: none;
+  padding: 2px 8px;
+  border-radius: 10px;
+  background: var(--brand-soft);
+  color: var(--brand-text);
+  font-size: var(--fs-xs);
+  font-weight: 600;
+}
+
+/* ---------- ขั้นที่ 3: ท่า ---------- */
+.ex-row {
+  min-height: 72px;
+  padding-left: 10px;
+  gap: 14px;
+}
+
+.art {
+  flex: none;
+  width: 56px;
+  height: 56px;
+  display: grid;
+  place-items: center;
+  border-radius: 16px;
+  background: var(--income-soft);
+  color: var(--income);
+
+  &.cardio {
+    background: var(--meal-soft);
+    color: var(--meal);
+  }
+}
+
+/* ---------- ขั้นที่ 4: รายละเอียด ---------- */
+.hero {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-4);
+  margin-bottom: var(--sp-3);
+  padding: 14px;
+  border-radius: var(--radius);
+  background: var(--income-soft);
+  color: var(--income);
+
+  &.cardio {
+    background: var(--meal-soft);
+    color: var(--meal);
+  }
+}
+
+.hero-art {
+  flex: none;
+  width: 124px;
+  height: 124px;
+  display: grid;
+  place-items: center;
+  border-radius: 22px;
+  background: var(--surface);
+}
+
+.hero-text {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-1);
+
+  small {
+    font-size: var(--fs-xs);
+    font-weight: 600;
+    letter-spacing: 0.02em;
+  }
+
+  b {
+    font-size: var(--fs-lg);
+    line-height: 1.4;
+    color: var(--text);
+  }
+}
+
+.field-row {
+  gap: 10px;
+}
+
+.step-btn {
+  flex: none;
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  border: none;
+  border-radius: 14px;
+  background: var(--surface-2);
+  cursor: pointer;
+
+  &.plus {
+    background: var(--brand-soft);
+    color: var(--brand-text);
+  }
+
+  &:active {
+    transform: scale(0.94);
+  }
+}
+
+.value {
+  width: 76px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  input {
+    width: 100%;
+    padding: 0;
+    border: none;
+    border-radius: 8px;
+    background: transparent;
+    text-align: center;
+    font-size: 24px;
+    line-height: 1.3;
+    -moz-appearance: textfield;
+    appearance: textfield;
+
+    &::-webkit-inner-spin-button,
+    &::-webkit-outer-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+
+    &:focus {
+      outline: none;
+      background: var(--surface-2);
+    }
+  }
+
+  small {
+    font-size: var(--fs-xs);
+    color: var(--text-faint);
+  }
+}
+
+.rest {
+  margin-top: var(--sp-5);
+}
+
+.rest-chips {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: var(--sp-2);
+
+  button {
+    min-height: 44px;
+    padding: 0 4px;
+    border: 1.5px solid var(--border);
+    border-radius: 14px;
+    background: var(--surface);
+    color: var(--text-dim);
+    font-size: var(--fs-md);
+    font-weight: 600;
+    white-space: nowrap;
+    cursor: pointer;
+
+    &.on {
+      border-color: transparent;
+      background: var(--brand-strong);
+      color: var(--on-brand);
+    }
+  }
+}
+
+.preview {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-top: var(--sp-4);
+  padding: var(--sp-3) var(--sp-4);
+  border-radius: var(--radius-md);
+  background: var(--surface-2);
+
+  small {
+    font-size: var(--fs-xs);
+    color: var(--text-faint);
+  }
+
+  code {
+    font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+    font-size: var(--fs-md);
+    word-break: break-word;
+  }
+}
+
+.delete-zone {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--sp-2);
+  margin-top: var(--sp-4);
+  font-size: var(--fs-md);
+
+  .delete {
+    color: var(--expense);
+  }
+}
+
+/* ---------- แถบบันทึกติดขอบล่าง ---------- */
+.save-bar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 30;
+  padding: var(--sp-3) var(--sp-5) calc(env(safe-area-inset-bottom) + var(--sp-4));
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+}
+
+.save-bar-inner {
+  max-width: calc(var(--max-w) - 40px);
+  margin: 0 auto;
+  display: flex;
+  gap: 10px;
+
+  .btn {
+    flex: 1;
+    min-height: 52px;
+    font-size: var(--fs-base);
+  }
+
+  .next {
+    color: var(--brand-text);
+  }
+}

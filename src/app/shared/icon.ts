@@ -29,6 +29,13 @@ const PATHS: Record<string, string> = {
   reset: 'M3 12a9 9 0 1 0 3-6.7L3 8M3 3v5h5',
   utensils: 'M3 2v7a3 3 0 0 0 3 3v10M9 2v7M6 2v4M21 15V2a5 5 0 0 0-5 5v6a2 2 0 0 0 2 2h3zM21 15v7',
   install: 'M12 3v12M7 10l5 5 5-5M5 21h14',
+  dumbbell: 'M6.5 6.5v11M17.5 6.5v11M3.5 9v6M20.5 9v6M6.5 12h11',
+  activity: 'M3 12h4l3-8 4 16 3-8h4',
+  wallet: 'M5 6h14a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2zM3 10h18M16 15h2',
+  copy: 'M11 9h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-8a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2zM5 15V6a2 2 0 0 1 2-2h9',
+  check: 'M5 12l5 5L20 7',
+  minus: 'M5 12h14',
+  history: 'M3 12a9 9 0 1 0 3-6.7L3 8M3 3v5h5M12 7v5l3 2',
 };
 
 @Component({

@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { Location } from '@angular/common';
 import {
   ActivatedRoute,
@@ -9,6 +9,8 @@ import {
   RouterOutlet,
 } from '@angular/router';
 import { SwUpdate } from '@angular/service-worker';
+import { BackHandler } from './core/back-handler';
+import { AppSwitcher } from './shared/app-switcher';
 import { Icon } from './shared/icon';
 
 interface InstallPromptEvent extends Event {
@@ -18,7 +20,7 @@ interface InstallPromptEvent extends Event {
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, RouterLink, RouterLinkActive, Icon],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, Icon, AppSwitcher],
   templateUrl: './app.html',
   styleUrl: './app.scss',
 })
@@ -27,13 +29,18 @@ export class App {
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
   private readonly location = inject(Location);
+  private readonly backHandler = inject(BackHandler);
 
   /**
    * แสดงปุ่มลอยเฉพาะหน้าที่ "เพิ่มรายการ" เป็นสิ่งที่ผู้ใช้น่าจะทำต่อ
    * หน้าฟอร์ม/แท็ก/ตั้งค่าไม่แสดง เพราะปุ่มไปทับปุ่มอื่นที่มุมขวาล่าง
    */
-  private static readonly FAB_ROUTES = ['/dashboard', '/transactions'];
+  private static readonly FAB_ROUTES = ['/dashboard', '/transactions', '/workout'];
   protected readonly showFab = signal(true);
+  /** ส่วนการเงินกับส่วนออกกำลังกายมีสีหลักและเมนูล่างแยกกัน */
+  protected readonly mode = signal<'finance' | 'workout'>('finance');
+  /** หน้าแรกของแต่ละส่วนแสดงปุ่มสลับส่วนแทนชื่อหน้า */
+  protected readonly showSwitcher = signal(false);
   protected readonly heading = signal('');
   protected readonly showBack = signal(false);
   /** หน้าฟอร์มมีแถบบันทึกของตัวเองที่ขอบล่าง จึงซ่อนเมนูหลัก */
@@ -41,7 +48,7 @@ export class App {
   protected readonly updateReady = signal(false);
   protected readonly installEvent = signal<InstallPromptEvent | null>(null);
 
-  protected readonly navItems = [
+  private static readonly FINANCE_NAV = [
     { path: '/dashboard', label: 'ภาพรวม', icon: 'dashboard' },
     { path: '/transactions', label: 'รายการ', icon: 'list' },
     { path: '/report', label: 'รายปี', icon: 'calendar' },
@@ -49,11 +56,21 @@ export class App {
     { path: '/settings', label: 'ตั้งค่า', icon: 'settings' },
   ];
 
+  private static readonly WORKOUT_NAV = [
+    { path: '/workout', label: 'วันนี้', icon: 'dumbbell' },
+    { path: '/workout/history', label: 'ประวัติ', icon: 'history' },
+  ];
+
+  protected readonly navItems = computed(() =>
+    this.mode() === 'workout' ? App.WORKOUT_NAV : App.FINANCE_NAV,
+  );
+
   constructor() {
     this.router.events.subscribe((event) => {
       if (!(event instanceof NavigationEnd)) return;
       const path = event.urlAfterRedirects.split('?')[0];
       this.showFab.set(App.FAB_ROUTES.includes(path));
+      this.mode.set(path.startsWith('/workout') ? 'workout' : 'finance');
 
       let child = this.route.firstChild;
       while (child?.firstChild) child = child.firstChild;
@@ -61,6 +78,7 @@ export class App {
       this.heading.set((data['heading'] as string) ?? '');
       this.showBack.set(!!data['back']);
       this.showNav.set(!data['back']);
+      this.showSwitcher.set(!!data['switcher']);
     });
 
     if (this.swUpdate.isEnabled) {
@@ -78,8 +96,9 @@ export class App {
   }
 
   protected goBack(): void {
+    if (this.backHandler.handle()) return;
     if (history.length > 1) this.location.back();
-    else this.router.navigate(['/dashboard']);
+    else this.router.navigate([this.mode() === 'workout' ? '/workout' : '/dashboard']);
   }
 
   protected reloadApp(): void {

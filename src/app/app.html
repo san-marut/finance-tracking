@@ -1,4 +1,9 @@
-<div class="shell" [class.with-fab]="showFab()" [class.no-nav]="!showNav()">
+<div
+  class="shell"
+  [class.mode-workout]="mode() === 'workout'"
+  [class.with-fab]="showFab()"
+  [class.no-nav]="!showNav()"
+>
   <header class="topbar">
     <div class="topbar-inner">
       @if (showBack()) {
@@ -11,7 +16,12 @@
         </a>
       }
 
-      <h1 class="heading">{{ heading() }}</h1>
+      @if (showSwitcher()) {
+        <h1 class="sr-only">{{ heading() }}</h1>
+        <app-switcher [mode]="mode()" />
+      } @else {
+        <h1 class="heading">{{ heading() }}</h1>
+      }
 
       @if (installEvent()) {
         <button type="button" class="btn install-btn" (click)="install()">
@@ -34,15 +44,30 @@
   </main>
 
   @if (showFab()) {
-    <a class="fab" routerLink="/entry" aria-label="เพิ่มรายการใหม่">
-      <app-icon name="plus" [size]="28" [stroke]="2.6" />
-    </a>
+    @if (mode() === 'workout') {
+      <a class="fab fab-wide" routerLink="/workout/add">
+        <app-icon name="plus" [size]="22" [stroke]="2.6" />
+        <span>เพิ่มท่า</span>
+      </a>
+    } @else {
+      <a class="fab" routerLink="/entry" aria-label="เพิ่มรายการใหม่">
+        <app-icon name="plus" [size]="28" [stroke]="2.6" />
+      </a>
+    }
   }
 
   @if (showNav()) {
-    <nav class="bottom-nav" aria-label="เมนูหลัก">
-      @for (item of navItems; track item.path) {
-        <a [routerLink]="item.path" routerLinkActive="active" class="nav-item">
+    <nav
+      class="bottom-nav"
+      [attr.aria-label]="mode() === 'workout' ? 'เมนูออกกำลังกาย' : 'เมนูหลัก'"
+    >
+      @for (item of navItems(); track item.path) {
+        <a
+          [routerLink]="item.path"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{ exact: true }"
+          class="nav-item"
+        >
           <app-icon [name]="item.icon" [size]="22" />
           <span class="nav-label">{{ item.label }}</span>
           <span class="nav-dot" aria-hidden="true"></span>

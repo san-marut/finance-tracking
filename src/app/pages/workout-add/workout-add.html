@@ -1,0 +1,179 @@
+<p class="step-label">{{ stepLabel() }}</p>
+
+@if (savedName()) {
+  <p class="saved" role="status">
+    <app-icon name="check" [size]="16" [stroke]="2.6" />
+    <span class="ellipsis">บันทึก {{ savedName() }} แล้ว</span>
+  </p>
+}
+
+@switch (step()) {
+  @case ('type') {
+    <div class="types">
+      <button type="button" class="card type-card" (click)="pickType('cardio')">
+        <span class="type-icon cardio"
+          ><app-icon name="activity" [size]="28" [stroke]="2.2"
+        /></span>
+        <span class="list-text">
+          <b class="display">Cardio</b>
+          <small>{{ cardio.exercises.length }} เครื่อง · {{ cardio.exercises.join(' · ') }}</small>
+        </span>
+        <app-icon class="faint" name="chevronRight" />
+      </button>
+      <button type="button" class="card type-card" (click)="pickType('weight')">
+        <span class="type-icon weight"
+          ><app-icon name="dumbbell" [size]="28" [stroke]="2.2"
+        /></span>
+        <span class="list-text">
+          <b class="display">Weight Training</b>
+          <small>{{ parts.length }} ส่วน · {{ weightCount }} ท่า</small>
+        </span>
+        <app-icon class="faint" name="chevronRight" />
+      </button>
+    </div>
+  }
+
+  @case ('part') {
+    <div class="parts">
+      @for (p of parts; track p.id) {
+        <button type="button" class="card part-card" (click)="pickPart(p.id)">
+          <span class="part-head">
+            <b class="display">{{ p.label }}</b>
+            <span class="count">{{ p.exercises.length }} ท่า</span>
+          </span>
+          <small
+            >{{ p.exercises.slice(0, 2).join(' · ')
+            }}{{ p.exercises.length > 2 ? ' …' : '' }}</small
+          >
+        </button>
+      }
+    </div>
+  }
+
+  @case ('exercise') {
+    <div class="card list-card">
+      @for (x of exercises(); track x.name) {
+        <button type="button" class="list-row ex-row" (click)="pickExercise(x.name)">
+          <span class="art" [class.cardio]="type() === 'cardio'">
+            <app-exercise-art [exercise]="x.name" [size]="40" />
+          </span>
+          <span class="list-text">
+            <b>{{ x.name }}</b>
+            @if (x.last) {
+              <small>ครั้งล่าสุด {{ x.last }}</small>
+            }
+          </span>
+          <app-icon class="faint" name="chevronRight" [size]="18" />
+        </button>
+      }
+    </div>
+  }
+
+  @default {
+    <div class="hero" [class.cardio]="type() === 'cardio'">
+      <span class="hero-art"
+        ><app-exercise-art [exercise]="exercise()" [size]="104" [stroke]="1.6"
+      /></span>
+      <span class="hero-text">
+        <small>{{ type() === 'cardio' ? 'CARDIO' : 'WEIGHT · ' + (part()?.label ?? '') }}</small>
+        <b class="display">{{ exercise() }}</b>
+      </span>
+    </div>
+
+    <div class="card list-card">
+      @for (f of fields(); track f.key) {
+        <div class="list-row field-row">
+          <label class="list-text" [for]="'f-' + f.key">
+            <b>{{ f.label }}</b>
+            @if (f.hint) {
+              <small>{{ f.hint }}</small>
+            }
+          </label>
+          <button
+            type="button"
+            class="step-btn"
+            (click)="bump(f, -1)"
+            [attr.aria-label]="'ลด' + f.label"
+          >
+            <app-icon name="minus" [size]="18" [stroke]="2.6" />
+          </button>
+          <span class="value">
+            <input
+              [id]="'f-' + f.key"
+              class="display tabular"
+              type="number"
+              inputmode="decimal"
+              [min]="f.min"
+              [max]="f.max"
+              [step]="f.step"
+              [value]="fmt(f)"
+              (change)="typed(f, $event)"
+            />
+            <small>{{ f.unit }}</small>
+          </span>
+          <button
+            type="button"
+            class="step-btn plus"
+            (click)="bump(f, 1)"
+            [attr.aria-label]="'เพิ่ม' + f.label"
+          >
+            <app-icon name="plus" [size]="18" [stroke]="2.6" />
+          </button>
+        </div>
+      }
+    </div>
+
+    @if (type() === 'weight') {
+      <section class="rest">
+        <h2 class="section-title"><span>พักต่อเซต</span></h2>
+        <div class="rest-chips" role="radiogroup" aria-label="พักต่อเซต">
+          @for (r of restOptions; track r.sec) {
+            <button
+              type="button"
+              role="radio"
+              [attr.aria-checked]="values().rest === r.sec"
+              [class.on]="values().rest === r.sec"
+              (click)="setRest(r.sec)"
+            >
+              {{ r.label }}
+            </button>
+          }
+        </div>
+      </section>
+    }
+
+    <div class="preview">
+      <small>จะคัดลอกเป็น</small>
+      <code>{{ previewLine() }}</code>
+    </div>
+
+    @if (editing()) {
+      <div class="delete-zone">
+        @if (confirmDelete()) {
+          <span class="muted">ลบท่านี้ออกจากบันทึก?</span>
+          <button type="button" class="btn btn-ghost" (click)="confirmDelete.set(false)">
+            ยกเลิก
+          </button>
+          <button type="button" class="btn btn-danger" (click)="remove()">ลบเลย</button>
+        } @else {
+          <button type="button" class="btn btn-ghost delete" (click)="confirmDelete.set(true)">
+            <app-icon name="trash" [size]="18" /> ลบท่านี้
+          </button>
+        }
+      </div>
+    }
+
+    <div class="save-bar">
+      <div class="save-bar-inner">
+        @if (editing()) {
+          <button type="button" class="btn btn-primary" (click)="save(false)">
+            บันทึกการแก้ไข
+          </button>
+        } @else {
+          <button type="button" class="btn next" (click)="save(true)">บันทึก + ท่าต่อไป</button>
+          <button type="button" class="btn btn-primary" (click)="save(false)">บันทึก</button>
+        }
+      </div>
+    </div>
+  }
+}
