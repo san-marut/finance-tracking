@@ -19,7 +19,11 @@
   </div>
 
   @if (scope() === 'month') {
-    <app-month-picker [month]="store.selectedMonth()" (monthChange)="setMonth($event)" />
+    <app-month-picker
+      [month]="store.selectedMonth()"
+      [max]="store.lastMonth()"
+      (monthChange)="setMonth($event)"
+    />
   }
 </section>
 

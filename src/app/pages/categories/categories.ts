@@ -120,7 +120,16 @@ export class Categories {
     if (name) this.store.renameSubCategory(catId, subId, name);
   }
 
+  /** แตะครั้งแรกถามยืนยันถ้ามีรายการใช้แท็กย่อยนี้อยู่ แท็กย่อยที่ยังไม่ถูกใช้ลบได้ทันที */
+  protected readonly confirmSubId = signal<string | null>(null);
+
+  protected askRemoveSub(catId: string, subId: string): void {
+    if (this.subUsage(subId) === 0) this.removeSub(catId, subId);
+    else this.confirmSubId.set(subId);
+  }
+
   protected removeSub(catId: string, subId: string): void {
     this.store.deleteSubCategory(catId, subId);
+    this.confirmSubId.set(null);
   }
 }

@@ -14,12 +14,15 @@
 
 <p class="step-label">{{ stepLabel() }}</p>
 
-@if (savedName()) {
-  <p class="saved" role="status">
-    <app-icon name="check" [size]="16" [stroke]="2.6" />
-    <span class="ellipsis">บันทึก {{ savedName() }} แล้ว</span>
-  </p>
-}
+<!-- กล่อง role="status" ต้องอยู่บนหน้าตลอด ถ้าสร้างพร้อมข้อความ screen reader มักไม่อ่าน -->
+<div role="status">
+  @if (savedName()) {
+    <p class="saved">
+      <app-icon name="check" [size]="16" [stroke]="2.6" />
+      <span class="ellipsis">บันทึก {{ savedName() }} แล้ว</span>
+    </p>
+  }
+</div>
 
 @switch (step()) {
   @case ('type') {

@@ -29,6 +29,10 @@
   --income-soft: #ddf4ea;
   --expense: #c23d2b;
   --expense-soft: #fde5e0;
+  /* ตัวอักษรสีรายจ่ายบนพื้น --expense-soft: --expense ได้แค่ 4.37:1 จึงเข้มขึ้นอีกนิด (4.72:1) */
+  --on-expense-soft: #b93a27;
+  /* ป้าย "ดีขึ้น" สีเขียวที่อาจไปอยู่บนการ์ดสีชมพู (--income ได้ 4.4:1) */
+  --on-soft-good: #0f6a4f;
   /* ตัวอักษรบนพื้นสีรายรับ/รายจ่ายเต็มสี */
   --on-kind: #ffffff;
   --warn: #b26b00;
@@ -99,6 +103,8 @@
   --income-soft: #173228;
   --expense: #ff8b7a;
   --expense-soft: #3b1f1a;
+  --on-expense-soft: #ff8b7a;
+  --on-soft-good: #52d3a2;
   /* ธีมมืดสีรายรับ/รายจ่ายสว่าง ตัวขาวได้แค่ 2.3:1 จึงใช้ตัวเข้มแทน */
   --on-kind: #1f110d;
   --warn: #ffc766;
@@ -214,6 +220,16 @@ a {
 }
 
 :focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 2px;
+}
+
+/*
+ * ตัวเลือกวันที่ใช้ input ใสทับทั้งกล่องเพื่อเปิดปฏิทินของเครื่อง วงโฟกัสของ input จึงมองไม่เห็น
+ * ย้ายวงไปไว้ที่กล่องที่ครอบแทน (day-picker, แถบวันที่ในหน้าเพิ่มท่า)
+ */
+.picker-label:has(> input:focus-visible),
+.date-chip:has(> input:focus-visible) {
   outline: 2px solid var(--brand);
   outline-offset: 2px;
 }
@@ -434,7 +450,7 @@ a {
 }
 
 .btn-danger {
-  color: var(--expense);
+  color: var(--on-expense-soft);
   border-color: color-mix(in srgb, var(--expense) 30%, transparent);
   background: var(--expense-soft);
 }
@@ -723,6 +739,12 @@ input[type='checkbox'] {
     background: var(--brand-strong);
     border-color: transparent;
     color: var(--on-brand);
+  }
+
+  /* เดือน/ปีในอนาคตที่ยังไม่มีข้อมูล */
+  button:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
   }
 }
 

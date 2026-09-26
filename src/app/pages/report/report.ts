@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@a
 import { Router } from '@angular/router';
 import { FinanceStore } from '../../core/finance-store';
 import { MonthlyPoint, TxKind } from '../../models/finance.models';
-import { dateLabel, monthLabel } from '../../core/utils';
+import { currentMonth, dateLabel, monthLabel } from '../../core/utils';
 import { CategoryBreakdown } from '../../shared/category-breakdown';
 import { YearPicker } from '../../shared/year-picker';
 import { TrendChart } from '../../shared/trend-chart';
@@ -22,6 +22,9 @@ export class Report {
   protected readonly year = signal(new Date().getFullYear());
   protected readonly kindView = signal<TxKind>('expense');
 
+  /** ปีล่าสุดที่เลื่อนไปดูได้ (ปีนี้ หรือปีของรายการที่ลงวันล่วงหน้าไว้) */
+  protected readonly lastYear = computed(() => Number(this.store.lastMonth().slice(0, 4)));
+
   /** ปี พ.ศ. ไว้แสดงผล */
   protected readonly yearLabel = computed(() => this.year() + 543);
 
@@ -34,21 +37,26 @@ export class Report {
     this.store.statsFor(this.kindView(), String(this.year())),
   );
 
-  /** เดือนที่มีความเคลื่อนไหวจริง ใช้เป็นตัวหารของค่าเฉลี่ย */
-  protected readonly activeMonths = computed(
-    () => this.points().filter((p) => p.income > 0 || p.expense > 0).length,
+  /**
+   * เดือนที่ใช้หาค่าเฉลี่ยและเทียบกับปีก่อน: มีรายการจริง และจบเดือนแล้ว
+   * เดือนปัจจุบันยังไม่จบ ถ้านับด้วยค่าเฉลี่ยจะต่ำเกินจริง ส่วนปีที่เพิ่งเริ่มใช้แอปก็มีไม่ครบ 12 เดือน
+   * จึงเทียบกันด้วยค่าเฉลี่ยต่อเดือน ไม่ใช่ยอดรวมทั้งปี (ต้นปีที่ยังไม่มีเดือนไหนจบ ใช้เดือนที่มีข้อมูลแทน)
+   */
+  protected readonly baseMonths = computed(() => completedOrActive(this.points()));
+  private readonly prevBaseMonths = computed(() =>
+    completedOrActive(this.store.monthlyPointsOfYear(String(this.year() - 1))),
   );
 
-  protected readonly avgIncome = computed(() =>
-    this.activeMonths() ? this.summary().income / this.activeMonths() : 0,
-  );
-
-  protected readonly avgExpense = computed(() =>
-    this.activeMonths() ? this.summary().expense / this.activeMonths() : 0,
-  );
+  protected readonly avgIncome = computed(() => average(this.baseMonths(), 'income'));
+  protected readonly avgExpense = computed(() => average(this.baseMonths(), 'expense'));
 
   /** เดือนที่จ่ายมากสุด / น้อยสุด (นับเฉพาะเดือนที่มีรายจ่าย) */
   protected readonly spentMonths = computed(() => this.points().filter((p) => p.expense > 0));
+
+  /** "น้อยที่สุด" ไม่นับเดือนปัจจุบัน ไม่งั้นกลางเดือนจะชนะเกือบทุกครั้งทั้งที่ยังจ่ายไม่ครบ */
+  private readonly closedSpentMonths = computed(() =>
+    this.spentMonths().filter((p) => p.month < currentMonth()),
+  );
 
   protected readonly topMonth = computed<MonthlyPoint | null>(() => {
     const rows = this.spentMonths();
@@ -56,7 +64,7 @@ export class Report {
   });
 
   protected readonly lowMonth = computed<MonthlyPoint | null>(() => {
-    const rows = this.spentMonths();
+    const rows = this.closedSpentMonths();
     return rows.length ? rows.reduce((min, p) => (p.expense < min.expense ? p : min)) : null;
   });
 
@@ -78,8 +86,13 @@ export class Report {
     return income > 0 ? (balance / income) * 100 : null;
   });
 
-  protected readonly incomeDelta = computed(() => this.delta(this.summary().income, this.prevSummary().income));
-  protected readonly expenseDelta = computed(() => this.delta(this.summary().expense, this.prevSummary().expense));
+  /** เทียบค่าเฉลี่ยต่อเดือนกับปีก่อน (ดู baseMonths) */
+  protected readonly incomeDelta = computed(() =>
+    this.delta(this.avgIncome(), average(this.prevBaseMonths(), 'income')),
+  );
+  protected readonly expenseDelta = computed(() =>
+    this.delta(this.avgExpense(), average(this.prevBaseMonths(), 'expense')),
+  );
 
   protected readonly hasPrevYear = computed(() => this.prevSummary().count > 0);
 
@@ -108,4 +121,14 @@ export class Report {
     if (!prev) return null;
     return ((now - prev) / prev) * 100;
   }
+}
+
+function completedOrActive(points: MonthlyPoint[]): MonthlyPoint[] {
+  const active = points.filter((p) => p.income > 0 || p.expense > 0);
+  const completed = active.filter((p) => p.month < currentMonth());
+  return completed.length ? completed : active;
+}
+
+function average(points: MonthlyPoint[], key: 'income' | 'expense'): number {
+  return points.length ? points.reduce((sum, p) => sum + p[key], 0) / points.length : 0;
 }

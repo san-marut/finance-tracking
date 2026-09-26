@@ -50,6 +50,16 @@ export class FinanceStore {
     ),
   );
 
+  /**
+   * เดือนล่าสุดที่ตัวเลือกเดือน/ปีให้เลื่อนไปได้: เดือนนี้ หรือเดือนของรายการที่ลงวันล่วงหน้าไว้ (ถ้าไกลกว่า)
+   * กันการเลื่อนไปเจอเดือนว่างในอนาคต แต่ยังเปิดดูรายการล่วงหน้าที่มีอยู่จริงได้
+   */
+  readonly lastMonth = computed(() => {
+    const latest = this._transactions().reduce((max, t) => (t.date > max ? t.date : max), '');
+    const now = currentMonth();
+    return latest && monthOf(latest) > now ? monthOf(latest) : now;
+  });
+
   /** รายการของเดือนที่เลือก */
   readonly monthTransactions = computed(() =>
     this.sortedTransactions().filter((t) => monthOf(t.date) === this.selectedMonth()),

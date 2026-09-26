@@ -66,11 +66,11 @@
   font-weight: 700;
 
   &.good {
-    color: var(--income);
+    color: var(--on-soft-good);
   }
 
   &.bad {
-    color: var(--expense);
+    color: var(--on-expense-soft);
   }
 }
 

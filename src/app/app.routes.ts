@@ -62,6 +62,14 @@ export const routes: Routes = [
       import('./pages/workout-history/workout-history').then((m) => m.WorkoutHistory),
   },
   {
+    // หน้าตั้งค่าเดียวกัน แต่อยู่ใต้ /workout ให้เมนูล่างและสีของส่วนออกกำลังกายไม่หายไป
+    // (ธีมและการสำรองข้อมูลออกกำลังกายอยู่ในหน้านี้ คนที่ใช้แต่ส่วนนี้ต้องหาเจอ)
+    path: 'workout/settings',
+    title: 'ตั้งค่า · บันทึกประจำวัน',
+    data: { heading: 'ตั้งค่า' },
+    loadComponent: () => import('./pages/settings/settings').then((m) => m.Settings),
+  },
+  {
     path: 'workout/add',
     title: 'เพิ่มท่า · บันทึกประจำวัน',
     data: { heading: 'เพิ่มท่า', back: true },

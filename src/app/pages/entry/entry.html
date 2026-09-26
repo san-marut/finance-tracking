@@ -145,6 +145,9 @@
   </div>
 </div>
 
-@if (toast()) {
-  <div class="toast save-toast" role="status">{{ toast() }}</div>
-}
+<!-- กล่อง role="status" ต้องอยู่บนหน้าตลอด ถ้าสร้างพร้อมข้อความ screen reader มักไม่อ่าน -->
+<div role="status">
+  @if (toast()) {
+    <div class="toast save-toast">{{ toast() }}</div>
+  }
+</div>

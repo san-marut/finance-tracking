@@ -128,7 +128,7 @@
   background: var(--expense-soft);
   font-size: var(--fs-sm);
   font-weight: 600;
-  color: var(--expense);
+  color: var(--on-expense-soft);
 
   .form-actions {
     margin-top: var(--sp-3);
@@ -220,4 +220,16 @@
   .btn {
     flex: none;
   }
+}
+
+/* ยืนยันลบแท็กย่อยที่มีรายการใช้อยู่ */
+.sub-confirm {
+  min-height: 40px;
+  padding: 0 var(--sp-3);
+}
+
+.sub-warn {
+  margin: 0 0 var(--sp-1) var(--sp-4);
+  font-size: var(--fs-sm);
+  color: var(--on-expense-soft);
 }

@@ -219,6 +219,9 @@
   ติดตั้งเป็นแอปได้จากเมนูเบราว์เซอร์ → "เพิ่มไปยังหน้าจอโฮม" แล้วใช้งานแบบออฟไลน์ได้
 </p>
 
-@if (toast()) {
-  <div class="toast" role="status">{{ toast() }}</div>
-}
+<!-- กล่อง role="status" ต้องอยู่บนหน้าตลอด ถ้าสร้างพร้อมข้อความ screen reader มักไม่อ่าน -->
+<div role="status">
+  @if (toast()) {
+    <div class="toast">{{ toast() }}</div>
+  }
+</div>

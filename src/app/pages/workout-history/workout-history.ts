@@ -44,7 +44,7 @@ import { Icon } from '../../shared/icon';
       flex-direction: column;
       align-items: flex-end;
       font-size: var(--fs-sm);
-      font-weight: 600;
+      font-weight: 500;
       color: var(--brand-text);
       line-height: 1.4;
     }

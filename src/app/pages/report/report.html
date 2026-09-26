@@ -1,4 +1,9 @@
-<app-year-picker class="year" [year]="year()" (yearChange)="year.set($event)" />
+<app-year-picker
+  class="year"
+  [year]="year()"
+  [max]="lastYear()"
+  (yearChange)="year.set($event)"
+/>
 
 @if (!hasData()) {
   <div class="card empty">
@@ -20,7 +25,7 @@
         @if (incomeDelta() !== null) {
           <!-- รายรับเพิ่มขึ้นคือดี -->
           <span class="flow-delta" [class.good]="incomeDelta()! > 0" [class.bad]="incomeDelta()! <= 0">
-            {{ incomeDelta()! > 0 ? '▲' : '▼' }} {{ abs(incomeDelta()!) | money: 0 }}% จากปี {{ yearLabel() - 1 }}
+            {{ incomeDelta()! > 0 ? '▲' : '▼' }} {{ abs(incomeDelta()!) | money: 0 }}% ต่อเดือน เทียบปี {{ yearLabel() - 1 }}
           </span>
         }
       </div>
@@ -30,7 +35,7 @@
         @if (expenseDelta() !== null) {
           <!-- รายจ่ายเพิ่มขึ้นคือไม่ดี -->
           <span class="flow-delta" [class.bad]="expenseDelta()! > 0" [class.good]="expenseDelta()! <= 0">
-            {{ expenseDelta()! > 0 ? '▲' : '▼' }} {{ abs(expenseDelta()!) | money: 0 }}% จากปี {{ yearLabel() - 1 }}
+            {{ expenseDelta()! > 0 ? '▲' : '▼' }} {{ abs(expenseDelta()!) | money: 0 }}% ต่อเดือน เทียบปี {{ yearLabel() - 1 }}
           </span>
         }
       </div>

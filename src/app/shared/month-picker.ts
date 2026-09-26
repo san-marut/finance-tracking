@@ -36,7 +36,13 @@ import { Icon } from './icon';
         <span class="picker-caption">แตะเพื่อเลือกเดือนและปี</span>
       </button>
 
-      <button type="button" class="icon-btn soft" (click)="shift(1)" aria-label="เดือนถัดไป">
+      <button
+        type="button"
+        class="icon-btn soft"
+        [disabled]="atMax()"
+        (click)="shift(1)"
+        aria-label="เดือนถัดไป"
+      >
         <app-icon name="chevronRight" />
       </button>
 
@@ -47,7 +53,13 @@ import { Icon } from './icon';
               <app-icon name="chevronLeft" [size]="18" />
             </button>
             <b>{{ panelYear() + 543 }}</b>
-            <button type="button" class="icon-btn soft" (click)="shiftYear(1)" aria-label="ปีถัดไป">
+            <button
+              type="button"
+              class="icon-btn soft"
+              [disabled]="!!maxYear() && panelYear() >= maxYear()!"
+              (click)="shiftYear(1)"
+              aria-label="ปีถัดไป"
+            >
               <app-icon name="chevronRight" [size]="18" />
             </button>
           </div>
@@ -59,6 +71,7 @@ import { Icon } from './icon';
                 [class.on]="isSelected(i)"
                 [attr.aria-pressed]="isSelected(i)"
                 [class.now]="isCurrent(i)"
+                [disabled]="isAfterMax(i)"
                 (click)="pick(i)"
               >
                 {{ name }}
@@ -78,6 +91,11 @@ export class MonthPicker {
 
   readonly month = input.required<string>();
   readonly monthChange = output<string>();
+  /** เดือนล่าสุดที่เลือกได้ ('YYYY-MM') ไม่ใส่ = ไม่จำกัด */
+  readonly max = input<string | null>(null);
+
+  protected readonly atMax = computed(() => !!this.max() && this.month() >= this.max()!);
+  protected readonly maxYear = computed(() => (this.max() ? Number(this.max()!.slice(0, 4)) : null));
 
   protected readonly monthNames = TH_MONTHS_SHORT;
   protected readonly open = signal(false);
@@ -108,6 +126,7 @@ export class MonthPicker {
   }
 
   protected shift(delta: number): void {
+    if (delta > 0 && this.atMax()) return;
     this.monthChange.emit(shiftMonth(this.month(), delta));
   }
 
@@ -123,6 +142,15 @@ export class MonthPicker {
   protected isCurrent(index: number): boolean {
     const now = currentMonth();
     return this.panelYear() === Number(now.slice(0, 4)) && Number(now.slice(5, 7)) - 1 === index;
+  }
+
+  protected isAfterMax(index: number): boolean {
+    const max = this.max();
+    return !!max && this.ym(index) > max;
+  }
+
+  private ym(index: number): string {
+    return `${this.panelYear()}-${`${index + 1}`.padStart(2, '0')}`;
   }
 
   protected pick(index: number): void {

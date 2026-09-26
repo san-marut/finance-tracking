@@ -65,6 +65,7 @@ export class App {
   private static readonly WORKOUT_NAV = [
     { path: '/workout', label: 'บันทึก', icon: 'dumbbell' },
     { path: '/workout/history', label: 'ประวัติ', icon: 'history' },
+    { path: '/workout/settings', label: 'ตั้งค่า', icon: 'settings' },
   ];
 
   protected readonly navItems = computed(() =>

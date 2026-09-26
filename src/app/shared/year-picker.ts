@@ -37,7 +37,13 @@ const PAGE_SIZE = 12;
         <span class="picker-caption">แตะเพื่อเลือกปี</span>
       </button>
 
-      <button type="button" class="icon-btn soft" (click)="shift(1)" aria-label="ปีถัดไป">
+      <button
+        type="button"
+        class="icon-btn soft"
+        [disabled]="!!max() && year() >= max()!"
+        (click)="shift(1)"
+        aria-label="ปีถัดไป"
+      >
         <app-icon name="chevronRight" />
       </button>
 
@@ -48,7 +54,13 @@ const PAGE_SIZE = 12;
               <app-icon name="chevronLeft" [size]="18" />
             </button>
             <b>{{ pageStart() + 543 }} – {{ pageStart() + 543 + 11 }}</b>
-            <button type="button" class="icon-btn soft" (click)="page(1)" aria-label="ถัดไป 12 ปี">
+            <button
+              type="button"
+              class="icon-btn soft"
+              [disabled]="!!max() && pageStart() + 11 >= max()!"
+              (click)="page(1)"
+              aria-label="ถัดไป 12 ปี"
+            >
               <app-icon name="chevronRight" [size]="18" />
             </button>
           </div>
@@ -60,6 +72,7 @@ const PAGE_SIZE = 12;
                 [class.on]="y === year()"
                 [attr.aria-pressed]="y === year()"
                 [class.now]="y === thisYear"
+                [disabled]="!!max() && y > max()!"
                 (click)="pick(y)"
               >
                 {{ y + 543 }}
@@ -79,6 +92,8 @@ export class YearPicker {
 
   readonly year = input.required<number>();
   readonly yearChange = output<number>();
+  /** ปีล่าสุดที่เลือกได้ ไม่ใส่ = ไม่จำกัด */
+  readonly max = input<number | null>(null);
 
   protected readonly thisYear = new Date().getFullYear();
   protected readonly open = signal(false);
@@ -108,6 +123,8 @@ export class YearPicker {
   }
 
   protected shift(delta: number): void {
+    const max = this.max();
+    if (delta > 0 && max && this.year() >= max) return;
     this.yearChange.emit(this.year() + delta);
   }
 

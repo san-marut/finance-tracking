@@ -19,7 +19,11 @@
   </div>
 
   @if (mode() === 'month') {
-    <app-month-picker [month]="store.selectedMonth()" (monthChange)="setMonth($event)" />
+    <app-month-picker
+      [month]="store.selectedMonth()"
+      [max]="store.lastMonth()"
+      (monthChange)="setMonth($event)"
+    />
   } @else {
     <app-day-picker [date]="store.selectedDate()" (dateChange)="setDate($event)" />
   }
@@ -49,8 +53,22 @@
 
   <select class="select" [(ngModel)]="categoryFilter" aria-label="กรองตามแท็กหลัก">
     <option value="">ทุกแท็กหลัก</option>
-    @for (c of categoryOptions(); track c.id) {
-      <option [value]="c.id">{{ c.icon }} {{ c.name }}</option>
+    <!-- ดูทั้งรับและจ่าย: แยกกลุ่ม ไม่งั้นแท็กชื่อซ้ำกันสองฝั่ง (เช่น "อื่นๆ") แยกไม่ออก -->
+    @if (kindFilter() === 'all') {
+      <optgroup label="รายจ่าย">
+        @for (c of store.categoriesOf('expense'); track c.id) {
+          <option [value]="c.id">{{ c.icon }} {{ c.name }}</option>
+        }
+      </optgroup>
+      <optgroup label="รายรับ">
+        @for (c of store.categoriesOf('income'); track c.id) {
+          <option [value]="c.id">{{ c.icon }} {{ c.name }}</option>
+        }
+      </optgroup>
+    } @else {
+      @for (c of categoryOptions(); track c.id) {
+        <option [value]="c.id">{{ c.icon }} {{ c.name }}</option>
+      }
     }
   </select>
 </section>

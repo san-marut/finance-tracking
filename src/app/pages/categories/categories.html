@@ -122,11 +122,34 @@
                 [attr.aria-label]="'ชื่อแท็กย่อย ' + sub.name"
                 (change)="renameSub(cat.id, sub.id, $event)"
               />
-              <span class="usage tabular">{{ subUsage(sub.id) }}</span>
-              <button type="button" class="icon-btn" (click)="removeSub(cat.id, sub.id)" aria-label="ลบแท็กย่อย">
-                <app-icon name="close" [size]="16" />
-              </button>
+              <span class="usage tabular" [attr.aria-label]="subUsage(sub.id) + ' รายการ'">{{
+                subUsage(sub.id)
+              }}</span>
+              @if (confirmSubId() === sub.id) {
+                <button
+                  type="button"
+                  class="btn btn-danger sub-confirm"
+                  (click)="removeSub(cat.id, sub.id)"
+                  [attr.aria-label]="'ยืนยันลบแท็กย่อย ' + sub.name"
+                >
+                  ลบ
+                </button>
+              } @else {
+                <button
+                  type="button"
+                  class="icon-btn"
+                  (click)="askRemoveSub(cat.id, sub.id)"
+                  [attr.aria-label]="'ลบแท็กย่อย ' + sub.name"
+                >
+                  <app-icon name="close" [size]="16" />
+                </button>
+              }
             </div>
+            @if (confirmSubId() === sub.id) {
+              <p class="sub-warn" role="status">
+                {{ subUsage(sub.id) }} รายการจะไม่มีแท็กย่อย (แท็กหลักยังอยู่) — แตะ "ลบ" อีกครั้งเพื่อยืนยัน
+              </p>
+            }
           } @empty {
             <p class="none">ยังไม่มีแท็กย่อย</p>
           }
