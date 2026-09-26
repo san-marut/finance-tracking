@@ -58,10 +58,26 @@ export class FinanceStore {
   readonly monthSummary = computed(() => summarize(this.monthTransactions()));
   readonly allTimeSummary = computed(() => summarize(this._transactions()));
 
-  /** ยอดรวมของเดือนก่อนหน้า ไว้เทียบ % */
+  /**
+   * ยอดรวมของเดือนก่อนหน้า ไว้เทียบ %
+   * ถ้าเดือนที่เลือกคือเดือนปัจจุบัน นับเดือนก่อนแค่ถึงวันที่เดียวกับวันนี้
+   * ไม่งั้นครึ่งเดือนนี้จะไปเทียบกับเดือนก่อนทั้งเดือน แล้วขึ้นว่า "ลดลง" เกือบตลอด
+   */
   readonly prevMonthSummary = computed(() => {
-    const prev = shiftMonth(this.selectedMonth(), -1);
-    return summarize(this._transactions().filter((t) => monthOf(t.date) === prev));
+    const month = this.selectedMonth();
+    const prev = shiftMonth(month, -1);
+    const today = todayIso();
+    // 'YYYY-MM-DD' เทียบเป็นสตริงได้ วันที่ 31 ของเดือนที่มี 30 วันก็ยังครอบทั้งเดือน
+    const cutoff = month === monthOf(today) ? `${prev}-${today.slice(8, 10)}` : `${prev}-31`;
+    return summarize(
+      this._transactions().filter((t) => monthOf(t.date) === prev && t.date <= cutoff),
+    );
+  });
+
+  /** ยอดของเดือนที่เลือกสำหรับเทียบกับ prevMonthSummary — เดือนปัจจุบันไม่นับรายการที่ลงวันล่วงหน้า */
+  readonly monthToDateSummary = computed(() => {
+    const today = todayIso();
+    return summarize(this.monthTransactions().filter((t) => t.date <= today));
   });
 
   /** รายเดือนย้อนหลัง 12 เดือน (นับจากเดือนที่เลือก) สำหรับกราฟแนวโน้ม */
@@ -397,18 +413,26 @@ export class FinanceStore {
     return '﻿' + [head.map(esc).join(','), ...rows].join('\n');
   }
 
-  /** คืนค่า true ถ้านำเข้าสำเร็จ */
-  importJson(raw: string): boolean {
+  /** อ่านไฟล์สำรองโดยยังไม่แทนที่ข้อมูล ให้หน้าตั้งค่าถามยืนยันก่อน — null ถ้าไฟล์ไม่ถูกต้อง */
+  parseImport(raw: string): FinanceData | null {
     try {
       const parsed = JSON.parse(raw) as Partial<FinanceData>;
-      if (!Array.isArray(parsed.categories) || !Array.isArray(parsed.transactions)) return false;
-      this._categories.set(parsed.categories);
-      this._transactions.set(parsed.transactions);
-      this._mealTagIds.set(parsed.mealTagIds ?? defaultMealTagIds(parsed.categories));
-      return true;
+      if (!Array.isArray(parsed.categories) || !Array.isArray(parsed.transactions)) return null;
+      return {
+        version: DATA_VERSION,
+        categories: parsed.categories,
+        transactions: parsed.transactions,
+        mealTagIds: parsed.mealTagIds ?? defaultMealTagIds(parsed.categories),
+      };
     } catch {
-      return false;
+      return null;
     }
+  }
+
+  applyImport(data: FinanceData): void {
+    this._categories.set(data.categories);
+    this._transactions.set(data.transactions);
+    this._mealTagIds.set(data.mealTagIds ?? defaultMealTagIds(data.categories));
   }
 
   /** ลบเฉพาะรายการรับ-จ่าย เก็บแท็กไว้ */

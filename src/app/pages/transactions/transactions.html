@@ -1,9 +1,8 @@
 <section class="controls">
-  <div class="segmented block" role="tablist" aria-label="ช่วงเวลาที่ดู">
+  <div class="segmented block" role="group" aria-label="ช่วงเวลาที่ดู">
     <button
       type="button"
-      role="tab"
-      [attr.aria-selected]="mode() === 'month'"
+      [attr.aria-pressed]="mode() === 'month'"
       [class.on]="mode() === 'month'"
       (click)="setMode('month')"
     >
@@ -11,8 +10,7 @@
     </button>
     <button
       type="button"
-      role="tab"
-      [attr.aria-selected]="mode() === 'day'"
+      [attr.aria-pressed]="mode() === 'day'"
       [class.on]="mode() === 'day'"
       (click)="setMode('day')"
     >
@@ -33,17 +31,18 @@
     <input
       class="input"
       type="search"
+      aria-label="ค้นหารายการ"
       placeholder="ค้นหาบันทึก แท็ก หรือจำนวนเงิน"
       [(ngModel)]="query"
     />
   </div>
 
   <div class="segmented block">
-    <button type="button" [class.on]="kindFilter() === 'all'" (click)="setKind('all')">ทั้งหมด</button>
-    <button type="button" [class.on]="kindFilter() === 'expense'" (click)="setKind('expense')">
+    <button type="button" [class.on]="kindFilter() === 'all'" [attr.aria-pressed]="kindFilter() === 'all'" (click)="setKind('all')">ทั้งหมด</button>
+    <button type="button" [class.on]="kindFilter() === 'expense'" [attr.aria-pressed]="kindFilter() === 'expense'" (click)="setKind('expense')">
       รายจ่าย
     </button>
-    <button type="button" [class.on]="kindFilter() === 'income'" (click)="setKind('income')">
+    <button type="button" [class.on]="kindFilter() === 'income'" [attr.aria-pressed]="kindFilter() === 'income'" (click)="setKind('income')">
       รายรับ
     </button>
   </div>
@@ -77,7 +76,7 @@
 
 <section class="section">
   <div class="section-title">
-    <span>{{ periodLabel() }} <span class="hint">{{ total().count }} รายการ</span></span>
+    <h2>{{ periodLabel() }} <span class="hint">{{ total().count }} รายการ</span></h2>
     @if (hasFilter()) {
       <button type="button" class="link clear-btn" (click)="clearFilters()">
         <app-icon name="close" [size]="16" /> ล้างตัวกรอง

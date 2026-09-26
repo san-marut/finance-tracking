@@ -37,6 +37,9 @@ export class App {
    */
   private static readonly FAB_ROUTES = ['/dashboard', '/transactions', '/workout'];
   protected readonly showFab = signal(true);
+  /** ปุ่มลอยหลบชั่วคราวระหว่างเลื่อนหน้าลง เพราะมันบังปุ่มที่อยู่ใต้มัน (เช่น "รายรับ", "คัดลอกข้อความ") */
+  protected readonly fabAway = signal(false);
+  private lastScrollY = 0;
   /** ส่วนการเงินกับส่วนออกกำลังกายมีสีหลักและเมนูล่างแยกกัน */
   protected readonly mode = signal<'finance' | 'workout'>('finance');
   /** หน้าแรกของแต่ละส่วนแสดงปุ่มสลับส่วนแทนชื่อหน้า */
@@ -57,7 +60,7 @@ export class App {
   ];
 
   private static readonly WORKOUT_NAV = [
-    { path: '/workout', label: 'วันนี้', icon: 'dumbbell' },
+    { path: '/workout', label: 'บันทึก', icon: 'dumbbell' },
     { path: '/workout/history', label: 'ประวัติ', icon: 'history' },
   ];
 
@@ -70,6 +73,8 @@ export class App {
       if (!(event instanceof NavigationEnd)) return;
       const path = event.urlAfterRedirects.split('?')[0];
       this.showFab.set(App.FAB_ROUTES.includes(path));
+      this.fabAway.set(false);
+      this.lastScrollY = window.scrollY;
       this.mode.set(path.startsWith('/workout') ? 'workout' : 'finance');
 
       let child = this.route.firstChild;
@@ -93,12 +98,24 @@ export class App {
     });
 
     window.addEventListener('appinstalled', () => this.installEvent.set(null));
+
+    window.addEventListener('scroll', () => this.onScroll(), { passive: true });
   }
 
   protected goBack(): void {
     if (this.backHandler.handle()) return;
     if (history.length > 1) this.location.back();
     else this.router.navigate([this.mode() === 'workout' ? '/workout' : '/dashboard']);
+  }
+
+  /** เลื่อนลง = หลบ, เลื่อนขึ้นหรือถึงท้ายหน้า = กลับมา (ท้ายหน้ามีที่เว้นไว้ให้ปุ่มลอยแล้ว ไม่บังอะไร) */
+  private onScroll(): void {
+    const y = window.scrollY;
+    const delta = y - this.lastScrollY;
+    if (Math.abs(delta) < 8) return;
+    this.lastScrollY = y;
+    const atBottom = window.innerHeight + y >= document.documentElement.scrollHeight - 8;
+    this.fabAway.set(delta > 0 && y > 40 && !atBottom);
   }
 
   protected reloadApp(): void {

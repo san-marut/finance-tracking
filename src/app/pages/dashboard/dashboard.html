@@ -1,9 +1,8 @@
 <section class="controls">
-  <div class="segmented block" role="tablist" aria-label="ช่วงข้อมูล">
+  <div class="segmented block" role="group" aria-label="ช่วงข้อมูล">
     <button
       type="button"
-      role="tab"
-      [attr.aria-selected]="scope() === 'month'"
+      [attr.aria-pressed]="scope() === 'month'"
       [class.on]="scope() === 'month'"
       (click)="scope.set('month')"
     >
@@ -11,8 +10,7 @@
     </button>
     <button
       type="button"
-      role="tab"
-      [attr.aria-selected]="scope() === 'all'"
+      [attr.aria-pressed]="scope() === 'all'"
       [class.on]="scope() === 'all'"
       (click)="scope.set('all')"
     >
@@ -31,7 +29,7 @@
     <span class="hero-label">{{ scope() === 'month' ? 'คงเหลือเดือนนี้' : 'คงเหลือทั้งหมด' }}</span>
     @if (expenseDelta() !== null) {
       <!-- รายจ่ายลดลงคือดี จึงเป็นสีเขียว -->
-      <span class="delta" [class.good]="expenseDelta()! <= 0" [class.bad]="expenseDelta()! > 0">
+      <span class="delta" title="เทียบกับช่วงวันเดียวกันของเดือนก่อน" [class.good]="expenseDelta()! <= 0" [class.bad]="expenseDelta()! > 0">
         รายจ่าย{{ expenseDelta()! > 0 ? 'เพิ่มขึ้น' : 'ลดลง' }} {{ abs(expenseDelta()!) | money: 0 }}%
       </span>
     }
@@ -109,12 +107,12 @@
 <!-- แยกตามแท็ก -->
 <section class="section">
   <div class="section-title">
-    <span>แยกตามแท็ก</span>
+    <h2>แยกตามแท็ก</h2>
     <div class="segmented sm">
-      <button type="button" [class.on]="kindView() === 'expense'" (click)="kindView.set('expense')">
+      <button type="button" [class.on]="kindView() === 'expense'" [attr.aria-pressed]="kindView() === 'expense'" (click)="kindView.set('expense')">
         รายจ่าย
       </button>
-      <button type="button" [class.on]="kindView() === 'income'" (click)="kindView.set('income')">
+      <button type="button" [class.on]="kindView() === 'income'" [attr.aria-pressed]="kindView() === 'income'" (click)="kindView.set('income')">
         รายรับ
       </button>
     </div>
@@ -131,7 +129,7 @@
 <!-- แนวโน้ม -->
 <section class="section">
   <div class="section-title">
-    <span>แนวโน้ม 12 เดือน</span>
+    <h2>แนวโน้ม 12 เดือน</h2>
     <span class="hint legend">
       <span class="legend-dot income"></span>รับ
       <span class="legend-dot expense"></span>จ่าย
@@ -149,7 +147,7 @@
 <!-- รายการวันนี้ -->
 <section class="section">
   <div class="section-title">
-    <span>รายการวันนี้ <span class="hint">{{ todayLabel() }}</span></span>
+    <h2>รายการวันนี้ <span class="hint">{{ todayLabel() }}</span></h2>
     <a class="link" routerLink="/transactions">
       ดูทั้งหมด <app-icon name="chevronRight" [size]="16" />
     </a>

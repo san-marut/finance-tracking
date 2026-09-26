@@ -56,9 +56,9 @@ interface Bar {
       color: var(--text-faint);
     }
 
+    /* ไม่เว้นช่องระหว่างคอลัมน์ ให้แต่ละเดือนกว้างพอแตะ (≥ 24px บนจอ 375px) — แท่งจริงแคบกว่าคอลัมน์อยู่แล้ว */
     .bars {
       display: flex;
-      gap: 2px;
     }
 
     .col {
@@ -81,7 +81,7 @@ interface Bar {
       gap: 2px;
       height: 124px;
       width: 100%;
-      border-radius: 8px;
+      border-radius: var(--radius-xs);
     }
 
     .col.current .stack { background: var(--brand-soft); }

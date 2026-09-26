@@ -1,8 +1,8 @@
 <p class="intro">แท็กมี 2 ชั้น — <b>แท็กหลัก</b> และ <b>แท็กย่อย</b> ข้างใน</p>
 
 <div class="segmented block kind">
-  <button type="button" [class.on]="kind() === 'expense'" (click)="kind.set('expense')">แท็กรายจ่าย</button>
-  <button type="button" [class.on]="kind() === 'income'" (click)="kind.set('income')">แท็กรายรับ</button>
+  <button type="button" [class.on]="kind() === 'expense'" [attr.aria-pressed]="kind() === 'expense'" (click)="kind.set('expense')">แท็กรายจ่าย</button>
+  <button type="button" [class.on]="kind() === 'income'" [attr.aria-pressed]="kind() === 'income'" (click)="kind.set('income')">แท็กรายรับ</button>
 </div>
 
 @if (showAdd()) {
@@ -18,7 +18,7 @@
       <span class="label">ไอคอน</span>
       <div class="icon-grid">
         @for (i of icons; track i) {
-          <button type="button" [class.on]="newIcon() === i" (click)="newIcon.set(i)">{{ i }}</button>
+          <button type="button" [class.on]="newIcon() === i" [attr.aria-pressed]="newIcon() === i" (click)="newIcon.set(i)">{{ i }}</button>
         }
       </div>
     </div>
@@ -31,6 +31,7 @@
             type="button"
             class="swatch"
             [class.on]="newColor() === c"
+            [attr.aria-pressed]="newColor() === c"
             [style.background]="c"
             [attr.aria-label]="'เลือกสี ' + c"
             (click)="newColor.set(c)"
@@ -63,7 +64,7 @@
           </label>
           <div class="icon-grid">
             @for (i of icons; track i) {
-              <button type="button" [class.on]="editIcon() === i" (click)="editIcon.set(i)">{{ i }}</button>
+              <button type="button" [class.on]="editIcon() === i" [attr.aria-pressed]="editIcon() === i" (click)="editIcon.set(i)">{{ i }}</button>
             }
           </div>
           <div class="color-grid">
@@ -72,6 +73,7 @@
                 type="button"
                 class="swatch"
                 [class.on]="editColor() === c"
+                [attr.aria-pressed]="editColor() === c"
                 [style.background]="c"
                 [attr.aria-label]="'เลือกสี ' + c"
                 (click)="editColor.set(c)"

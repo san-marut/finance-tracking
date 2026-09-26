@@ -117,7 +117,12 @@ export function compactMoney(value: number): string {
 
 /** คำนวณตัวเลขจากนิพจน์ง่ายๆ ที่พิมพ์ในช่องจำนวนเงิน เช่น "120+35*2" */
 export function evalAmount(expr: string): number | null {
-  const cleaned = expr.replace(/[,\s฿]/g, '');
+  // รับเครื่องหมายแบบที่พิมพ์จากแป้นมือถือ (× ÷ −) ด้วย ตามที่ข้อความช่วยเหลือบอกไว้
+  const cleaned = expr
+    .replace(/[,\s฿]/g, '')
+    .replace(/[×xX]/g, '*')
+    .replace(/÷/g, '/')
+    .replace(/[−–]/g, '-');
   if (!cleaned) return null;
   if (!/^[0-9+\-*/.()]+$/.test(cleaned)) return null;
   try {

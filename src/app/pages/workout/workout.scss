@@ -131,3 +131,12 @@
     color: var(--on-brand);
   }
 }
+
+/* หัวข้อไม่ตัดกลางคำ ("คัด/ลอก") ให้คำอธิบายรูปแบบข้อความเป็นฝ่ายขึ้นบรรทัดใหม่แทน */
+.nowrap {
+  white-space: nowrap;
+}
+
+.copy-hint {
+  text-align: right;
+}

@@ -59,7 +59,7 @@
   <!-- กราฟรายเดือน -->
   <section class="section">
     <div class="section-title">
-      <span>รับ-จ่ายรายเดือน</span>
+      <h2>รับ-จ่ายรายเดือน</h2>
       <span class="hint legend">
         <span class="legend-dot income"></span>รับ
         <span class="legend-dot expense"></span>จ่าย
@@ -73,7 +73,7 @@
   <!-- ตารางรายเดือน -->
   <section class="section">
     <div class="section-title">
-      <span>สรุปรายเดือน <span class="hint">แตะเพื่อดูรายละเอียด</span></span>
+      <h2>สรุปรายเดือน <span class="hint">แตะเพื่อดูรายละเอียด</span></h2>
     </div>
     <div class="card table">
       <div class="tr th">
@@ -112,7 +112,7 @@
 
   <!-- ไฮไลต์ -->
   <section class="section">
-    <div class="section-title"><span>ไฮไลต์ของปี</span></div>
+    <div class="section-title"><h2>ไฮไลต์ของปี</h2></div>
     <div class="card list-card">
       @if (topMonth(); as top) {
         <div class="list-row">
@@ -160,12 +160,12 @@
   <!-- แยกตามแท็ก -->
   <section class="section">
     <div class="section-title">
-      <span>แยกตามแท็กทั้งปี</span>
+      <h2>แยกตามแท็กทั้งปี</h2>
       <div class="segmented sm">
-        <button type="button" [class.on]="kindView() === 'expense'" (click)="kindView.set('expense')">
+        <button type="button" [class.on]="kindView() === 'expense'" [attr.aria-pressed]="kindView() === 'expense'" (click)="kindView.set('expense')">
           รายจ่าย
         </button>
-        <button type="button" [class.on]="kindView() === 'income'" (click)="kindView.set('income')">
+        <button type="button" [class.on]="kindView() === 'income'" [attr.aria-pressed]="kindView() === 'income'" (click)="kindView.set('income')">
           รายรับ
         </button>
       </div>

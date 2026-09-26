@@ -1,4 +1,14 @@
-import { ChangeDetectionStrategy, Component, computed, effect, inject, input, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  ElementRef,
+  afterNextRender,
+  computed,
+  effect,
+  inject,
+  input,
+  signal,
+} from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Location } from '@angular/common';
 import { Router } from '@angular/router';
@@ -19,6 +29,7 @@ export class Entry {
   private readonly store = inject(FinanceStore);
   private readonly router = inject(Router);
   private readonly location = inject(Location);
+  private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
 
   /** id ของรายการที่แก้ไข (มาจาก route param) */
   readonly id = input<string | undefined>(undefined);
@@ -44,7 +55,7 @@ export class Entry {
   protected readonly amount = computed(() => evalAmount(this.amountText()));
 
   /** แสดงผลลัพธ์เมื่อผู้ใช้พิมพ์เป็นนิพจน์ เช่น 120+35 */
-  protected readonly isExpression = computed(() => /[+\-*/]/.test(this.amountText().slice(1)));
+  protected readonly isExpression = computed(() => /[+\-*/×xX÷−–]/.test(this.amountText().slice(1)));
 
   protected readonly dateText = computed(() => dateLabelLong(this.date()));
 
@@ -63,6 +74,11 @@ export class Entry {
   protected readonly quickAdds = [1, 5, 10, 20, 50, 100, 500, 1000];
 
   constructor() {
+    // รายการใหม่เริ่มจากจำนวนเงินเสมอ โฟกัสให้พิมพ์ได้เลย (โหมดแก้ไขไม่โฟกัส จะได้ไม่เด้งแป้นพิมพ์ทับข้อมูลเดิม)
+    afterNextRender(() => {
+      if (!this.isEdit()) this.focusAmount();
+    });
+
     // โหลดค่ารายการเดิมเมื่อเข้าโหมดแก้ไข
     effect(() => {
       const id = this.id();
@@ -122,7 +138,7 @@ export class Entry {
     const editId = this.id();
     if (editId) {
       this.store.updateTransaction(editId, payload);
-      this.location.back();
+      this.leave('/transactions');
       return;
     }
 
@@ -133,17 +149,28 @@ export class Entry {
       this.note.set('');
       this.subCategoryId.set(null);
       this.flash('บันทึกแล้ว เพิ่มรายการต่อได้เลย');
+      this.focusAmount();
       return;
     }
 
-    this.router.navigate(['/dashboard']);
+    this.leave('/dashboard');
   }
 
   protected remove(): void {
     const editId = this.id();
     if (!editId) return;
     this.store.deleteTransaction(editId);
-    this.router.navigate(['/transactions']);
+    this.leave('/transactions');
+  }
+
+  /** กลับไปหน้าที่เปิดฟอร์มนี้มา ไม่เด้งไปภาพรวมทุกครั้ง ถ้าเปิดตรงจากลิงก์ใช้หน้า fallback */
+  private leave(fallback: string): void {
+    if (history.length > 1) this.location.back();
+    else this.router.navigate([fallback]);
+  }
+
+  private focusAmount(): void {
+    this.host.nativeElement.querySelector<HTMLInputElement>('#amount')?.focus();
   }
 
   private flash(message: string): void {

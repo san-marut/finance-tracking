@@ -58,6 +58,7 @@ const PAGE_SIZE = 12;
               <button
                 type="button"
                 [class.on]="y === year()"
+                [attr.aria-pressed]="y === year()"
                 [class.now]="y === thisYear"
                 (click)="pick(y)"
               >

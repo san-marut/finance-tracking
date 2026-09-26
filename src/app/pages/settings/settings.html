@@ -23,7 +23,7 @@
 
 <!-- ค่าอาหาร -->
 <section class="section">
-  <div class="section-title"><span>ค่าอาหารเฉลี่ยต่อวัน</span></div>
+  <div class="section-title"><h2>ค่าอาหารเฉลี่ยต่อวัน</h2></div>
   <div class="card list-card">
     <button type="button" class="list-row" [attr.aria-expanded]="mealOpen()" (click)="mealOpen.set(!mealOpen())">
       <span class="tile meal-tile"><app-icon name="utensils" /></span>
@@ -75,14 +75,32 @@
   </div>
 </section>
 
-<!-- สำรองข้อมูล -->
+<!-- สำรองข้อมูล: การเงินกับออกกำลังกายเก็บแยกคีย์กัน จึงสำรองแยกไฟล์ -->
 <section class="section">
-  <div class="section-title"><span>สำรอง / ย้ายข้อมูล</span></div>
+  <div class="section-title"><h2>สำรอง / ย้ายข้อมูล</h2></div>
+
+  @if (pendingImport(); as p) {
+    <div class="card list-card import-confirm" tabindex="-1" role="group" aria-label="ยืนยันนำเข้าไฟล์สำรอง">
+      <div class="list-row confirm">
+        <span>
+          แทนที่ข้อมูล{{ p.target === 'finance' ? 'การเงิน' : 'ออกกำลังกาย' }}ในเครื่องด้วย
+          <b class="file-name">{{ p.fileName }}</b> ({{ p.count | money: 0 }} รายการ)?
+          ข้อมูลเดิมจะหายและย้อนกลับไม่ได้
+        </span>
+        <div class="confirm-actions">
+          <button type="button" class="btn" (click)="pendingImport.set(null)">ยกเลิก</button>
+          <button type="button" class="btn btn-danger" (click)="confirmImport()">แทนที่ข้อมูล</button>
+        </div>
+      </div>
+    </div>
+  }
+
+  <p class="group-label">การเงิน</p>
   <div class="card list-card">
     <button type="button" class="list-row" (click)="exportJson()">
       <span class="tile"><app-icon name="download" /></span>
       <span class="list-text">
-        <b>ส่งออกไฟล์สำรอง (JSON)</b>
+        <b>ส่งออกไฟล์สำรองการเงิน (JSON)</b>
         <small>เก็บไว้ย้ายเครื่องหรือกู้คืนภายหลัง</small>
       </span>
       <app-icon class="caret" name="chevronRight" [size]="18" />
@@ -91,7 +109,7 @@
     <button type="button" class="list-row" (click)="exportCsv()">
       <span class="tile"><app-icon name="file" /></span>
       <span class="list-text">
-        <b>ส่งออกเป็น CSV</b>
+        <b>ส่งออกรายการรับ-จ่ายเป็น CSV</b>
         <small>เปิดต่อใน Excel หรือ Google Sheets</small>
       </span>
       <app-icon class="caret" name="chevronRight" [size]="18" />
@@ -100,18 +118,40 @@
     <label class="list-row">
       <span class="tile"><app-icon name="upload" /></span>
       <span class="list-text">
-        <b>นำเข้าไฟล์สำรอง</b>
-        <small>ข้อมูลเดิมในเครื่องจะถูกแทนที่ทั้งหมด</small>
+        <b>นำเข้าไฟล์สำรองการเงิน</b>
+        <small>ถามยืนยันก่อนแทนที่ข้อมูลเดิม</small>
       </span>
       <app-icon class="caret" name="chevronRight" [size]="18" />
-      <input class="sr-only" type="file" accept="application/json,.json" (change)="importFile($event)" />
+      <input class="sr-only" type="file" accept="application/json,.json" (change)="pickImport('finance', $event)" />
+    </label>
+  </div>
+
+  <p class="group-label">ออกกำลังกาย</p>
+  <div class="card list-card">
+    <button type="button" class="list-row" (click)="exportWorkout()">
+      <span class="tile"><app-icon name="download" /></span>
+      <span class="list-text">
+        <b>ส่งออกไฟล์สำรองออกกำลังกาย (JSON)</b>
+        <small>{{ workoutCount() ? workoutCount() + ' ท่าที่บันทึกไว้' : 'ยังไม่มีบันทึก' }}</small>
+      </span>
+      <app-icon class="caret" name="chevronRight" [size]="18" />
+    </button>
+
+    <label class="list-row">
+      <span class="tile"><app-icon name="upload" /></span>
+      <span class="list-text">
+        <b>นำเข้าไฟล์สำรองออกกำลังกาย</b>
+        <small>ถามยืนยันก่อนแทนที่ข้อมูลเดิม</small>
+      </span>
+      <app-icon class="caret" name="chevronRight" [size]="18" />
+      <input class="sr-only" type="file" accept="application/json,.json" (change)="pickImport('workout', $event)" />
     </label>
   </div>
 </section>
 
 <!-- ล้างข้อมูล -->
 <section class="section">
-  <div class="section-title"><span>ล้างข้อมูล</span></div>
+  <div class="section-title"><h2>ล้างข้อมูลการเงิน</h2></div>
   <div class="card list-card">
     @if (!confirmClear()) {
       <button type="button" class="list-row danger" (click)="confirmClear.set(true)">
@@ -136,14 +176,14 @@
       <button type="button" class="list-row danger" (click)="confirmReset.set(true)">
         <span class="tile"><app-icon name="reset" /></span>
         <span class="list-text">
-          <b>คืนค่าเริ่มต้นทั้งหมด</b>
-          <small>ลบทั้งรายการและแท็กที่แก้ไขไว้</small>
+          <b>คืนค่าเริ่มต้นส่วนการเงิน</b>
+          <small>ลบรายการและแท็กที่แก้ไขไว้ ข้อมูลออกกำลังกายไม่ถูกลบ</small>
         </span>
         <app-icon class="caret" name="chevronRight" [size]="18" />
       </button>
     } @else {
       <div class="list-row confirm">
-        <span>ล้างทุกอย่างและกลับไปใช้แท็กเริ่มต้น?</span>
+        <span>ล้างข้อมูลการเงินทั้งหมดและกลับไปใช้แท็กเริ่มต้น?</span>
         <div class="confirm-actions">
           <button type="button" class="btn" (click)="confirmReset.set(false)">ยกเลิก</button>
           <button type="button" class="btn btn-danger" (click)="resetAll()">คืนค่าเริ่มต้น</button>

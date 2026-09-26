@@ -21,11 +21,11 @@
 .hero-amount {
   display: block;
   margin: var(--sp-1) 0 14px;
-  font-size: 38px;
+  font-size: var(--fs-3xl);
   line-height: 1.2;
 
   small {
-    font-size: 20px;
+    font-size: var(--fs-xl);
   }
 }
 
@@ -39,7 +39,7 @@
   display: flex;
   flex-direction: column;
   padding: var(--sp-3);
-  border-radius: 18px;
+  border-radius: var(--radius-md);
   line-height: 1.3;
 
   &.income {

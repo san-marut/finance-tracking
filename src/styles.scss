@@ -29,6 +29,8 @@
   --income-soft: #ddf4ea;
   --expense: #c23d2b;
   --expense-soft: #fde5e0;
+  /* ตัวอักษรบนพื้นสีรายรับ/รายจ่ายเต็มสี */
+  --on-kind: #ffffff;
   --warn: #b26b00;
   --meal: #9a5b00;
   --meal-soft: #ffefc7;
@@ -46,9 +48,12 @@
   --fs-md: 14px;
   --fs-base: 15px;
   --fs-lg: 17px;
+  --fs-title: 18px;
   --fs-xl: 20px;
-  --fs-2xl: 26px;
-  --fs-3xl: 34px;
+  --fs-stat: 22px;
+  --fs-2xl: 24px;
+  --fs-3xl: 40px;
+  --fs-hero: 52px;
 
   /* ---------- ระยะห่าง (ตาราง 4px) ---------- */
   --sp-1: 4px;
@@ -62,6 +67,7 @@
   --radius: 24px;
   --radius-md: 18px;
   --radius-sm: 12px;
+  --radius-xs: 8px;
   --shadow: 0 10px 30px -18px rgba(120, 72, 30, 0.35);
   --shadow-lg: 0 18px 44px -18px rgba(90, 50, 20, 0.4);
 
@@ -93,6 +99,8 @@
   --income-soft: #173228;
   --expense: #ff8b7a;
   --expense-soft: #3b1f1a;
+  /* ธีมมืดสีรายรับ/รายจ่ายสว่าง ตัวขาวได้แค่ 2.3:1 จึงใช้ตัวเข้มแทน */
+  --on-kind: #1f110d;
   --warn: #ffc766;
   --meal: #ffc766;
   --meal-soft: #3a2c12;
@@ -265,8 +273,14 @@ a {
   min-height: 36px;
   margin: 0 var(--sp-1) var(--sp-2);
   font-family: var(--font-display);
-  font-size: 18px;
+  font-size: var(--fs-title);
   font-weight: 700;
+
+  /* หัวข้อเป็น h2 ให้ screen reader ข้ามไปทีละส่วนได้ แต่หน้าตาเหมือนเดิม */
+  h2 {
+    margin: 0;
+    font: inherit;
+  }
 
   .hint {
     font-family: var(--font-body);
@@ -280,6 +294,9 @@ a {
   display: inline-flex;
   align-items: center;
   gap: 2px;
+  /* ขยายพื้นที่แตะให้สูงราว 44px โดยไม่ดันเลย์เอาต์ */
+  padding: 12px 8px;
+  margin: -12px -8px;
   font-size: var(--fs-md);
   font-weight: 600;
   color: var(--brand-text);
@@ -323,7 +340,7 @@ a {
   line-height: 1.35;
 
   b {
-    font-size: 16px;
+    font-size: var(--fs-lg);
     font-weight: 600;
   }
 
@@ -340,10 +357,10 @@ a {
   height: 40px;
   display: grid;
   place-items: center;
-  border-radius: 12px;
+  border-radius: var(--radius-sm);
   background: var(--surface-2);
   color: var(--text-dim);
-  font-size: 19px;
+  font-size: var(--fs-title);
   line-height: 1;
 }
 
@@ -475,7 +492,7 @@ a {
     border-radius: 999px;
     background: transparent;
     font-size: var(--fs-base);
-    font-weight: 600;
+    font-weight: 500;
     color: var(--text-dim);
     white-space: nowrap;
     cursor: pointer;
@@ -491,12 +508,12 @@ a {
 
   button.on.expense {
     background: var(--expense);
-    color: #fff;
+    color: var(--on-kind);
   }
 
   button.on.income {
     background: var(--income);
-    color: #fff;
+    color: var(--on-kind);
   }
 
   &.block {
@@ -624,9 +641,16 @@ input[type='checkbox'] {
     gap: 4px;
     max-width: 100%;
     font-family: var(--font-display);
-    font-size: 18px;
+    font-size: var(--fs-title);
     font-weight: 700;
     white-space: nowrap;
+
+    /* .ellipsis ใส่ overflow: hidden ซึ่งตัดวรรณยุกต์ที่ซ้อนบนสระ (เช่น "นี้" ในฟอนต์ Mali)
+       เผื่อที่ด้านบน-ล่างแล้วหักคืนด้วย margin เลย์เอาต์จึงไม่ขยับ */
+    &.ellipsis {
+      padding-block: 0.2em;
+      margin-block: -0.2em;
+    }
 
     app-icon {
       color: var(--text-faint);
@@ -665,7 +689,7 @@ input[type='checkbox'] {
 
   b {
     font-family: var(--font-display);
-    font-size: 18px;
+    font-size: var(--fs-title);
   }
 }
 

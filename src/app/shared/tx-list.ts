@@ -85,7 +85,7 @@ interface DayGroup {
     }
 
     .day-label { font-weight: 700; color: var(--text-dim); }
-    .day-sum { display: flex; gap: var(--sp-3); font-weight: 600; }
+    .day-sum { display: flex; gap: var(--sp-3); font-weight: 500; }
 
     .amount {
       flex: none;

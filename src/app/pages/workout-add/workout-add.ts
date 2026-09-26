@@ -20,6 +20,7 @@ import {
   partById,
 } from '../../core/workout-catalog';
 import { WorkoutEntry, WorkoutEntryInput, WorkoutType } from '../../models/workout.models';
+import { relativeDateLabel, todayIso } from '../../core/utils';
 import { ExerciseArt } from '../../shared/exercise-art';
 import { Icon } from '../../shared/icon';
 
@@ -92,6 +93,15 @@ export class WorkoutAdd {
 
   protected readonly values = signal({ ...DEFAULTS });
 
+  /**
+   * วันที่จะบันทึก — เริ่มจากวันที่เปิดดูอยู่ในหน้าบันทึก (อาจเป็นวันก่อนๆ ถ้าเปิดมาจากประวัติ)
+   * จึงต้องแสดงให้เห็นและเปลี่ยนได้ ไม่งั้นท่าจะไปลงวันเก่าโดยไม่รู้ตัว
+   */
+  protected readonly date = signal(this.store.selectedDate());
+  protected readonly today = todayIso();
+  protected readonly isToday = computed(() => this.date() === this.today);
+  protected readonly dateText = computed(() => relativeDateLabel(this.date()));
+
   /** ชื่อท่าที่เพิ่งบันทึกด้วย "บันทึก + ท่าต่อไป" */
   protected readonly savedName = signal('');
   protected readonly confirmDelete = signal(false);
@@ -116,7 +126,7 @@ export class WorkoutAdd {
           ? 'ขั้นที่ 2 · เลือกเครื่อง'
           : `ขั้นที่ 3 · เลือกท่า (${this.part()?.label ?? ''})`;
       default:
-        return cardio ? 'Cardio' : `Weight Training › ${this.part()?.label ?? ''}`;
+        return cardio ? 'คาร์ดิโอ' : `เวทเทรนนิ่ง › ${this.part()?.label ?? ''}`;
     }
   });
 
@@ -147,6 +157,7 @@ export class WorkoutAdd {
       this.type.set(e.type);
       this.partId.set(e.partId);
       this.exercise.set(e.exercise);
+      this.date.set(e.date);
       this.values.set({
         weight: e.weight ?? DEFAULTS.weight,
         sets: e.sets ?? DEFAULTS.sets,
@@ -195,9 +206,17 @@ export class WorkoutAdd {
   }
 
   protected typed(field: Field, event: Event): void {
-    const raw = (event.target as HTMLInputElement).value;
-    const n = Number(raw);
-    if (raw !== '' && isFinite(n)) this.setValue(field, n);
+    const input = event.target as HTMLInputElement;
+    const n = Number(input.value);
+    if (input.value !== '' && isFinite(n)) this.setValue(field, n);
+    // เขียนค่าจริงกลับเข้าช่องเสมอ: ถ้าค่าที่ปัดแล้วเท่าค่าเดิม Angular จะไม่อัปเดตช่องให้
+    // แล้วช่องจะค้าง 999 หรือว่างเปล่า ทั้งที่บันทึกเป็นอีกค่า
+    input.value = this.fmt(field);
+  }
+
+  protected pickDate(event: Event): void {
+    const value = (event.target as HTMLInputElement).value;
+    if (value) this.date.set(value);
   }
 
   protected setRest(sec: number): void {
@@ -207,11 +226,14 @@ export class WorkoutAdd {
   protected save(next: boolean): void {
     const e = this.editing();
     if (e) {
-      this.store.update(e.id, { ...this.toInput(), date: e.date });
+      this.store.update(e.id, this.toInput());
+      this.store.selectedDate.set(this.date());
       this.leave();
       return;
     }
     this.store.add(this.toInput());
+    // กลับไปหน้าบันทึกแล้วให้เห็นวันที่เพิ่งบันทึก
+    this.store.selectedDate.set(this.date());
     if (next) {
       this.savedName.set(this.exercise());
       this.step.set('exercise');
@@ -241,7 +263,7 @@ export class WorkoutAdd {
   private toInput(): WorkoutEntryInput {
     const v = this.values();
     const base = {
-      date: this.store.selectedDate(),
+      date: this.date(),
       type: this.type(),
       partId: this.partId() ?? '',
       exercise: this.exercise(),

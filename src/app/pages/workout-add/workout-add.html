@@ -1,3 +1,17 @@
+<!-- วันที่จะบันทึก แตะเพื่อเปิดปฏิทินของเครื่อง ถ้าไม่ใช่วันนี้ใช้สีเตือนให้สังเกต -->
+<label class="date-chip" [class.past]="!isToday()">
+  <app-icon name="calendar" [size]="18" />
+  <span class="ellipsis">บันทึกลง <b>{{ dateText() }}</b></span>
+  <span class="change">เปลี่ยน</span>
+  <input
+    type="date"
+    [value]="date()"
+    [max]="today"
+    (change)="pickDate($event)"
+    aria-label="วันที่บันทึกท่านี้"
+  />
+</label>
+
 <p class="step-label">{{ stepLabel() }}</p>
 
 @if (savedName()) {
@@ -15,7 +29,7 @@
           ><app-icon name="activity" [size]="28" [stroke]="2.2"
         /></span>
         <span class="list-text">
-          <b class="display">Cardio</b>
+          <b class="display">คาร์ดิโอ</b>
           <small>{{ cardio.exercises.length }} เครื่อง · {{ cardio.exercises.join(' · ') }}</small>
         </span>
         <app-icon class="faint" name="chevronRight" />
@@ -25,7 +39,7 @@
           ><app-icon name="dumbbell" [size]="28" [stroke]="2.2"
         /></span>
         <span class="list-text">
-          <b class="display">Weight Training</b>
+          <b class="display">เวทเทรนนิ่ง</b>
           <small>{{ parts.length }} ส่วน · {{ weightCount }} ท่า</small>
         </span>
         <app-icon class="faint" name="chevronRight" />
@@ -75,7 +89,7 @@
         ><app-exercise-art [exercise]="exercise()" [size]="104" [stroke]="1.6"
       /></span>
       <span class="hero-text">
-        <small>{{ type() === 'cardio' ? 'CARDIO' : 'WEIGHT · ' + (part()?.label ?? '') }}</small>
+        <small>{{ type() === 'cardio' ? 'คาร์ดิโอ' : 'เวท · ' + (part()?.label ?? '') }}</small>
         <b class="display">{{ exercise() }}</b>
       </span>
     </div>
@@ -125,7 +139,7 @@
 
     @if (type() === 'weight') {
       <section class="rest">
-        <h2 class="section-title"><span>พักต่อเซต</span></h2>
+        <div class="section-title"><h2>พักต่อเซต</h2></div>
         <div class="rest-chips" role="radiogroup" aria-label="พักต่อเซต">
           @for (r of restOptions; track r.sec) {
             <button

@@ -42,7 +42,7 @@ import { Icon } from './icon';
       gap: 4px;
       height: 48px;
       padding: 4px;
-      border-radius: 24px;
+      border-radius: var(--radius);
       background: var(--seg-track);
     }
 
@@ -52,9 +52,9 @@ import { Icon } from './icon';
       justify-content: center;
       gap: 6px;
       min-width: 0;
-      border-radius: 20px;
+      border-radius: calc(var(--radius) - 4px);
       font-size: var(--fs-md);
-      font-weight: 600;
+      font-weight: 500;
       color: var(--text-dim);
       white-space: nowrap;
       transition:

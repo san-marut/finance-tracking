@@ -22,13 +22,12 @@
   margin-bottom: var(--sp-6);
 
   .stat-value {
-    font-size: 19px;
+    font-size: var(--fs-title);
   }
 }
 
 .clear-btn {
   border: none;
   background: transparent;
-  padding: 0;
   cursor: pointer;
 }

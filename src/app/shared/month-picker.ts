@@ -57,6 +57,7 @@ import { Icon } from './icon';
               <button
                 type="button"
                 [class.on]="isSelected(i)"
+                [attr.aria-pressed]="isSelected(i)"
                 [class.now]="isCurrent(i)"
                 (click)="pick(i)"
               >

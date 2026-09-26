@@ -6,7 +6,7 @@
   margin-bottom: var(--sp-6);
 
   .stat-value {
-    font-size: 22px;
+    font-size: var(--fs-stat);
   }
 }
 
@@ -25,7 +25,7 @@
 .list-row .tile {
   width: 42px;
   height: 42px;
-  border-radius: 14px;
+  border-radius: var(--radius-sm);
 }
 
 .caret {
@@ -97,8 +97,8 @@
 .tile.small {
   width: 32px;
   height: 32px;
-  border-radius: 10px;
-  font-size: 16px;
+  border-radius: var(--radius-xs);
+  font-size: var(--fs-lg);
 }
 
 .pick-name {
@@ -145,4 +145,21 @@
   line-height: 1.7;
   text-align: center;
   color: var(--text-faint);
+}
+
+/* ---------- สำรองข้อมูล: แยกกลุ่มการเงิน / ออกกำลังกาย ---------- */
+.group-label {
+  margin: var(--sp-3) var(--sp-1) var(--sp-2);
+  font-size: var(--fs-sm);
+  font-weight: 700;
+  color: var(--text-dim);
+}
+
+.import-confirm {
+  margin-bottom: var(--sp-3);
+  border: 1.5px solid color-mix(in srgb, var(--expense) 35%, transparent);
+}
+
+.file-name {
+  overflow-wrap: anywhere;
 }

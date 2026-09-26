@@ -11,7 +11,11 @@
           <app-icon name="back" [size]="22" />
         </button>
       } @else {
-        <a routerLink="/dashboard" aria-label="กลับหน้าภาพรวม">
+        <!-- กลับหน้าแรกของส่วนที่อยู่ ไม่ข้ามส่วนไปการเงินเมื่ออยู่ในส่วนออกกำลังกาย -->
+        <a
+          [routerLink]="mode() === 'workout' ? '/workout' : '/dashboard'"
+          [attr.aria-label]="mode() === 'workout' ? 'กลับหน้าบันทึกออกกำลังกาย' : 'กลับหน้าภาพรวม'"
+        >
           <img class="brand-mark" src="icons/icon.svg" alt="" width="40" height="40" />
         </a>
       }
@@ -45,12 +49,12 @@
 
   @if (showFab()) {
     @if (mode() === 'workout') {
-      <a class="fab fab-wide" routerLink="/workout/add">
+      <a class="fab fab-wide" [class.away]="fabAway()" routerLink="/workout/add">
         <app-icon name="plus" [size]="22" [stroke]="2.6" />
         <span>เพิ่มท่า</span>
       </a>
     } @else {
-      <a class="fab" routerLink="/entry" aria-label="เพิ่มรายการใหม่">
+      <a class="fab" [class.away]="fabAway()" routerLink="/entry" aria-label="เพิ่มรายการใหม่">
         <app-icon name="plus" [size]="28" [stroke]="2.6" />
       </a>
     }

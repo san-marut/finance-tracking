@@ -15,7 +15,7 @@ export interface BodyPart {
 /** Cardio ไม่แยกส่วนของร่างกาย ใช้ id นี้แทน */
 export const CARDIO_PART: BodyPart = {
   id: 'cardio',
-  label: 'Cardio',
+  label: 'คาร์ดิโอ',
   exercises: ['Elliptical Trainer', 'Treadmill', 'Bike Indoor'],
 };
 

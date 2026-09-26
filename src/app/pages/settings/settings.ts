@@ -1,5 +1,17 @@
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  ElementRef,
+  Injector,
+  afterNextRender,
+  computed,
+  inject,
+  signal,
+} from '@angular/core';
 import { FinanceStore } from '../../core/finance-store';
+import { WorkoutStore } from '../../core/workout-store';
+import { FinanceData } from '../../models/finance.models';
+import { WorkoutData } from '../../models/workout.models';
 import { dateLabel, todayIso } from '../../core/utils';
 import { Icon } from '../../shared/icon';
 import { MoneyPipe } from '../../shared/money.pipe';
@@ -13,11 +25,18 @@ import { MoneyPipe } from '../../shared/money.pipe';
 })
 export class Settings {
   protected readonly store = inject(FinanceStore);
+  private readonly workout = inject(WorkoutStore);
+  private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
+  private readonly injector = inject(Injector);
 
   protected readonly toast = signal('');
   protected readonly mealOpen = signal(false);
   protected readonly confirmReset = signal(false);
   protected readonly confirmClear = signal(false);
+
+  /** ไฟล์ที่เลือกแล้วแต่ยังไม่แทนที่ข้อมูล รอผู้ใช้ยืนยัน เพราะแทนที่แล้วย้อนกลับไม่ได้ */
+  protected readonly pendingImport = signal<PendingImport | null>(null);
+  protected readonly workoutCount = computed(() => this.workout.entries().length);
 
   protected readonly stats = computed(() => {
     const txs = this.store.transactions();
@@ -70,14 +89,50 @@ export class Settings {
     this.flash('ดาวน์โหลดไฟล์ CSV แล้ว');
   }
 
-  protected async importFile(event: Event): Promise<void> {
+  protected exportWorkout(): void {
+    this.download(
+      this.workout.exportJson(),
+      `workout-backup-${todayIso()}.json`,
+      'application/json',
+    );
+    this.flash('ดาวน์โหลดไฟล์สำรองออกกำลังกายแล้ว');
+  }
+
+  protected async pickImport(target: ImportTarget, event: Event): Promise<void> {
     const input = event.target as HTMLInputElement;
     const file = input.files?.[0];
+    input.value = '';
     if (!file) return;
     const text = await file.text();
-    const ok = this.store.importJson(text);
-    this.flash(ok ? 'นำเข้าข้อมูลสำเร็จ' : 'ไฟล์ไม่ถูกต้อง นำเข้าไม่สำเร็จ');
-    input.value = '';
+
+    if (target === 'finance') {
+      const data = this.store.parseImport(text);
+      if (!data) return this.flash('ไม่ใช่ไฟล์สำรองการเงิน นำเข้าไม่สำเร็จ');
+      this.pendingImport.set({ target, data, fileName: file.name, count: data.transactions.length });
+    } else {
+      const data = this.workout.parseImport(text);
+      if (!data) return this.flash('ไม่ใช่ไฟล์สำรองออกกำลังกาย นำเข้าไม่สำเร็จ');
+      this.pendingImport.set({ target, data, fileName: file.name, count: data.entries.length });
+    }
+
+    // แถวนำเข้าอยู่ล่างกล่องยืนยัน เลื่อนและย้ายโฟกัสไปให้เห็นว่ายังต้องกดยืนยัน
+    afterNextRender(
+      () => {
+        const box = this.host.nativeElement.querySelector<HTMLElement>('.import-confirm');
+        box?.scrollIntoView({ block: 'center' });
+        box?.focus({ preventScroll: true });
+      },
+      { injector: this.injector },
+    );
+  }
+
+  protected confirmImport(): void {
+    const pending = this.pendingImport();
+    if (!pending) return;
+    if (pending.target === 'finance') this.store.applyImport(pending.data);
+    else this.workout.applyImport(pending.data);
+    this.pendingImport.set(null);
+    this.flash('นำเข้าข้อมูลสำเร็จ');
   }
 
   protected clearTransactions(): void {
@@ -107,3 +162,9 @@ export class Settings {
     setTimeout(() => this.toast.set(''), 2000);
   }
 }
+
+type ImportTarget = 'finance' | 'workout';
+
+type PendingImport =
+  | { target: 'finance'; data: FinanceData; fileName: string; count: number }
+  | { target: 'workout'; data: WorkoutData; fileName: string; count: number };

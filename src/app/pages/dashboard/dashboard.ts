@@ -35,11 +35,11 @@ export class Dashboard {
     this.store.statsFor(this.kindView(), this.activeMonth()),
   );
 
-  /** เปรียบเทียบรายจ่ายกับเดือนก่อน (เฉพาะโหมดรายเดือน) */
+  /** เปรียบเทียบรายจ่ายกับช่วงเดียวกันของเดือนก่อน (เฉพาะโหมดรายเดือน ไม่คิดเดือนในอนาคต) */
   protected readonly expenseDelta = computed(() => {
-    if (this.scope() !== 'month') return null;
+    if (this.scope() !== 'month' || this.store.selectedMonth() > currentMonth()) return null;
     const prev = this.store.prevMonthSummary().expense;
-    const now = this.store.monthSummary().expense;
+    const now = this.store.monthToDateSummary().expense;
     if (!prev) return null;
     return ((now - prev) / prev) * 100;
   });

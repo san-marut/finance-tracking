@@ -89,6 +89,28 @@ export class WorkoutStore {
     this._entries.update((list) => list.filter((e) => e.id !== id));
   }
 
+  // ---------- นำเข้า/ส่งออก (ไฟล์แยกจากข้อมูลการเงิน ใช้โครงสร้าง WorkoutData เดิม) ----------
+
+  exportJson(): string {
+    const data: WorkoutData = { version: DATA_VERSION, entries: this._entries() };
+    return JSON.stringify(data, null, 2);
+  }
+
+  /** อ่านไฟล์สำรองโดยยังไม่แทนที่ข้อมูล — null ถ้าไม่ใช่ไฟล์ออกกำลังกายหรือมีรายการที่ผิดรูป */
+  parseImport(raw: string): WorkoutData | null {
+    try {
+      const parsed = JSON.parse(raw) as Partial<WorkoutData>;
+      if (!Array.isArray(parsed.entries) || !parsed.entries.every(isEntry)) return null;
+      return { version: DATA_VERSION, entries: parsed.entries };
+    } catch {
+      return null;
+    }
+  }
+
+  applyImport(data: WorkoutData): void {
+    this._entries.set(data.entries);
+  }
+
   private load(): void {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
@@ -98,6 +120,20 @@ export class WorkoutStore {
       this._entries.set([]);
     }
   }
+}
+
+/** ตรวจพอให้ไม่รับไฟล์ผิดประเภท (เช่นไฟล์สำรองการเงิน) หรือรายการที่หน้าบันทึกแสดงไม่ได้ */
+function isEntry(e: unknown): e is WorkoutEntry {
+  if (!e || typeof e !== 'object') return false;
+  const x = e as Partial<WorkoutEntry>;
+  return (
+    typeof x.id === 'string' &&
+    typeof x.date === 'string' &&
+    /^\d{4}-\d{2}-\d{2}$/.test(x.date) &&
+    (x.type === 'weight' || x.type === 'cardio') &&
+    typeof x.exercise === 'string' &&
+    typeof x.createdAt === 'string'
+  );
 }
 
 export function entryLine(e: WorkoutEntry): string {

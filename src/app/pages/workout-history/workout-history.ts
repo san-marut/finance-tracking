@@ -19,10 +19,10 @@ import { Icon } from '../../shared/icon';
             </span>
             <span class="nums">
               @if (d.exercises) {
-                <span>{{ d.exercises }} ท่า · {{ d.sets }} เซต</span>
+                <span>เวท {{ d.exercises }} ท่า · {{ d.sets }} เซต</span>
               }
               @if (d.minutes) {
-                <span class="cardio">Cardio {{ d.minutes }} นาที</span>
+                <span class="cardio">คาร์ดิโอ {{ d.minutes }} นาที</span>
               }
             </span>
             <app-icon class="faint" name="chevronRight" [size]="18" />
@@ -30,7 +30,7 @@ import { Icon } from '../../shared/icon';
         }
       </div>
     } @else {
-      <div class="empty">ยังไม่มีประวัติ — บันทึกท่าแรกได้ที่หน้า “วันนี้”</div>
+      <div class="empty">ยังไม่มีประวัติ — บันทึกท่าแรกได้ที่หน้า “บันทึก”</div>
     }
   `,
   styles: `
@@ -76,7 +76,7 @@ export class WorkoutHistory {
     })),
   );
 
-  /** เปิดบันทึกของวันนั้นในหน้า "วันนี้" */
+  /** เปิดบันทึกของวันนั้นในหน้า "บันทึก" */
   protected open(date: string): void {
     this.store.selectedDate.set(date);
     this.router.navigate(['/workout']);

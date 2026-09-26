@@ -1,8 +1,8 @@
 <div class="segmented block lg kind">
-  <button type="button" class="expense" [class.on]="kind() === 'expense'" (click)="switchKind('expense')">
+  <button type="button" class="expense" [class.on]="kind() === 'expense'" [attr.aria-pressed]="kind() === 'expense'" (click)="switchKind('expense')">
     รายจ่าย
   </button>
-  <button type="button" class="income" [class.on]="kind() === 'income'" (click)="switchKind('income')">
+  <button type="button" class="income" [class.on]="kind() === 'income'" [attr.aria-pressed]="kind() === 'income'" (click)="switchKind('income')">
     รายรับ
   </button>
 </div>
@@ -46,7 +46,7 @@
 
 <!-- แท็กหลัก -->
 <section class="section">
-  <div class="section-title"><span>แท็กหลัก</span></div>
+  <div class="section-title"><h2>แท็กหลัก</h2></div>
   <div class="cat-grid">
     @for (c of categories(); track c.id) {
       <button
@@ -70,7 +70,7 @@
 @if (categoryId()) {
   <section class="section">
     <div class="section-title">
-      <span>แท็กย่อย <span class="hint">ไม่บังคับ</span></span>
+      <h2>แท็กย่อย <span class="hint">ไม่บังคับ</span></h2>
     </div>
     <div class="sub-grid">
       @for (s of subCategories(); track s.id) {
