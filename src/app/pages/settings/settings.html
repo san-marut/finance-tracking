@@ -21,6 +21,27 @@
   </div>
 </section>
 
+<!-- ธีม: ค่าของเครื่องนี้ ไม่อยู่ในไฟล์สำรอง -->
+<section class="section">
+  <div class="section-title"><h2>หน้าตา</h2></div>
+  <div class="card card-pad theme-card">
+    <div class="segmented block theme-seg" role="group" aria-label="ธีม">
+      @for (o of themeOptions; track o.value) {
+        <button
+          type="button"
+          [class.on]="theme.pref() === o.value"
+          [attr.aria-pressed]="theme.pref() === o.value"
+          (click)="theme.pref.set(o.value)"
+        >
+          <app-icon [name]="o.icon" [size]="18" />
+          {{ o.label }}
+        </button>
+      }
+    </div>
+    <p class="theme-hint">{{ themeHint() }}</p>
+  </div>
+</section>
+
 <!-- ค่าอาหาร -->
 <section class="section">
   <div class="section-title"><h2>ค่าอาหารเฉลี่ยต่อวัน</h2></div>

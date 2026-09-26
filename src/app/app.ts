@@ -10,6 +10,7 @@ import {
 } from '@angular/router';
 import { SwUpdate } from '@angular/service-worker';
 import { BackHandler } from './core/back-handler';
+import { ThemeService } from './core/theme';
 import { AppSwitcher } from './shared/app-switcher';
 import { Icon } from './shared/icon';
 
@@ -30,6 +31,8 @@ export class App {
   private readonly route = inject(ActivatedRoute);
   private readonly location = inject(Location);
   private readonly backHandler = inject(BackHandler);
+  /** สร้างตั้งแต่เปิดแอป ให้สีแถบสถานะตรงกับธีมที่เลือกไว้ทุกหน้า ไม่ใช่แค่หลังเข้าหน้าตั้งค่า */
+  private readonly theme = inject(ThemeService);
 
   /**
    * แสดงปุ่มลอยเฉพาะหน้าที่ "เพิ่มรายการ" เป็นสิ่งที่ผู้ใช้น่าจะทำต่อ

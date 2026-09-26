@@ -24,6 +24,13 @@
       href="https://fonts.googleapis.com/css2?family=Mali:wght@500;600;700&family=Anuphan:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
+    <script>
+      // ใส่ธีมที่ผู้ใช้เลือกก่อนแอปโหลด ไม่งั้นจะเห็นธีมของเครื่องแวบหนึ่งก่อนเปลี่ยน (คีย์เดียวกับ core/theme.ts)
+      try {
+        var t = localStorage.getItem('app-theme');
+        if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t);
+      } catch (e) {}
+    </script>
   </head>
   <body>
     <app-root></app-root>

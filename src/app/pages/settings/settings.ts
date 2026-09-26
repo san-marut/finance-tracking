@@ -10,6 +10,7 @@ import {
 } from '@angular/core';
 import { FinanceStore } from '../../core/finance-store';
 import { WorkoutStore } from '../../core/workout-store';
+import { ThemePref, ThemeService } from '../../core/theme';
 import { FinanceData } from '../../models/finance.models';
 import { WorkoutData } from '../../models/workout.models';
 import { dateLabel, todayIso } from '../../core/utils';
@@ -26,6 +27,16 @@ import { MoneyPipe } from '../../shared/money.pipe';
 export class Settings {
   protected readonly store = inject(FinanceStore);
   private readonly workout = inject(WorkoutStore);
+  protected readonly theme = inject(ThemeService);
+
+  protected readonly themeOptions: { value: ThemePref; label: string; icon: string; hint: string }[] = [
+    { value: 'system', label: 'ตามเครื่อง', icon: 'monitor', hint: 'สว่างหรือมืดตามการตั้งค่าของเครื่อง' },
+    { value: 'light', label: 'สว่าง', icon: 'sun', hint: 'ใช้ธีมครีมสว่างเสมอ' },
+    { value: 'dark', label: 'มืด', icon: 'moon', hint: 'ใช้ธีมมืดโทนอุ่นเสมอ' },
+  ];
+  protected readonly themeHint = computed(
+    () => this.themeOptions.find((o) => o.value === this.theme.pref())?.hint ?? '',
+  );
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
   private readonly injector = inject(Injector);
 

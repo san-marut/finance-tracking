@@ -163,3 +163,22 @@
 .file-name {
   overflow-wrap: anywhere;
 }
+
+/* ---------- ธีม ---------- */
+.theme-card {
+  padding: var(--sp-3);
+}
+
+.theme-seg button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 0 var(--sp-2);
+}
+
+.theme-hint {
+  margin: var(--sp-2) var(--sp-2) 0;
+  font-size: var(--fs-sm);
+  color: var(--text-dim);
+}
