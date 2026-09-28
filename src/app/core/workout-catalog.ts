@@ -43,6 +43,7 @@ export const BODY_PARTS: BodyPart[] = [
       'Lat Pull Down Single Arm Machine',
       'Seated Row Single Arm Machine',
       'Low Row',
+      'Rear Delt Fly Machine',
       'Standing Barbell Back Pull',
       'Standing Cable Rope Lat Pushdown',
       'Low Back Machine',
@@ -106,7 +107,8 @@ export const BODY_PARTS: BodyPart[] = [
   },
 ];
 
-export const WEIGHT_EXERCISE_COUNT = BODY_PARTS.reduce((n, p) => n + p.exercises.length, 0);
+/** นับชื่อท่าไม่ซ้ำ เพราะบางท่าอยู่ได้หลายส่วน เช่น Rear Delt Fly Machine (หลัง + ไหล่) */
+export const WEIGHT_EXERCISE_COUNT = new Set(BODY_PARTS.flatMap((p) => p.exercises)).size;
 
 export function partById(type: WorkoutType, id: string | null): BodyPart | undefined {
   if (type === 'cardio') return CARDIO_PART;
