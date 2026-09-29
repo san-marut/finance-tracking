@@ -167,6 +167,57 @@
 }
 
 /* ---------- ขั้นที่ 3: ท่า ---------- */
+/* ชิปกรองอุปกรณ์ เลื่อนแนวนอนได้ถ้าจอแคบ ไม่ให้หน้าทั้งหน้าเลื่อนข้าง */
+.equip-chips {
+  display: flex;
+  gap: var(--sp-2);
+  margin: 0 calc(-1 * var(--sp-1)) var(--sp-4);
+  padding: 0 var(--sp-1) 2px;
+  overflow-x: auto;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  button {
+    flex: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    min-height: 44px;
+    padding: 0 14px;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: var(--surface);
+    color: var(--text-dim);
+    font-size: var(--fs-md);
+    font-weight: 600;
+    white-space: nowrap;
+    cursor: pointer;
+
+    .n {
+      font-size: var(--fs-xs);
+      color: var(--text-faint);
+    }
+
+    &.on {
+      border-color: transparent;
+      background: var(--brand-strong);
+      color: var(--on-brand);
+
+      .n {
+        color: inherit;
+        opacity: 0.8;
+      }
+    }
+  }
+}
+
+.ex-group + .ex-group {
+  margin-top: var(--sp-5);
+}
+
 .ex-row {
   min-height: 72px;
   padding-left: 10px;

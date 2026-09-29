@@ -15,6 +15,8 @@ import { WorkoutStore, entryLine, restLabel } from '../../core/workout-store';
 import {
   BODY_PARTS,
   CARDIO_PART,
+  EQUIPS,
+  Equip,
   WEIGHT_EXERCISE_COUNT,
   formatWeight,
   partById,
@@ -25,6 +27,19 @@ import { ExerciseArt } from '../../shared/exercise-art';
 import { Icon } from '../../shared/icon';
 
 type Step = 'type' | 'part' | 'exercise' | 'detail';
+
+type EquipFilter = Equip | 'all';
+
+interface ExerciseRow {
+  name: string;
+  last: string;
+}
+
+interface ExerciseGroup {
+  /** ว่าง = ไม่ต้องมีหัวข้อ (คาร์ดิโอ หรือกรองอุปกรณ์อยู่) */
+  title: string;
+  rows: ExerciseRow[];
+}
 
 interface Field {
   key: 'weight' | 'sets' | 'reps' | 'minutes';
@@ -81,8 +96,16 @@ export class WorkoutAdd {
   /** มาจาก route 'workout/edit/:id' */
   readonly id = input<string>();
 
-  protected readonly parts = BODY_PARTS;
+  protected readonly parts = BODY_PARTS.map((p) => ({
+    ...p,
+    preview:
+      p.exercises
+        .slice(0, 2)
+        .map((x) => x.name)
+        .join(' · ') + (p.exercises.length > 2 ? ' …' : ''),
+  }));
   protected readonly cardio = CARDIO_PART;
+  protected readonly cardioNames = CARDIO_PART.exercises.map((x) => x.name).join(' · ');
   protected readonly weightCount = WEIGHT_EXERCISE_COUNT;
   protected readonly restOptions = REST_OPTIONS.map((sec) => ({ sec, label: restLabel(sec) }));
 
@@ -90,6 +113,8 @@ export class WorkoutAdd {
   protected readonly type = signal<WorkoutType>('weight');
   protected readonly partId = signal<string | null>(null);
   protected readonly exercise = signal('');
+  /** กรองรายการท่าตามอุปกรณ์ — กลับเป็นทั้งหมดทุกครั้งที่เปลี่ยนส่วน */
+  protected readonly equipFilter = signal<EquipFilter>('all');
 
   protected readonly values = signal({ ...DEFAULTS });
 
@@ -130,12 +155,48 @@ export class WorkoutAdd {
     }
   });
 
-  protected readonly exercises = computed(() => {
+  /** ชิปกรองอุปกรณ์ แสดงเฉพาะอุปกรณ์ที่ส่วนนี้มี และซ่อนถ้ามีแค่ชนิดเดียว */
+  protected readonly equipChips = computed(() => {
+    const list = this.part()?.exercises ?? [];
+    const chips = EQUIPS.map((e) => ({
+      ...e,
+      count: list.filter((x) => x.equip === e.id).length,
+    })).filter((c) => c.count > 0);
+    if (chips.length < 2) return [];
+    return [{ id: 'all' as EquipFilter, label: 'ทั้งหมด', count: list.length }, ...chips];
+  });
+
+  /**
+   * รายการท่าแบ่งเป็นกลุ่ม: ท่าที่เคยเล่นขึ้นก่อน (ล่าสุดอยู่บน) เพราะส่วนใหญ่เล่นท่าเดิมซ้ำ
+   * ที่เหลือแยกตามอุปกรณ์ ส่วนนี้มีท่าเยอะ ถ้าเรียงยาวรวดเดียวจะหาท่ายาก
+   */
+  protected readonly exerciseGroups = computed<ExerciseGroup[]>(() => {
     const last = this.store.lastByExercise();
-    return (this.part()?.exercises ?? []).map((name) => {
+    const filter = this.equipFilter();
+    const list = (this.part()?.exercises ?? []).filter(
+      (x) => filter === 'all' || x.equip === filter,
+    );
+    const row = (name: string): ExerciseRow => {
       const prev = last.get(name);
       return { name, last: prev ? lastLabel(prev) : '' };
-    });
+    };
+
+    if (this.type() === 'cardio' || filter !== 'all') {
+      return [{ title: '', rows: list.map((x) => row(x.name)) }];
+    }
+
+    const played = list
+      .filter((x) => last.has(x.name))
+      .sort((a, b) => recency(last.get(b.name)!).localeCompare(recency(last.get(a.name)!)));
+    const groups: ExerciseGroup[] = [];
+    if (played.length) groups.push({ title: 'เคยเล่น', rows: played.map((x) => row(x.name)) });
+    for (const e of EQUIPS) {
+      const rows = list
+        .filter((x) => x.equip === e.id && !last.has(x.name))
+        .map((x) => row(x.name));
+      if (rows.length) groups.push({ title: e.label, rows });
+    }
+    return groups;
   });
 
   protected readonly previewLine = computed(() =>
@@ -182,6 +243,7 @@ export class WorkoutAdd {
 
   protected pickPart(id: string): void {
     this.partId.set(id);
+    this.equipFilter.set('all');
     this.savedName.set('');
     this.step.set('exercise');
   }
@@ -299,6 +361,10 @@ export class WorkoutAdd {
 }
 
 /** '50 kg · 4×12' หรือ '20 นาที' */
+function recency(e: WorkoutEntry): string {
+  return `${e.date} ${e.createdAt}`;
+}
+
 function lastLabel(e: WorkoutEntry): string {
   if (e.type === 'cardio') return `${e.minutes ?? 0} นาที`;
   const weight = e.weight ? `${formatWeight(e.weight)} kg` : 'น้ำหนักตัว';

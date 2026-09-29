@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
+import { EQUIP_OF, Equip } from '../core/workout-catalog';
 
 type Shape =
   | { t: 'c'; x: number; y: number; r: number }
@@ -209,6 +210,32 @@ const ART_OF_EXERCISE: Record<string, string> = {
   'Elliptical Trainer': 'elliptical',
   Treadmill: 'treadmill',
   'Bike Indoor': 'bike',
+  'Dumbbell Bench Press': 'bench',
+  'Dumbbell Decline Bench Press': 'bench',
+  'Dumbbell Pullover': 'bench',
+  'Barbell Close Grip Bench Press': 'bench',
+  'Dumbbell Incline Bench Press': 'benchIncline',
+  'Dumbbell Chest Fly': 'dumbbellFly',
+  'Dumbbell Incline Chest Fly': 'dumbbellFly',
+  'Dumbbell Front Raise': 'dumbbellFly',
+  'Dumbbell Rear Delt Fly': 'dumbbellFly',
+  'Cable Crossover High to Low': 'chestFly',
+  'Cable Crossover Low to High': 'chestFly',
+  'Cable Rear Delt Fly': 'chestFly',
+  'Dumbbell Arnold Press': 'dumbbellPress',
+  'Dumbbell Overhead Tricep Extension': 'dumbbellPress',
+  'Seated Cable Row V Bar': 'row',
+  'Seated Cable Row Wide Grip': 'row',
+  'Cable Single Arm Row': 'row',
+};
+
+/** ท่าที่ยังไม่มีภาพเฉพาะ ใช้ภาพตามอุปกรณ์ */
+const ART_OF_EQUIP: Record<Equip, string> = {
+  machine: 'chestPress',
+  barbell: 'barbell',
+  dumbbell: 'dumbbellCurl',
+  cable: 'cable',
+  other: 'plate',
 };
 
 @Component({
@@ -260,5 +287,9 @@ export class ExerciseArt {
   readonly size = input(40);
   readonly stroke = input(2);
 
-  protected readonly shapes = computed(() => ART[ART_OF_EXERCISE[this.exercise()] ?? 'barbell']);
+  protected readonly shapes = computed(() => {
+    const name = this.exercise();
+    const equip = EQUIP_OF.get(name);
+    return ART[ART_OF_EXERCISE[name] ?? (equip ? ART_OF_EQUIP[equip] : 'barbell')];
+  });
 }

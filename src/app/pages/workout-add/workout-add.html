@@ -33,7 +33,7 @@
         /></span>
         <span class="list-text">
           <b class="display">คาร์ดิโอ</b>
-          <small>{{ cardio.exercises.length }} เครื่อง · {{ cardio.exercises.join(' · ') }}</small>
+          <small>{{ cardio.exercises.length }} เครื่อง · {{ cardioNames }}</small>
         </span>
         <app-icon class="faint" name="chevronRight" />
       </button>
@@ -58,32 +58,52 @@
             <b class="display">{{ p.label }}</b>
             <span class="count">{{ p.exercises.length }} ท่า</span>
           </span>
-          <small
-            >{{ p.exercises.slice(0, 2).join(' · ')
-            }}{{ p.exercises.length > 2 ? ' …' : '' }}</small
-          >
+          <small>{{ p.preview }}</small>
         </button>
       }
     </div>
   }
 
   @case ('exercise') {
-    <div class="card list-card">
-      @for (x of exercises(); track x.name) {
-        <button type="button" class="list-row ex-row" (click)="pickExercise(x.name)">
-          <span class="art" [class.cardio]="type() === 'cardio'">
-            <app-exercise-art [exercise]="x.name" [size]="40" />
-          </span>
-          <span class="list-text">
-            <b>{{ x.name }}</b>
-            @if (x.last) {
-              <small>ครั้งล่าสุด {{ x.last }}</small>
-            }
-          </span>
-          <app-icon class="faint" name="chevronRight" [size]="18" />
-        </button>
-      }
-    </div>
+    @if (equipChips().length) {
+      <div class="equip-chips" role="radiogroup" aria-label="กรองตามอุปกรณ์">
+        @for (c of equipChips(); track c.id) {
+          <button
+            type="button"
+            role="radio"
+            [attr.aria-checked]="equipFilter() === c.id"
+            [class.on]="equipFilter() === c.id"
+            (click)="equipFilter.set(c.id)"
+          >
+            {{ c.label }} <span class="n">{{ c.count }}</span>
+          </button>
+        }
+      </div>
+    }
+
+    @for (g of exerciseGroups(); track g.title) {
+      <section class="ex-group">
+        @if (g.title) {
+          <div class="section-title"><h2>{{ g.title }}</h2></div>
+        }
+        <div class="card list-card">
+          @for (x of g.rows; track x.name) {
+            <button type="button" class="list-row ex-row" (click)="pickExercise(x.name)">
+              <span class="art" [class.cardio]="type() === 'cardio'">
+                <app-exercise-art [exercise]="x.name" [size]="40" />
+              </span>
+              <span class="list-text">
+                <b>{{ x.name }}</b>
+                @if (x.last) {
+                  <small>ครั้งล่าสุด {{ x.last }}</small>
+                }
+              </span>
+              <app-icon class="faint" name="chevronRight" [size]="18" />
+            </button>
+          }
+        </div>
+      </section>
+    }
   }
 
   @default {
