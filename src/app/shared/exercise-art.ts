@@ -161,6 +161,92 @@ const ART: Record<string, Shape[]> = {
     { t: 'p', d: 'M16 20L26 12M26 14L34 16M34 12V20M12 20H20M16 20L24 30L22 38M16 44L24 30L36 34' },
     { t: 'c', x: 36, y: 34, r: 6 },
   ],
+  squat: [
+    { t: 'c', x: 23, y: 8, r: 3.5 },
+    { t: 'p', d: 'M8 14H36M22 13L18 26M18 26L29 30L24 42H30M21 16L28 14' },
+    { t: 'r', x: 5, y: 9, w: 3, h: 10, rx: 1 },
+    { t: 'r', x: 36, y: 9, w: 3, h: 10, rx: 1 },
+  ],
+  lunge: [
+    { t: 'c', x: 24, y: 8, r: 3.5 },
+    {
+      t: 'p',
+      d: 'M24 12V26M24 26L33 28V40H38M24 26L15 35L9 40M24 15L20 25M17 25H23M17 22V28M23 22V28',
+    },
+  ],
+  deadlift: [
+    { t: 'c', x: 13, y: 14, r: 3.5 },
+    { t: 'p', d: 'M17 17L32 21M32 21L30 31L32 42H26M19 18L21 32M8 32H34' },
+    { t: 'r', x: 5, y: 27, w: 3, h: 10, rx: 1 },
+    { t: 'r', x: 34, y: 27, w: 3, h: 10, rx: 1 },
+  ],
+  bentRow: [
+    { t: 'c', x: 13, y: 14, r: 3.5 },
+    {
+      t: 'p',
+      d: 'M17 17L32 21M32 21L30 31L32 42H26M19 18L27 12L23 25M20 25H26M20 22V28M26 22V28',
+    },
+  ],
+  shrug: [
+    { t: 'c', x: 20, y: 9, r: 3.5 },
+    {
+      t: 'p',
+      d: 'M20 13V28M20 28L16 42M20 28L24 42M20 16L17 26M20 16L23 26M8 26H32M9 14L12 10L15 14M25 14L28 10L31 14',
+    },
+    { t: 'r', x: 5, y: 21, w: 3, h: 10, rx: 1 },
+    { t: 'r', x: 32, y: 21, w: 3, h: 10, rx: 1 },
+  ],
+  overheadPress: [
+    { t: 'c', x: 20, y: 12, r: 3.5 },
+    { t: 'p', d: 'M20 16V30M20 30L16 43M20 30L24 43M20 19L13 14V6M20 19L27 14V6M7 6H33' },
+    { t: 'r', x: 4, y: 1, w: 3, h: 10, rx: 1 },
+    { t: 'r', x: 33, y: 1, w: 3, h: 10, rx: 1 },
+  ],
+  hipThrust: [
+    { t: 'c', x: 7, y: 21, r: 3.5 },
+    { t: 'p', d: 'M4 28H16M8 28V42M11 25L25 22L34 23L36 42H41' },
+    { t: 'c', x: 25, y: 16, r: 4.5 },
+    { t: 'c', x: 25, y: 16, r: 1.2 },
+  ],
+  calfRaise: [
+    { t: 'c', x: 20, y: 8, r: 3.5 },
+    {
+      t: 'p',
+      d: 'M20 12V27M20 27L18 38L21 42M20 27L23 38L26 42M10 42H32M20 15L15 25M12 25H18M12 22V28M18 22V28M37 32V18M34 21L37 18L40 21',
+    },
+  ],
+  skullCrusher: [
+    { t: 'c', x: 8, y: 26, r: 3 },
+    { t: 'p', d: 'M5 31H38M10 31V41M34 31V41M12 27H29M29 27L35 35V42M16 26L19 14L11 10' },
+    { t: 'c', x: 9, y: 9, r: 2.5 },
+  ],
+  overheadExt: [
+    { t: 'c', x: 22, y: 12, r: 3.5 },
+    { t: 'p', d: 'M22 16V30M22 30L18 43M22 30L26 43M22 18L29 5L17 6M17 2V10M15 2H19M15 10H19' },
+  ],
+  rollout: [
+    { t: 'c', x: 12, y: 25, r: 3.5 },
+    { t: 'p', d: 'M4 43H44M34 40L28 31M28 31L16 29M17 30L11 37M34 40H42' },
+    { t: 'c', x: 10, y: 38, r: 4.5 },
+  ],
+  seatedTwist: [
+    { t: 'c', x: 16, y: 17, r: 3.5 },
+    {
+      t: 'p',
+      d: 'M4 42H44M24 38L18 22M24 38L34 30L42 35M19 25L28 28M28 25V31M31 25V31M28 28H31M8 30Q6 36 12 39',
+    },
+  ],
+  sideBend: [
+    { t: 'c', x: 17, y: 10, r: 3.5 },
+    {
+      t: 'p',
+      d: 'M24 30Q23 22 19 15M24 30L20 43M24 30L28 43M19 17L14 28M14 28V34M12 28H16M12 34H16M21 17L28 22L25 28',
+    },
+  ],
+  triKickback: [
+    { t: 'c', x: 13, y: 14, r: 3.5 },
+    { t: 'p', d: 'M17 17L32 21M32 21L30 31L32 42H26M19 18L27 24L38 21M38 18V24M41 18V24M38 21H41' },
+  ],
 };
 
 /** ท่าที่ใช้เครื่องหรือท่าทางเดียวกันใช้ภาพเดียวกัน */
@@ -223,10 +309,40 @@ const ART_OF_EXERCISE: Record<string, string> = {
   'Cable Crossover Low to High': 'chestFly',
   'Cable Rear Delt Fly': 'chestFly',
   'Dumbbell Arnold Press': 'dumbbellPress',
-  'Dumbbell Overhead Tricep Extension': 'dumbbellPress',
   'Seated Cable Row V Bar': 'row',
   'Seated Cable Row Wide Grip': 'row',
   'Cable Single Arm Row': 'row',
+  'Barbell Back Squat': 'squat',
+  'Barbell Front Squat': 'squat',
+  'Dumbbell Goblet Squat': 'squat',
+  'Barbell Lunge': 'lunge',
+  'Dumbbell Lunge': 'lunge',
+  'Dumbbell Bulgarian Split Squat': 'lunge',
+  'Dumbbell Step Up': 'lunge',
+  'Barbell Deadlift': 'deadlift',
+  'Barbell Romanian Deadlift': 'deadlift',
+  'Dumbbell Romanian Deadlift': 'deadlift',
+  'Barbell Bent Over Row': 'bentRow',
+  'Barbell Underhand Row': 'bentRow',
+  'T-Bar Row': 'bentRow',
+  'Dumbbell Single Arm Row': 'bentRow',
+  'Dumbbell Bent Over Row': 'bentRow',
+  'Dumbbell Incline Bench Row': 'bentRow',
+  'Barbell Shrug': 'shrug',
+  'Dumbbell Shrug': 'shrug',
+  'Barbell Overhead Press': 'overheadPress',
+  'Barbell Hip Thrust': 'hipThrust',
+  'Barbell Standing Calf Raise': 'calfRaise',
+  'Dumbbell Calf Raise': 'calfRaise',
+  'EZ Bar Skull Crusher': 'skullCrusher',
+  'Dumbbell Skull Crusher': 'skullCrusher',
+  'Barbell Overhead Tricep Extension': 'overheadExt',
+  'Dumbbell Overhead Tricep Extension': 'overheadExt',
+  'Tricep Cable Overhead Rope Extension': 'overheadExt',
+  'Barbell Rollout': 'rollout',
+  'Dumbbell Russian Twist': 'seatedTwist',
+  'Dumbbell Side Bend': 'sideBend',
+  'Dumbbell Tricep Kickback': 'triKickback',
 };
 
 /** ท่าที่ยังไม่มีภาพเฉพาะ ใช้ภาพตามอุปกรณ์ */
