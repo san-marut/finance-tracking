@@ -148,7 +148,7 @@ export class WorkoutAdd {
         return 'ขั้นที่ 2 · เลือกส่วนของร่างกาย';
       case 'exercise':
         return cardio
-          ? 'ขั้นที่ 2 · เลือกเครื่อง'
+          ? 'ขั้นที่ 2 · เลือกกิจกรรม'
           : `ขั้นที่ 3 · เลือกท่า (${this.part()?.label ?? ''})`;
       default:
         return cardio ? 'คาร์ดิโอ' : `เวทเทรนนิ่ง › ${this.part()?.label ?? ''}`;
@@ -157,6 +157,7 @@ export class WorkoutAdd {
 
   /** ชิปกรองอุปกรณ์ แสดงเฉพาะอุปกรณ์ที่ส่วนนี้มี และซ่อนถ้ามีแค่ชนิดเดียว */
   protected readonly equipChips = computed(() => {
+    if (this.type() === 'cardio') return [];
     const list = this.part()?.exercises ?? [];
     const chips = EQUIPS.map((e) => ({
       ...e,

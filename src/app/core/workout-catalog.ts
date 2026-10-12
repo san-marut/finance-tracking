@@ -35,7 +35,10 @@ const of = (equip: Equip, names: string[]): Exercise[] => names.map((name) => ({
 export const CARDIO_PART: BodyPart = {
   id: 'cardio',
   label: 'คาร์ดิโอ',
-  exercises: of('machine', ['Elliptical Trainer', 'Treadmill', 'Bike Indoor']),
+  exercises: [
+    ...of('machine', ['Elliptical Trainer', 'Treadmill', 'Bike Indoor']),
+    ...of('other', ['Running']),
+  ],
 };
 
 export const BODY_PARTS: BodyPart[] = [
