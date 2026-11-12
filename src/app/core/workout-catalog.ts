@@ -37,7 +37,7 @@ export const CARDIO_PART: BodyPart = {
   label: 'คาร์ดิโอ',
   exercises: [
     ...of('machine', ['Elliptical Trainer', 'Treadmill', 'Bike Indoor']),
-    ...of('other', ['Running']),
+    ...of('other', ['Running', 'Walking']),
   ],
 };
 

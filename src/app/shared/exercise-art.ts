@@ -156,6 +156,13 @@ const ART: Record<string, Shape[]> = {
       d: 'M4 42H44M34 42L37 12M37 14L30 18M10 38L30 34M20 12V24M20 24L14 36M20 24L27 34M20 15L30 18',
     },
   ],
+  walking: [
+    { t: 'c', x: 24, y: 8, r: 3.5 },
+    {
+      t: 'p',
+      d: 'M24 12V26M24 26L19 35L17 43M24 26L29 35L32 43M24 15L20 21L16 25M24 15L28 21L32 24M8 44H40',
+    },
+  ],
   running: [
     { t: 'c', x: 26, y: 8, r: 3.5 },
     {
@@ -304,6 +311,7 @@ const ART_OF_EXERCISE: Record<string, string> = {
   Treadmill: 'treadmill',
   'Bike Indoor': 'bike',
   Running: 'running',
+  Walking: 'walking',
   'Dumbbell Bench Press': 'bench',
   'Dumbbell Decline Bench Press': 'bench',
   'Dumbbell Pullover': 'bench',
