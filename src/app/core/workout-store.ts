@@ -29,7 +29,7 @@ export class WorkoutStore {
 
   readonly daySummary = computed(() => summarizeDay(this.selectedDate(), this.dayEntries()));
 
-  /** ข้อความสำหรับคัดลอก: "[ประเภท] [ท่า] [น้ำหนัก] [เซต] [ครั้ง]" หรือ "[ประเภท] [ท่า] [นาที]" */
+  /** ข้อความสำหรับคัดลอก: "[ประเภท] [ท่า] [น้ำหนัก] [เซต] [ครั้ง] พัก [เวลา]" หรือ "[ประเภท] [ท่า] [นาที]" */
   readonly dayText = computed(() => this.dayEntries().map(entryLine).join('\n'));
 
   /** สรุปทุกวันที่มีบันทึก ใหม่สุดก่อน */
@@ -137,16 +137,18 @@ function isEntry(e: unknown): e is WorkoutEntry {
 }
 
 export function entryLine(e: WorkoutEntry): string {
-  return e.type === 'cardio'
-    ? `${TYPE_LABEL.cardio} ${e.exercise} ${e.minutes ?? 0}`
-    : `${TYPE_LABEL.weight} ${e.exercise} ${formatWeight(e.weight ?? 0)} ${e.sets ?? 0} ${e.reps ?? 0}`;
+  if (e.type === 'cardio') return `${TYPE_LABEL.cardio} ${e.exercise} ${e.minutes ?? 0}`;
+  const line = `${TYPE_LABEL.weight} ${e.exercise} ${formatWeight(e.weight ?? 0)} ${e.sets ?? 0} ${e.reps ?? 0}`;
+  // รายการเก่า/ไฟล์นำเข้าที่ไม่มีเวลาพัก ไม่ต่อท้าย แทนที่จะเดาเป็น "พัก 0 วิ"
+  return typeof e.rest === 'number' ? `${line} พัก ${restLabel(e.rest)}` : line;
 }
 
 /** '50 kg · 4×12 · พัก 60 วิ' หรือ '20 นาที' */
 export function entryDetail(e: WorkoutEntry): string {
   if (e.type === 'cardio') return `${e.minutes ?? 0} นาที`;
   const weight = e.weight ? `${formatWeight(e.weight)} kg` : 'น้ำหนักตัว';
-  return `${weight} · ${e.sets}×${e.reps} · พัก ${restLabel(e.rest ?? 0)}`;
+  const rest = typeof e.rest === 'number' ? ` · พัก ${restLabel(e.rest)}` : '';
+  return `${weight} · ${e.sets}×${e.reps}${rest}`;
 }
 
 export function restLabel(sec: number): string {
